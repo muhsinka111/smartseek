@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSeek — One №1 seat. Every smart thing on Earth wants it.</title>
+<meta name="description" content="A live auction over everything intelligent — AI tools, agents, robots, people, businesses, opportunities. Pay $1 more than the last believer. Take the seat. Hold it if you can.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF8;
+  --card:#FFFFFF;
+  --ink:#17130E;
+  --sub:#59544C;
+  --faint:#A39C91;
+  --line:#E8E4DC;
+  --line-soft:#F0EDE6;
+  --soft:#F5F3EE;
+  --red:#9F1239;
+  --red-deep:#7E0E2D;
+  --red-wash:#FCF4F1;
+  --red-line:#EDD5CD;
+  --gold:#A16207;
+  --gold-soft:#FDF9EC;
+  --gold-line:#EFE3BC;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;}
+::selection{background:var(--red);color:#fff;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px;}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:2px;}
+
+/* ---------- demo bar ---------- */
+.demo-bar{background:var(--ink);color:#D8D2C7;text-align:center;font-size:11px;padding:7px 16px;letter-spacing:.05em;font-family:var(--mono);}
+.demo-bar b{color:#FBD38D;font-weight:500;}
+
+/* ---------- masthead ---------- */
+header.mast{position:sticky;top:0;z-index:60;background:rgba(250,250,248,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.mast-in{display:flex;align-items:center;height:62px;gap:36px;}
+.wordmark{font-family:var(--serif);font-size:21px;font-weight:500;letter-spacing:-.01em;}
+.wordmark i{font-style:normal;color:var(--red);}
+.nav{display:flex;gap:26px;margin-left:auto;font-size:13px;color:var(--sub);font-weight:500;}
+.nav a:hover{color:var(--ink);}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border:none;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:transform .12s ease,background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease;}
+.btn:active{transform:scale(.96);}
+.btn-red{background:var(--red);color:#fff;padding:11px 24px;}
+.btn-red:hover{background:var(--red-deep);}
+.btn-gold{background:linear-gradient(180deg,#B7791F,#975A16);color:#fff;padding:13px 26px;font-size:14.5px;letter-spacing:.04em;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 18px rgba(151,90,22,.28);}
+.btn-gold:hover{filter:brightness(1.06);}
+.btn-sm{padding:8px 18px;font-size:13px;min-height:38px;}
+.link-btn{background:none;border:none;color:var(--sub);font-size:13.5px;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line);padding:10px 4px;}
+.link-btn:hover{color:var(--ink);text-decoration-color:var(--red);}
+
+/* ---------- ticker tape ---------- */
+.tape{border-bottom:1px solid var(--line);background:var(--ink);overflow:hidden;height:34px;display:flex;align-items:center;}
+.tape-track{display:flex;gap:0;white-space:nowrap;font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:#B9B2A5;animation:tape 46s linear infinite;will-change:transform;}
+.tape:hover .tape-track{animation-play-state:paused;}
+@keyframes tape{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.tp{display:inline-flex;align-items:baseline;gap:7px;padding:0 22px;border-right:1px solid rgba(255,255,255,.08);}
+.tp b{color:#F1EDE4;font-weight:600;}
+.tp .amt{color:#F0ABCB;}
+.tp .mv{color:#FBD38D;}
+
+/* ---------- status strip ---------- */
+.strip{border-bottom:1px solid var(--line);background:var(--card);}
+.strip-in{display:flex;align-items:center;gap:0;overflow-x:auto;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--sub);}
+.stat{display:flex;align-items:baseline;gap:8px;padding:10px 20px;border-right:1px solid var(--line);white-space:nowrap;}
+.stat:first-child{padding-left:0;}
+.stat b{color:var(--ink);font-weight:600;font-size:12.5px;}
+.stat.live{color:var(--red);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0;transform:translateY(-1px);}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(159,18,57,.35);}70%{box-shadow:0 0 0 6px rgba(159,18,57,0);}100%{box-shadow:0 0 0 0 rgba(159,18,57,0);}}
+
+/* ---------- opening game console ---------- */
+.opening{padding:64px 0 56px;display:grid;grid-template-columns:minmax(0,6.5fr) minmax(0,5.5fr);gap:52px;align-items:start;}
+.kicker{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.2em;color:var(--red);margin-bottom:24px;}
+.kicker::before{content:"";width:22px;height:1px;background:var(--red);}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(42px,5vw,66px);line-height:1.04;letter-spacing:-.015em;margin-bottom:20px;text-wrap:balance;}
+h1 em{font-style:italic;color:var(--red);}
+.lede{font-size:16px;color:var(--sub);max-width:520px;margin-bottom:26px;text-wrap:pretty;}
+.lede b{color:var(--ink);font-weight:600;}
+.mini-moves{display:flex;flex-direction:column;gap:0;max-width:480px;margin-top:8px;}
+.mv-line{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:11px 0;border-top:1px solid var(--line-soft);font-size:13.5px;color:var(--sub);}
+.mv-line:last-child{border-bottom:1px solid var(--line-soft);}
+.mv-line .no{font-family:var(--serif);font-style:italic;color:var(--red);font-size:16px;}
+.mv-line b{color:var(--ink);font-weight:600;}
+
+/* ---------- THE CLAIM CARD ---------- */
+.claim-card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 28px 24px;position:relative;overflow:hidden;
+  box-shadow:0 1px 0 rgba(23,19,14,.02),0 18px 50px -18px rgba(23,19,14,.18);
+}
+.claim-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),#E3B341,var(--gold));}
+.cc-flash{animation:flash .9s ease;}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(161,98,7,.45);}100%{box-shadow:0 0 0 26px rgba(161,98,7,0);}}
+.cc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cc-lbl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;color:var(--faint);text-transform:uppercase;}
+.cc-live{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--red);}
+.cc-seat{margin-bottom:20px;}
+.cc-price{font-family:var(--mono);font-weight:700;font-size:clamp(44px,4.6vw,58px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;}
+.cc-price .cents{font-size:.55em;color:var(--faint);font-weight:600;}
+.holder-line{font-size:13px;color:var(--sub);margin-top:9px;}
+.holder-line b{color:var(--ink);font-weight:600;}
+.medal-inline{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--gold);background:var(--gold-soft);border:1px solid var(--gold-line);padding:2px 8px;border-radius:999px;margin-right:7px;transform:translateY(-1px);}
+.cc-form{display:flex;flex-direction:column;gap:10px;}
+.f-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--sub);text-transform:uppercase;margin-bottom:-4px;}
+.url-row{display:flex;border:1px solid var(--line);border-radius:11px;background:var(--paper);overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease;}
+.url-row:focus-within{border-color:var(--red);box-shadow:0 0 0 3px rgba(159,18,57,.07);background:var(--card);}
+.url-row input{flex:1;min-width:0;border:none;background:none;height:48px;padding:0 15px;font-size:14.5px;font-family:var(--sans);outline:none;color:var(--ink);}
+.url-row input::placeholder{color:var(--faint);}
+.bid-row{display:flex;gap:10px;}
+.bid-field{flex:1;display:flex;align-items:center;border:1px solid var(--line);border-radius:11px;background:var(--paper);overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease;}
+.bid-field:focus-within{border-color:var(--red);box-shadow:0 0 0 3px rgba(159,18,57,.07);background:var(--card);}
+.bid-field .cur{font-family:var(--mono);font-weight:600;color:var(--faint);padding-left:15px;}
+.bid-field input{flex:1;min-width:0;border:none;background:none;height:48px;padding:0 12px 0 6px;font-family:var(--mono);font-size:17px;font-weight:600;color:var(--ink);outline:none;font-variant-numeric:tabular-nums;}
+.take-btn{background:var(--red);color:#fff;border:none;border-radius:11px;padding:0 24px;font-size:14px;font-weight:700;letter-spacing:.05em;cursor:pointer;white-space:nowrap;transition:background-color .15s ease,transform .12s ease,box-shadow .15s ease;box-shadow:0 6px 18px -6px rgba(159,18,57,.5);}
+.take-btn:hover{background:var(--red-deep);}
+.take-btn:active{transform:scale(.97);}
+.cc-foot{margin-top:14px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.cc-foot .link-btn{font-size:12px;padding:0;text-decoration-color:var(--red-line);}
+.cc-foot .link-btn:hover{color:var(--red);}
+.cc-beat{font-family:var(--mono);font-size:10.5px;color:var(--gold);font-weight:600;letter-spacing:.06em;}
+
+/* ---------- sections ---------- */
+section{padding:64px 0;}
+.sec-bar{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-top:1px solid var(--ink);padding-top:14px;margin-bottom:28px;}
+.sec-bar h2{font-family:var(--serif);font-weight:400;font-size:30px;letter-spacing:-.01em;}
+.sec-bar h2 em{font-style:italic;color:var(--red);}
+.sec-note{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;}
+
+/* ---------- how to play ---------- */
+.play{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);}
+.p-card{padding:30px 28px 32px;border-right:1px solid var(--line);position:relative;}
+.p-card:last-child{border-right:none;}
+.p-no{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.p-no::after{content:"";height:1px;flex:1;background:var(--line);}
+.p-card h3{font-family:var(--serif);font-weight:400;font-size:23px;margin-bottom:9px;letter-spacing:-.01em;}
+.p-card h3 em{font-style:italic;color:var(--red);}
+.p-card p{font-size:13.5px;color:var(--sub);text-wrap:pretty;}
+.p-card p b{color:var(--ink);font-weight:600;}
+
+/* ---------- tabs & index ---------- */
+.tabs{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--line);}
+.tab{background:none;border:none;font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);cursor:pointer;padding:10px 2px 12px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s ease,border-color .15s ease;}
+.tab:hover{color:var(--ink);}
+.tab.on{color:var(--ink);border-bottom-color:var(--red);}
+.tab .n{color:var(--red);margin-left:4px;font-size:10.5px;}
+.index-layout{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:28px;align-items:start;}
+.table{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;}
+.t-head,.row{display:grid;grid-template-columns:58px minmax(0,1fr) 118px 86px 96px;gap:14px;align-items:center;padding:15px 22px;}
+.t-head{background:var(--soft);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;padding-top:12px;padding-bottom:12px;}
+.row{border-bottom:1px solid var(--line-soft);background:var(--card);transition:background-color .15s ease;}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--paper);}
+.row.leader{background:linear-gradient(90deg,var(--gold-soft) 0%,var(--card) 42%);}
+.rk{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--faint);display:flex;flex-direction:column;line-height:1.25;}
+.rk.top{color:var(--gold);font-weight:600;}
+.rk .up{font-size:9.5px;color:var(--red);font-weight:600;}
+.pos{min-width:0;}
+.pos-top{display:flex;align-items:center;gap:11px;}
+.av{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12.5px;font-family:var(--mono);}
+.p-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.medal{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--gold);background:var(--gold-soft);border:1px solid var(--gold-line);padding:2.5px 8px;border-radius:999px;flex-shrink:0;}
+.p-desc{font-size:12.5px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-meta{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px;}
+.bid-c{text-align:right;}
+.bid{font-family:var(--mono);font-size:15.5px;font-weight:600;font-variant-numeric:tabular-nums;}
+.clicks{font-family:var(--mono);font-size:12.5px;color:var(--sub);text-align:right;font-variant-numeric:tabular-nums;}
+.bid-btn{justify-self:end;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:600;padding:8px 16px;min-height:36px;border-radius:999px;cursor:pointer;transition:border-color .15s ease,color .15s ease,background-color .15s ease,transform .12s ease;}
+.bid-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-wash);}
+.bid-btn:active{transform:scale(.96);}
+.raiser{grid-column:1/-1;background:var(--red-wash);border-top:1px dashed var(--red-line);margin:0 -22px -15px;padding:14px 22px;display:none;}
+.raiser.open{display:block;}
+.raiser-in{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.stepper{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.stepper button{width:34px;height:36px;background:none;border:none;font-size:16px;color:var(--sub);cursor:pointer;}
+.stepper button:hover{background:var(--soft);color:var(--ink);}
+.stepper input{width:90px;height:36px;border:none;text-align:center;font-family:var(--mono);font-size:14.5px;font-weight:600;outline:none;}
+.rz-go{background:var(--red);color:#fff;border:none;padding:9px 18px;min-height:36px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;}
+.rz-go:hover{background:var(--red-deep);}
+.rz-note{font-size:11px;color:var(--faint);}
+
+/* ---------- order book ---------- */
+.book{border:1px solid var(--line);border-radius:12px;background:var(--card);position:sticky;top:86px;}
+.book-h{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
+.book-h .dot{margin-left:auto;}
+.book-list{max-height:520px;overflow-y:auto;}
+.trade{padding:12px 18px;border-bottom:1px solid var(--line-soft);font-size:12px;}
+.trade:last-child{border-bottom:none;}
+.tr-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.tr-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-amt{font-family:var(--mono);color:var(--red);font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.tr-sub{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:3px;}
+
+/* ---------- rules & essay ---------- */
+.rules-layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;}
+.rules-left{position:sticky;top:100px;align-self:start;}
+.rules-left h3{font-family:var(--serif);font-weight:400;font-size:24px;margin-bottom:12px;}
+.rules-left p{color:var(--sub);font-size:15px;max-width:380px;text-wrap:pretty;}
+.rule-list{list-style:none;}
+.rule{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:15px 0;border-bottom:1px solid var(--line-soft);}
+.rule:last-child{border-bottom:none;}
+.rule-no{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--faint);}
+.rule-t{font-size:14px;}
+.rule-t b{font-weight:600;}
+.essay-lede{font-family:var(--serif);font-size:clamp(25px,3.2vw,36px);line-height:1.28;font-weight:400;letter-spacing:-.01em;text-wrap:balance;margin-bottom:30px;max-width:900px;}
+.essay-lede em{font-style:italic;color:var(--red);}
+.fnotes{max-width:740px;}
+.fnote{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line-soft);font-size:13.5px;color:var(--sub);line-height:1.65;}
+.fnote sup{font-family:var(--serif);font-style:italic;color:var(--red);font-size:15px;}
+.fnote b{color:var(--ink);font-weight:600;}
+
+/* ---------- close & footer ---------- */
+.close-sec{border-top:1px solid var(--line);padding:60px 0 66px;display:flex;align-items:baseline;justify-content:space-between;gap:28px;flex-wrap:wrap;}
+.close-line{font-family:var(--serif);font-size:clamp(27px,3.4vw,42px);font-weight:400;letter-spacing:-.01em;text-wrap:balance;}
+.close-line em{font-style:italic;color:var(--red);}
+footer{border-top:1px solid var(--line);padding:28px 0;background:var(--card);}
+.foot-in{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--faint);}
+.foot-tag{font-family:var(--serif);font-style:italic;color:var(--sub);}
+.foot-links{display:flex;gap:22px;}
+.foot-links a:hover{color:var(--ink);}
+
+/* ---------- toast & modal ---------- */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#F5F2EC;padding:12px 22px;border-radius:999px;font-size:13px;font-weight:500;z-index:99;box-shadow:0 10px 34px rgba(23,19,14,.28);transition:transform .3s cubic-bezier(.22,.9,.36,1);max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.modal-back{position:fixed;inset:0;background:rgba(23,19,14,.44);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal-back.open{display:flex;}
+.modal{background:var(--card);border-radius:14px;padding:34px;width:100%;max-width:430px;box-shadow:0 28px 80px rgba(23,19,14,.3);}
+.modal h3{font-family:var(--serif);font-weight:400;font-size:26px;margin-bottom:6px;}
+.modal h3 em{font-style:italic;color:var(--red);}
+.m-sub{color:var(--sub);font-size:13px;margin-bottom:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--sub);margin-bottom:7px;text-transform:uppercase;}
+.field input{width:100%;height:46px;border:1px solid var(--line);border-radius:10px;padding:0 15px;font-size:14.5px;outline:none;background:var(--paper);}
+.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(159,18,57,.08);background:var(--card);}
+.m-actions{display:flex;gap:10px;margin-top:24px;}
+.m-actions .btn{flex:1;}
+.btn-ghost{background:var(--card);border:1px solid var(--line);color:var(--sub);padding:12px;}
+.btn-ghost:hover{color:var(--ink);}
+
+.cc-expose{font-size:11.5px;color:var(--sub);background:var(--soft);border:1px dashed var(--line);border-radius:9px;padding:9px 13px;display:flex;gap:8px;align-items:baseline;line-height:1.5;}
+.cc-expose b{color:var(--red);font-family:var(--mono);font-size:10px;letter-spacing:.1em;flex-shrink:0;}
+
+/* ---------- seated overlay ---------- */
+.seated-back{position:fixed;inset:0;background:rgba(23,19,14,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:120;padding:20px;}
+.seated-back.open{display:flex;}
+.seated{background:var(--card);border-radius:18px;padding:38px 38px 32px;max-width:470px;width:100%;text-align:center;box-shadow:0 30px 90px rgba(23,19,14,.35);animation:seatedPop .45s cubic-bezier(.22,.9,.36,1);position:relative;overflow:hidden;}
+.seated::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),#E3B341,var(--gold));}
+@keyframes seatedPop{from{opacity:0;transform:scale(.9) translateY(14px);}to{opacity:1;transform:none;}}
+.seated-kick{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.2em;color:var(--red);text-transform:uppercase;margin-bottom:8px;}
+.seated h3{font-family:var(--serif);font-weight:400;font-size:25px;margin-bottom:4px;}
+.seated .s-name{color:var(--red);font-style:italic;}
+.seated-rank{font-family:var(--mono);font-weight:700;font-size:62px;line-height:1.05;letter-spacing:-.03em;color:var(--ink);margin:6px 0 10px;font-variant-numeric:tabular-nums;}
+.seated-rank.gold{color:var(--gold);}
+.seated p{font-size:13.5px;color:var(--sub);margin-bottom:18px;text-wrap:pretty;}
+.seated p b{color:var(--ink);}
+.exposure{display:flex;justify-content:center;gap:30px;padding:15px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);margin-bottom:20px;}
+.exposure div b{display:block;font-family:var(--mono);font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;}
+.exposure div span{font-size:10px;color:var(--faint);letter-spacing:.09em;text-transform:uppercase;font-family:var(--mono);}
+.s-actions{display:flex;gap:10px;}
+.s-actions .btn{flex:1;}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
+
+@media(max-width:1020px){
+  .opening{grid-template-columns:1fr;gap:40px;}
+  .index-layout{grid-template-columns:1fr;}
+  .book{position:static;}
+  .play,.rules-layout{grid-template-columns:1fr;}
+  .p-card{border-right:none!important;border-bottom:1px solid var(--line)!important;}
+  .p-card:last-child{border-bottom:none!important;}
+  .rules-left{position:static;}
+}
+@media(max-width:720px){
+  .t-head{display:none;}
+  .row{grid-template-columns:44px 1fr;row-gap:12px;padding:16px;}
+  .bid-c{text-align:left;}
+  .clicks{text-align:left;}
+  .bid-btn{justify-self:start;grid-column:2;}
+  .nav{display:none;}
+  .take-btn{padding:14px 0;}
+  .bid-row{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">DESIGN PREVIEW · SAMPLE POSITIONS &amp; SIMULATED TRADES · <b>NO REAL MONEY MOVES</b></div>
+
+<header class="mast">
+  <div class="wrap mast-in">
+    <span class="wordmark">SmartSeek<i>.</i></span>
+    <nav class="nav">
+      <a href="#index">The Index</a>
+      <a href="#play">How to play</a>
+      <a href="#rules">Rules</a>
+      <a href="#">Ledger</a>
+    </nav>
+    <button class="btn btn-red btn-sm" onclick="focusSeat()">Take № 1</button>
+  </div>
+</header>
+
+<div class="tape" aria-hidden="true"><div class="tape-track" id="tapeTrack"></div></div>
+
+<div class="strip">
+  <div class="wrap strip-in">
+    <div class="stat"><b id="m-total">$0</b><span>in the pot</span></div>
+    <div class="stat"><b id="m-count">0</b><span>positions</span></div>
+    <div class="stat"><b id="m-clicks">0</b><span>clicks sent</span></div>
+    <div class="stat"><b id="m-seats">0</b><span>seats taken today</span></div>
+    <div class="stat"><b>$1</b><span>floor</span></div>
+    <div class="stat live"><span class="dot"></span><span>LIVE AUCTION</span></div>
+  </div>
+</div>
+
+<!-- ================= OPENING: THE GAME ================= -->
+<div class="wrap opening">
+  <div>
+    <div class="kicker">THE SMARTEST GAME ON THE INTERNET</div>
+    <h1>One №&nbsp;1 seat.<br>Every smart thing on Earth <em>wants it.</em></h1>
+    <p class="lede">This is a <b>live auction over everything intelligent</b> — AI tools, agents, robots, people, businesses, opportunities. Find your target. Pay <b>$1 more</b> than the last believer. The seat is yours — <b>until someone believes harder.</b></p>
+    <div class="mini-moves">
+      <div class="mv-line"><span class="no">i.</span><span><b>Pick anything smart</b> — paste any URL or @handle.</span></div>
+      <div class="mv-line"><span class="no">ii.</span><span><b>Name your price</b> — beat the seat by $1, whole dollars.</span></div>
+      <div class="mv-line"><span class="no">iii.</span><span><b>Defend it</b> — get outbid, climb back anytime for the difference.</span></div>
+    </div>
+  </div>
+
+  <!-- THE CLAIM CARD -->
+  <aside class="claim-card" id="claimCard">
+    <div class="cc-head">
+      <span class="cc-lbl">The № 1 seat costs</span>
+      <span class="cc-live"><span class="dot"></span>LIVE</span>
+    </div>
+    <div class="cc-seat">
+      <div class="cc-price" id="topPrice">$—</div>
+      <div class="holder-line" id="topHolder">reading the board…</div>
+    </div>
+    <div class="cc-form">
+      <span class="f-label">Your target — anything smart</span>
+      <div class="url-row"><input type="text" id="g-url" placeholder="yourproduct.ai · x.com/you · anything"></div>
+      <div class="bid-row">
+        <div class="bid-field"><span class="cur">$</span><input type="number" id="g-bid" min="1" step="1" aria-label="bid amount"></div>
+        <button class="take-btn" onclick="takeSeat()">TAKE THE SEAT</button>
+      </div>
+    </div>
+    <div class="cc-foot">
+      <span class="cc-beat" id="beatNote"></span>
+    </div>
+    <div class="cc-expose"><b>PAY → RANKED</b><span>The moment payment settles, your product sits on the public board — in front of every visitor seeking smart things. Clicks flow straight to you, counted live.</span></div>
+  </aside>
+</div>
+
+<!-- ================= HOW TO PLAY ================= -->
+<section id="play" style="padding-top:8px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>How to <em>play</em></h2>
+      <span class="sec-note">three moves · thirty seconds</span>
+    </div>
+    <div class="play">
+      <div class="p-card">
+        <div class="p-no">MOVE 01</div>
+        <h3>Pick your <em>target</em></h3>
+        <p>Paste any smart thing — a product, an agent, a robot, your own profile, a business, an opportunity. It goes on the board instantly, with its own public page.</p>
+      </div>
+      <div class="p-card">
+        <div class="p-no">MOVE 02</div>
+        <h3>Outbid the <em>seat</em></h3>
+        <p>The № 1 seat belongs to whoever paid the most, period. Pay <b>$1 more than the current price</b> and the seat — with every click it sends — becomes yours.</p>
+      </div>
+      <div class="p-card">
+        <div class="p-no">MOVE 03</div>
+        <h3>Defend your <em>crown</em></h3>
+        <p>Someone believes harder? They take it. Your dollars stay banked on the ledger — return anytime and reclaim the seat <b>for the difference.</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= THE INDEX ================= -->
+<section id="index" style="padding-top:12px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>The <em>Index</em></h2>
+      <span class="sec-note">rank = total paid · settles instantly</span>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="index-layout">
+      <div class="table">
+        <div class="t-head"><span>№</span><span>Position</span><span style="text-align:right">Paid</span><span style="text-align:right">Clicks</span><span></span></div>
+        <div id="rows"></div>
+      </div>
+      <aside class="book">
+        <div class="book-h">Order book<span class="dot"></span></div>
+        <div class="book-list" id="feed"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RULES ================= -->
+<section id="rules" style="padding-top:12px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>House <em>rules</em></h2>
+      <span class="sec-note">eight lines · no fine print</span>
+    </div>
+    <div class="rules-layout">
+      <div class="rules-left">
+        <h3>One rule does everything:</h3>
+        <p>A position's rank is the total dollars behind it. Everything below just keeps that rule honest.</p>
+      </div>
+      <ol class="rule-list">
+        <li class="rule"><span class="rule-no">01</span><span class="rule-t"><b>Money is the only ranking.</b> No algorithm, no jury, no engagement metrics.</span></li>
+        <li class="rule"><span class="rule-no">02</span><span class="rule-t"><b>New positions start at $1.</b> Whole dollars only.</span></li>
+        <li class="rule"><span class="rule-no">03</span><span class="rule-t"><b>Taking № 1 costs the leader plus $1.</b> Lower bids buy whatever rank they reach.</span></li>
+        <li class="rule"><span class="rule-no">04</span><span class="rule-t"><b>Raise anytime, pay the difference.</b> Past belief stays banked.</span></li>
+        <li class="rule"><span class="rule-no">05</span><span class="rule-t"><b>Ties go to the earlier believer.</b></span></li>
+        <li class="rule"><span class="rule-no">06</span><span class="rule-t"><b>Bids are final.</b> Getting outbid isn't a loss — it's the market working.</span></li>
+        <li class="rule"><span class="rule-no">07</span><span class="rule-t"><b>Clicks pass straight through,</b> counted honestly beside your name.</span></li>
+        <li class="rule"><span class="rule-no">08</span><span class="rule-t"><b>Everything is published.</b> Bids, history, totals — the ledger belongs to everyone.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY ================= -->
+<section id="why" style="padding-top:8px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>Why a <em>game</em></h2>
+      <span class="sec-note">four footnotes · zero promises</span>
+    </div>
+    <p class="essay-lede">Discovery got outsourced to machines guessing what you might click. We turned it into the oldest game there is — open bidding, in public, <em>with receipts.</em></p>
+    <div class="fnotes">
+      <div class="fnote"><sup>¹</sup><span><b>The full-glass ledger.</b> Every dollar carries a timestamp and a public record. If the seat changed hands, you see when and for how much — forever.</span></div>
+      <div class="fnote"><sup>²</sup><span><b>Verified clicks.</b> Traffic passes through our redirect; the count prints beside every position. Results aren't claimed — they're shown.</span></div>
+      <div class="fnote"><sup>³</sup><span><b>Permanent equity.</b> Positions are indexed pages with dofollow links. A bid buys lasting search presence, not fifteen minutes of meme fame.</span></div>
+      <div class="fnote"><sup>⁴</sup><span><b>Admission is curated to the intelligent:</b> AI tools, agents, robotics, platforms, smart people, businesses, opportunities. Qualified eyes only.</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="close-sec">
+  <div class="wrap" style="display:flex;align-items:baseline;justify-content:space-between;gap:28px;flex-wrap:wrap;">
+    <div class="close-line">Somewhere below, someone<br>is <em>$1 away from your seat.</em></div>
+    <button class="btn btn-red" onclick="focusSeat()">Take № 1</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>© 2026 SmartSeek</span>
+    <span class="foot-tag">what is smart worth?</span>
+    <div class="foot-links"><a href="#">Rules</a><a href="#">Ledger</a><a href="#">Privacy</a><a href="#">Contact</a></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- SEATED — the payoff moment -->
+<div class="seated-back" id="seatedBack" onclick="if(event.target===this)closeSeated()">
+  <div class="seated">
+    <div class="seated-kick">Payment settled · position live</div>
+    <h3><span class="s-name" id="sName">Your product</span> is on the board.</h3>
+    <div class="seated-rank gold" id="sRank">№ 1</div>
+    <p id="sMsg">Every visitor now sees you first. The seat is yours until someone believes harder — defend it for the difference.</p>
+    <div class="exposure">
+      <div><b id="xViewers">—</b><span>seekers online</span></div>
+      <div><b id="xClicks">0</b><span>clicks sent today</span></div>
+      <div><b id="xEyes">LIVE</b><span>your page views now</span></div>
+    </div>
+    <div class="s-actions">
+      <button class="btn btn-ghost" onclick="closeSeated()">Back to the floor</button>
+      <button class="btn btn-red" onclick="closeSeated();document.getElementById('index').scrollIntoView({behavior:'smooth'})">See your position ↓</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeClaim()">
+  <div class="modal">
+    <h3>List from <em>$1</em></h3>
+    <p class="m-sub">Anything intelligent qualifies. Start low, defend hard. <b>Demo:</b> nothing is charged.</p>
+    <div class="field"><label>Url or @handle</label><input type="text" id="c-url" placeholder="yourproduct.ai or @yourhandle"></div>
+    <div class="field"><label>Display name</label><input type="text" id="c-name" placeholder="Acme AI"></div>
+    <div class="field"><label>Your bid · USD whole dollars</label><input type="number" id="c-bid" min="1" step="1" placeholder="1"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeClaim()">Cancel</button>
+      <button class="btn btn-red" onclick="submitListing()">List it — demo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= demo data ================= */
+const CATS=["All","AI Tools","Agents","Platforms","Robotics","People","Businesses","Opportunities"];
+let seq=1;
+function P(name,domain,desc,cat,bid,clicks,color,minsAgo){
+  return {id:seq++,name,domain,desc,cat,bid,clicks,color,moved:0,createdAt:Date.now()-minsAgo*60000};
+}
+let positions=[
+  P("Nexus Agents","nexusagents.ai","Autonomous AI employees for sales, support and research — run from one console.","Agents",1240,2143,"#9F1239",3),
+  P("Helix Robotics","helixrobotics.com","Warehouse arms that learn pick-and-place from a single demonstration.","Robotics",980,1876,"#17130E",11),
+  P("PromptDeck","promptdeck.io","Version-control, test and ship prompts across every LLM like real code.","AI Tools",750,1204,"#5B21B6",26),
+  P("Sarah Chen","x.com/sarahbuilds","AI research engineer · building open agents · ex-DeepMind. Daily posts.","People",500,987,"#BE185D",48),
+  P("DataForge","dataforge.dev","Any messy database becomes a queryable knowledge API for agents.","Platforms",420,654,"#A16207",74),
+  P("Atlas Fund II","atlasopportunities.com","Co-invest in pre-seed AI infrastructure deals. Tranche closing soon.","Opportunities",350,431,"#1D4ED8",102),
+  P("Cognify","getcognify.app","The reasoning spreadsheet — formulas that plan, check and cite their work.","AI Tools",280,512,"#0F766E",133),
+  P("Marcus Reid","linkedin.com/in/marcusreid","Ghostwriter for AI founders · 2.1M impressions/mo · weekly in public.","People",190,289,"#3730A3",161),
+  P("Quantum Ledger","quantumledger.fi","Fraud decisions on payment rails in 40ms — fully explainable.","Platforms",120,176,"#92400E",210),
+  P("SmartK9","smartk9.co","Collar that translates barks, tracks health, trains with you. Ships '27.","Businesses",45,94,"#B91C1C",290),
+];
+let total=positions.reduce((s,p)=>s+p.bid,0);
+const CLICKS_BASE=12847;
+let seatsToday=7;
+let trades=[];
+
+/* ================= helpers ================= */
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const timeAgo=t=>{const m=Math.max(1,Math.round((Date.now()-t)/60000));
+  if(m<60)return m+'m ago';const h=Math.round(m/60);
+  return h<24?h+'h ago':Math.round(h/24)+'d ago';};
+const sorted=()=>[...positions].sort((a,b)=>b.bid-a.bid||a.createdAt-b.createdAt);
+let activeCat="All";
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= claim card (the game) ================= */
+function paintSeat(){
+  const s=sorted();const top=s[0];
+  document.getElementById('topPrice').innerHTML=fmt(top.bid+1)+'<span class="cents">.00</span>';
+  document.getElementById('topHolder').innerHTML=`<span class="medal-inline">HELD BY</span><b>${top.name}</b> · ${fmt(top.bid)} paid`;
+  const gb=document.getElementById('g-bid');
+  if(document.activeElement!==gb&&!gb.value)gb.value=top.bid+1;
+  const diff=(top.bid+1)-(s[1]?s[1].bid:0);
+  document.getElementById('beatNote').textContent=s[1]?`NEXT CHALLENGER CAN STRIKE AT ${fmt(s[1].bid+1)}`:'OPEN BOARD — FIRST BELIEVER WINS';
+}
+function showSeated(name,rank){
+  document.getElementById('sName').textContent=name;
+  const rk=document.getElementById('sRank');
+  rk.textContent=rank===1?'№ 1':'#'+rank;
+  rk.className='seated-rank'+(rank===1?' gold':'');
+  document.getElementById('sMsg').innerHTML=rank===1
+    ?'Every visitor now sees you <b>first</b>. The seat is yours until someone believes harder — reclaim it anytime for the difference.'
+    :'Your position is live on the public board. Climb higher anytime — the next seat costs exactly $1 more than the row above.';
+  document.getElementById('xViewers').textContent=(180+Math.floor(Math.random()*220)).toLocaleString('en-US');
+  document.getElementById('xClicks').textContent=(CLICKS_BASE%1000).toLocaleString('en-US');
+  document.getElementById('seatedBack').classList.add('open');
+}
+function closeSeated(){document.getElementById('seatedBack').classList.remove('open');}
+function focusSeat(){
+  document.getElementById('claimCard').scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>document.getElementById('g-url').focus({preventScroll:true}),450);
+}
+function takeSeat(){
+  const url=document.getElementById('g-url').value.trim();
+  let bid=Math.floor(Number(document.getElementById('g-bid').value));
+  const top=sorted()[0];
+  if(!url){toast('Name your target first — any URL or @handle');focusSeat();return;}
+  if(!bid||bid<1){toast('Floor is $1');return;}
+  if(bid<=top.bid){toast(`The seat costs ${fmt(top.bid+1)} — bid more to take it`);return;}
+  const existing=positions.find(p=>p.domain.toLowerCase()===url.toLowerCase());
+  const oldRank=existing?(sorted().findIndex(x=>x.id===existing.id)+1):null;
+  if(existing){
+    const diff=bid-existing.bid;total+=diff;seatsToday++;existing.bid=bid;
+    const nr=sorted().findIndex(x=>x.id===existing.id)+1;
+    logTrade(`<span class="tr-name">${existing.name}</span><span class="tr-amt">+${fmt(diff)}</span>`,
+             `<span>${oldRank===1?'HELD':'RECLAIMED'} № 1</span><span>just now</span>`);
+    toast(`👑 ${existing.name} TOOK № 1 — ${fmt(bid)} on the ledger`);
+  }else{
+    const palette=["#9F1239","#17130E","#5B21B6","#BE185D","#A16207","#1D4ED8","#0F766E","#B91C1C"];
+    const np=P(url.split('/')[0].replace('@',''),url,`Newly seated on SmartSeek — ${url}.`,url.startsWith('@')?"People":"Platforms",bid,0,palette[Math.floor(Math.random()*palette.length)],0);
+    positions.push(np);total+=bid;seatsToday++;
+    logTrade(`<span class="tr-name">${np.name}</span><span class="tr-amt">${fmt(bid)}</span>`,
+             `<span>TOOK № 1 — NEW POSITION</span><span>just now</span>`);
+    toast(`👑 ${np.name} TOOK № 1 — welcome to the top`);
+  }
+  document.getElementById('g-url').value='';
+  const winnerName=existing?existing.name:url.split('/')[0].replace('@','');
+  paintAll();
+  showSeated(winnerName,1);
+}
+
+/* ================= render index ================= */
+function render(){
+  const rowsEl=document.getElementById('rows');
+  const prev={};rowsEl.querySelectorAll('.row[data-id]').forEach(r=>prev[r.dataset.id]=r.getBoundingClientRect().top);
+  const view=sorted().filter(p=>activeCat==="All"||p.cat===activeCat);
+  const gRank=new Map();sorted().forEach((p,i)=>gRank.set(p.id,i+1));
+  rowsEl.innerHTML='';
+  view.forEach((p,idx)=>{
+    const rank=gRank.get(p.id);
+    const cost=rank===1?p.bid+1:(view[idx-1]?Math.max(view[idx-1].bid,p.bid)+1:p.bid+1);
+    const r=document.createElement('div');
+    r.className='row'+(rank===1?' leader':'');
+    r.dataset.id=p.id;
+    r.innerHTML=`
+      <span class="rk ${rank===1?'top':''}">#${rank}${p.moved>0?`<span class="up">▲${p.moved}</span>`:''}</span>
+      <div class="pos">
+        <div class="pos-top">
+          <span class="av" style="background:${p.color}">${p.name[0]}</span>
+          <span class="p-name">${p.name}</span>
+          ${rank===1?'<span class="medal">№ 1</span>':''}
+        </div>
+        <div class="p-desc">${p.desc}</div>
+        <div class="p-meta">${p.cat.toUpperCase()} · ${p.domain}</div>
+      </div>
+      <div class="bid-c"><div class="bid">${fmt(p.bid)}</div></div>
+      <div class="clicks">${p.clicks.toLocaleString('en-US')}</div>
+      <button class="bid-btn" onclick="openRaiser(${p.id})">Bid ↑</button>
+      <div class="raiser" id="rz-${p.id}">
+        <div class="raiser-in">
+          <span style="font-size:12.5px;font-weight:500;">Raise to</span>
+          <div class="stepper">
+            <button onclick="step(${p.id},-10)">−</button>
+            <input type="number" id="bi-${p.id}" min="${p.bid+1}" step="1" value="${suggest(p)}">
+            <button onclick="step(${p.id},10)">+</button>
+          </div>
+          <button class="rz-go" onclick="confirmRaise(${p.id})">Confirm — demo</button>
+          <span class="rz-note">you pay only the difference</span>
+        </div>
+      </div>`;
+    rowsEl.appendChild(r);
+  });
+}
+function suggest(p){
+  const s=sorted();const i=s.findIndex(x=>x.id===p.id);
+  return i===0?p.bid+1:s[i-1].bid+1;
+}
+function openRaiser(id){
+  document.querySelectorAll('.raiser.open').forEach(x=>x.classList.remove('open'));
+  document.getElementById('rz-'+id).classList.add('open');
+}
+function step(id,d){
+  const el=document.getElementById('bi-'+id);
+  el.value=Math.max(parseInt(el.min),parseInt(el.value||el.min)+d);
+}
+function confirmRaise(id){
+  const p=positions.find(x=>x.id===id);
+  const el=document.getElementById('bi-'+id);
+  const v=Math.floor(Number(el.value));
+  if(!v||v<=p.bid){toast('Must exceed '+fmt(p.bid));return;}
+  const oldRank=sorted().findIndex(x=>x.id===id)+1;
+  const diff=v-p.bid;
+  p.bid=v;total+=diff;
+  const wasTop=oldRank===1;
+  const newRank=sorted().findIndex(x=>x.id===id)+1;
+  p.moved=newRank<oldRank?oldRank-newRank:0;
+  if(wasTop&&newRank!==1)seatsToday++;
+  if(newRank===1){
+    paintAll();
+    showSeated(p.name,1);
+    toast(`👑 ${p.name} TOOK № 1 — raised ${fmt(diff)}`);
+  }else{
+    p.moved=p.moved||0;
+    logTrade(`<span class="tr-name">${p.name}</span><span class="tr-amt">+${fmt(diff)}</span>`,
+             `<span>#${oldRank}→#${newRank}</span><span>${timeAgo(Date.now())}</span>`);
+    paintAll();
+    showSeated(p.name,newRank);
+    toast(`${p.name} moved to #${newRank}`);
+  }
+}
+
+/* ================= listing modal ================= */
+function submitListing(){
+  const url=document.getElementById('c-url').value.trim();
+  const name=document.getElementById('c-name').value.trim()||url;
+  const bid=Math.floor(Number(document.getElementById('c-bid').value));
+  if(!url){toast('Paste a URL or @handle first');return;}
+  if(!bid||bid<1){toast('Floor is $1');return;}
+  const palette=["#9F1239","#17130E","#5B21B6","#BE185D","#A16207","#1D4ED8","#0F766E","#B91C1C"];
+  const np=P(name,url,`Newly listed on SmartSeek — ${url}.`,CATS.includes("People")&&url.startsWith('@')?"People":"Platforms",bid,0,palette[Math.floor(Math.random()*palette.length)],0);
+  positions.push(np);total+=bid;
+  logTrade(`<span class="tr-name">${np.name}</span><span class="tr-amt">${fmt(bid)}</span>`,
+           `<span>LISTED → #${sorted().findIndex(x=>x.id===np.id)+1}</span><span>${timeAgo(Date.now())}</span>`);
+  closeClaim();paintAll();
+  toast(`${np.name} entered the game at ${fmt(bid)}`);
+  ['c-url','c-name','c-bid'].forEach(i=>document.getElementById(i).value='');
+}
+function openClaim(){document.getElementById('modalBack').classList.add('open');}
+function closeClaim(){document.getElementById('modalBack').classList.remove('open');}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeClaim();
+  if(e.key==='Enter'&&document.activeElement&&(document.activeElement.id==='g-url'||document.activeElement.id==='g-bid'))takeSeat();
+});
+
+/* ================= order book & tape ================= */
+function logTrade(line,sub){
+  trades.unshift({line,sub,ts:Date.now()});
+  renderBook();
+}
+function renderBook(){
+  document.getElementById('feed').innerHTML=trades.slice(0,16).map(t=>`
+    <div class="trade"><div class="tr-line">${t.line}</div><div class="tr-sub">${t.sub}</div></div>`).join('');
+}
+let tapeDirty=true;
+function renderTape(){
+  const items=trades.slice(0,12).map(t=>{
+    const name=t.line.match(/class="tr-name">([^<]+)</)?.[1]||'';
+    const amt=t.line.match(/class="tr-amt">([^<]+)</)?.[1]||'';
+    const sub=t.sub.match(/<span>([^<]+)<\/span>/)?.[1]||'';
+    return `<span class="tp"><b>${name}</b><span class="amt">${amt}</span><span class="mv">${sub}</span></span>`;
+  }).join('');
+  document.getElementById('tapeTrack').innerHTML=items+items; /* duplicate for seamless loop */
+  tapeDirty=false;
+}
+
+/* ================= metrics & tabs ================= */
+let shownT=0,shownK=0;
+function paintAll(){paintSeat();renderBook();render();countTabs();
+  document.getElementById('m-count').textContent=positions.length;
+  document.getElementById('m-seats').textContent=seatsToday;
+  if(tapeDirty||true)renderTape();}
+function tickNumbers(){
+  shownT+=Math.ceil((total-shownT)*0.12)||0;
+  shownK+=Math.ceil((CLICKS_BASE-shownK)*0.12)||0;
+  document.getElementById('m-total').textContent=fmt(shownT);
+  document.getElementById('m-clicks').textContent=shownK.toLocaleString('en-US');
+  if((shownT!==total||shownK<CLICKS_BASE)&&!reduceMotion)requestAnimationFrame(tickNumbers);
+}
+function countTabs(){
+  document.getElementById('tabs').innerHTML=CATS.map(c=>{
+    const n=c==="All"?positions.length:positions.filter(p=>p.cat===c).length;
+    return `<button class="tab ${c===activeCat?'on':''}" onclick="setCat('${c}')">${c}<span class="n">${n}</span></button>`;}).join('');
+}
+function setCat(c){activeCat=c;countTabs();render();}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3400);
+}
+
+/* ================= boot ================= */
+(function boot(){
+  const seeds=[
+    ["Nexus Agents","+240","TOOK № 1"],
+    ["Helix Robotics","+60","raised"],
+    ["PromptDeck","+70","#4→#3"],
+    ["Sarah Chen","$500","listed"],
+    ["DataForge","+40","raised"],
+    ["Atlas Fund II","+110","#7→#6"],
+  ];
+  seeds.forEach((s,i)=>{
+    trades.push({ts:Date.now()-(i*7+2)*60000,
+      line:`<span class="tr-name">${s[0]}</span><span class="tr-amt">${s[1].startsWith('+')?'+'+fmt(parseInt(s[1].slice(1))):fmt(parseInt(s[1].replace(/\D/g,'')))}</span>`,
+      sub:`<span>${s[2]}</span><span>${timeAgo(Date.now()-(i*7+2)*60000)}</span>`});
+  });
+  paintAll();
+  shownT=Math.floor(total*0.55);shownK=Math.floor(CLICKS_BASE*0.55);
+  tickNumbers();
+})();
+
+/* ================= ambient market life ================= */
+if(!reduceMotion)setInterval(()=>{
+  const s=sorted();
+  /* half the time: a challenger strikes for the seat */
+  let target,drama=false;
+  if(s.length>2&&Math.random()<0.5){
+    target=s[1];drama=true;
+  }else{
+    const pool=[...positions].sort(()=>Math.random()-0.5).slice(0,3);
+    target=pool[Math.floor(Math.random()*pool.length)];
+  }
+  const oldRank=sorted().findIndex(x=>x.id===target.id)+1;
+  let newBid;
+  if(drama){
+    newBid=s[0].bid+1+Math.floor(Math.random()*3); /* takes the seat */
+  }else{
+    newBid=target.bid+Math.max(1,Math.floor(target.bid*0.05));
+  }
+  const diff=newBid-target.bid;
+  target.bid=newBid;total+=diff;
+  const newRank=sorted().findIndex(x=>x.id===target.id)+1;
+  target.moved=newRank<oldRank?oldRank-newRank:0;
+  if(newRank===1&&oldRank!==1)seatsToday++;
+  logTrade(`<span class="tr-name">${target.name}</span><span class="tr-amt">+${fmt(diff)}</span>`,
+           `<span>${newRank===1&&oldRank!==1?'TOOK № 1':`#${oldRank}→#${newRank}`}</span><span>${timeAgo(Date.now())}</span>`);
+  paintAll();
+},12000);
+</script>
+</body>
+</html>

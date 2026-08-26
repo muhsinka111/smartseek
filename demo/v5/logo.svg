@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 56" width="220" height="56">
+  <defs>
+    <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9F1239"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: seeker target in oxblood rounded square -->
+  <g transform="translate(0,2)">
+    <circle cx="26" cy="26" r="19.5" fill="none" stroke="url(#redGrad)" stroke-width="3.2"/>
+    <circle cx="26" cy="26" r="10" fill="url(#redGrad)"/>
+    <circle cx="26" cy="26" r="3.6" fill="#FFFFFF"/>
+    <line x1="26" y1="1.5" x2="26" y2="9.5" stroke="url(#redGrad)" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="26" y1="42.5" x2="26" y2="50.5" stroke="url(#redGrad)" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="1.5" y1="26" x2="9.5" y2="26" stroke="url(#redGrad)" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="42.5" y1="26" x2="50.5" y2="26" stroke="url(#redGrad)" stroke-width="3.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark: heavier serif for favicon safety, dark ink -->
+  <text x="66" y="39" font-family="Georgia, 'Times New Roman', serif"
+        font-size="30" font-weight="600" letter-spacing="-0.6"
+        fill="#17130E">SmartSeek</text>
+
+  <!-- Period accent after Seek -->
+  <circle cx="186.5" cy="37" r="3.2" fill="#9F1239"/>
+
+  <!-- System tagline: wider tracking, darker for legibility -->
+  <text x="66" y="51" font-family="'JetBrains Mono', ui-monospace, monospace"
+        font-size="7.8" font-weight="400" letter-spacing="3"
+        fill="#8C8478">RANK BY TOTAL PAID</text>
+</svg>

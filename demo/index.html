@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSeek — Find the smartest things on Earth</title>
+<meta name="description" content="The leaderboard for intelligent things. AI tools, agents, robots, platforms, people, opportunities — ranked by what believers paid. Every bid public. Every click counted.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF8;
+  --card:#FFFFFF;
+  --ink:#101014;
+  --ink-2:#1C1C22;
+  --sub:#667085;
+  --faint:#98A2B3;
+  --line:#E7E5E0;
+  --line-soft:#EFEEE9;
+  --soft:#F4F4F0;
+  --blue:#2563EB;
+  --blue-deep:#1D4ED8;
+  --blue-soft:#EFF4FF;
+  --blue-line:#C7DBFE;
+  --gold:#B45309;
+  --gold-soft:#FFF9EC;
+  --gold-line:#F5E3B8;
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum';}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
+::selection{background:var(--blue);color:#fff;}
+
+/* ---------- demo bar ---------- */
+.demo-bar{background:var(--ink);color:#E8EAED;text-align:center;font-size:11.5px;padding:7px 16px;letter-spacing:.03em;}
+.demo-bar b{color:#FBD38D;font-weight:600;}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:50;background:rgba(250,250,248,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.nav-inner{display:flex;align-items:center;gap:30px;height:62px;}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.01em;}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:16px;line-height:1;padding-bottom:2px;}
+.logo .star{color:var(--blue);}
+.nav-links{display:flex;gap:26px;margin-left:auto;font-size:13.5px;color:var(--sub);font-weight:500;}
+.nav-links a:hover{color:var(--ink);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .18s ease;white-space:nowrap;}
+.btn-dark{background:var(--ink);color:#fff;padding:10px 20px;}
+.btn-dark:hover{background:var(--ink-2);transform:translateY(-1px);}
+.btn-blue{background:var(--blue);color:#fff;padding:13px 26px;font-size:15px;}
+.btn-blue:hover{background:var(--blue-deep);transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line);padding:12px 24px;font-size:15px;background:rgba(255,255,255,.6);}
+.btn-outline:hover{border-color:#CFCDC6;background:#fff;}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:92px 0 64px;text-align:center;overflow:hidden;}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(var(--line) 1px, transparent 1px);
+  background-size:24px 24px;
+  -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,.7), transparent 78%);
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.7), transparent 78%);
+  pointer-events:none;
+}
+.hero>.wrap{position:relative;}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:600;letter-spacing:.15em;color:var(--blue-deep);border:1px solid var(--blue-line);background:rgba(255,255,255,.75);padding:7px 15px;border-radius:999px;margin-bottom:30px;}
+.eyebrow .star{color:var(--blue);}
+.hero h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(44px,6.2vw,74px);line-height:1.04;letter-spacing:-.01em;max-width:860px;margin:0 auto 24px;}
+.hero h1 em{font-style:italic;color:var(--blue);}
+.hero p{color:var(--sub);font-size:16.5px;max-width:640px;margin:0 auto 36px;}
+.hero p b{color:var(--ink);font-weight:600;}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+/* ---------- metrics ---------- */
+.metrics{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+.metric{padding:24px 26px;border-right:1px solid var(--line);}
+.metric:last-child{border-right:none;}
+.metric .num{font-family:'JetBrains Mono',monospace;font-size:27px;font-weight:700;letter-spacing:-.02em;}
+.metric .lbl{font-size:12px;color:var(--sub);margin-top:4px;display:flex;align-items:center;gap:7px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.3);}70%{box-shadow:0 0 0 7px rgba(37,99,235,0);}100%{box-shadow:0 0 0 0 rgba(37,99,235,0);}}
+
+/* ---------- sections ---------- */
+section{padding:68px 0;}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.sec-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;letter-spacing:-.01em;}
+.sec-head h2 em{font-style:italic;color:var(--blue);}
+.sec-sub{color:var(--sub);font-size:13px;}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 18px;}
+.chip{border:1px solid var(--line);background:#fff;color:var(--sub);font-size:12.5px;font-weight:600;padding:7px 15px;border-radius:999px;cursor:pointer;transition:all .15s ease;font-family:'Inter',sans-serif;}
+.chip:hover{border-color:#CFCDC6;color:var(--ink);}
+.chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+.chip .n{opacity:.55;font-weight:500;margin-left:3px;}
+
+/* ---------- board ---------- */
+.board-layout{display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start;}
+.board{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);}
+.board-cols{display:grid;grid-template-columns:56px 1fr 118px 84px 112px;gap:12px;align-items:center;padding:12px 20px;background:var(--soft);border-bottom:1px solid var(--line);font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;}
+.row{display:grid;grid-template-columns:56px 1fr 118px 84px 112px;gap:12px;align-items:center;padding:17px 20px;border-bottom:1px solid var(--line-soft);background:var(--card);transition:background .15s ease, transform .35s cubic-bezier(.22,.9,.36,1), opacity .35s ease;}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--soft);}
+.row.leader{background:linear-gradient(90deg,var(--gold-soft) 0%,var(--card) 45%);}
+.rank{font-family:'JetBrains Mono',monospace;font-size:14.5px;font-weight:600;color:var(--faint);display:flex;flex-direction:column;gap:1px;}
+.rank.top{color:var(--gold);}
+.rank .mv{font-size:10px;color:var(--blue);font-weight:700;}
+.listing{min-width:0;}
+.listing-top{display:flex;align-items:center;gap:10px;}
+.avatar{width:31px;height:31px;border-radius:9px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;}
+.l-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.crown{font-size:9.5px;font-weight:800;letter-spacing:.09em;color:var(--gold);background:var(--gold-soft);border:1px solid var(--gold-line);padding:2px 8px;border-radius:999px;flex-shrink:0;}
+.l-desc{font-size:12.5px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.l-cat{font-size:11px;color:var(--faint);margin-top:2px;}
+.bid-cell{text-align:right;}
+.bid{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;letter-spacing:-.02em;}
+.claim{display:block;width:100%;margin-top:4px;font-size:11px;color:var(--blue-deep);font-weight:600;background:none;border:none;cursor:pointer;padding:0;text-align:right;font-family:'Inter',sans-serif;}
+.claim:hover{text-decoration:underline;}
+.clicks{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--sub);text-align:right;}
+.outbid{justify-self:end;background:#fff;border:1px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:600;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .15s ease;font-family:'Inter',sans-serif;}
+.outbid:hover{border-color:var(--blue);color:var(--blue-deep);background:var(--blue-soft);}
+
+/* bid panel */
+.bid-panel{grid-column:1/-1;background:var(--blue-soft);border-top:1px dashed var(--blue-line);margin:0 -20px -17px;padding:15px 20px;display:none;}
+.bid-panel.open{display:block;animation:slideDown .25s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.bid-panel-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.bp-label{font-size:12.5px;color:var(--ink);font-weight:500;}
+.stepper{display:flex;align-items:center;border:1px solid var(--blue-line);border-radius:9px;background:#fff;overflow:hidden;}
+.stepper button{width:34px;height:36px;border:none;background:none;font-size:17px;cursor:pointer;color:var(--sub);}
+.stepper button:hover{background:var(--soft);color:var(--ink);}
+.stepper input{width:92px;height:36px;border:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--ink);outline:none;}
+.bp-note{font-size:11.5px;color:var(--sub);}
+.btn-confirm{background:var(--blue);color:#fff;padding:9px 18px;font-size:13px;border-radius:9px;}
+.btn-confirm:hover{background:var(--blue-deep);}
+
+/* ---------- activity feed ---------- */
+.feed{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);position:sticky;top:86px;}
+.feed-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;}
+.feed-list{max-height:520px;overflow-y:auto;}
+.feed-item{padding:13px 18px;border-bottom:1px solid var(--line-soft);font-size:12.5px;animation:slideDown .3s ease;}
+.feed-item:last-child{border-bottom:none;}
+.fi-main{color:var(--ink);}
+.fi-main b{font-weight:600;}
+.fi-meta{color:var(--faint);font-size:11px;margin-top:2px;display:flex;justify-content:space-between;gap:8px;}
+.fi-amt{font-family:'JetBrains Mono',monospace;color:var(--blue-deep);font-weight:600;}
+
+/* ---------- how it works ---------- */
+.hiw{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);}
+.step{padding:32px 30px;border-right:1px solid var(--line);}
+.step:last-child{border-right:none;}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue-deep);font-weight:700;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.step-num::after{content:"";height:1px;flex:1;background:var(--line);}
+.step h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:21px;margin-bottom:8px;}
+.step h3 em{font-style:italic;color:var(--blue);}
+.step p{font-size:13.5px;color:var(--sub);}
+
+/* ---------- why ---------- */
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);}
+.why-item{padding:30px 32px;border-bottom:1px solid var(--line);background:var(--card);}
+.why-item:nth-child(odd){border-right:1px solid var(--line);}
+.why-item:nth-last-child(-n+2){border-bottom:none;}
+.why-item h3{font-size:15.5px;font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
+.tick{width:20px;height:20px;border-radius:50%;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--blue-deep);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.why-item p{font-size:13.5px;color:var(--sub);}
+
+/* ---------- ticker ---------- */
+.ticker-section{text-align:center;padding:80px 0;position:relative;}
+.ticker-star{font-size:20px;color:var(--blue);margin-bottom:10px;}
+.ticker-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(46px,7.5vw,82px);letter-spacing:-.03em;line-height:1;}
+.ticker-lbl{color:var(--sub);font-size:14px;margin-top:16px;}
+.ticker-lbl .live-dot{margin-right:7px;}
+
+/* ---------- rules ---------- */
+.rules-strip{background:var(--ink);color:#fff;border-radius:16px;padding:44px 48px;position:relative;overflow:hidden;}
+.rules-strip::before{content:"✳";position:absolute;right:-30px;top:-46px;font-size:200px;color:rgba(255,255,255,.04);}
+.rules-strip h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:29px;margin-bottom:24px;}
+.rules-strip h2 em{font-style:italic;color:#93B4FD;}
+.rules-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px 44px;font-size:13.5px;color:#C6CBD4;position:relative;}
+.rules-grid li{list-style:none;padding-left:22px;position:relative;}
+.rules-grid li::before{content:"✳";position:absolute;left:0;color:#7CA3F8;font-size:11px;top:2px;}
+
+/* ---------- final cta ---------- */
+.final{text-align:center;padding:84px 0;}
+.final h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(34px,4.6vw,50px);letter-spacing:-.01em;margin-bottom:16px;}
+.final h2 em{font-style:italic;color:var(--blue);}
+.final p{color:var(--sub);margin-bottom:32px;font-size:16px;}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--faint);font-size:12.5px;background:var(--card);}
+.foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.foot-tag{font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:var(--sub);}
+.foot-links{display:flex;gap:22px;}
+.foot-links a:hover{color:var(--ink);}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:500;transition:transform .3s cubic-bezier(.22,.9,.36,1);z-index:99;box-shadow:0 8px 30px rgba(16,16,20,.25);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast .mono{color:#93B4FD;}
+
+/* ---------- modal ---------- */
+.modal-back{position:fixed;inset:0;background:rgba(16,16,20,.42);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal-back.open{display:flex;}
+.modal{background:#fff;border-radius:18px;padding:34px;width:100%;max-width:440px;box-shadow:0 24px 70px rgba(16,16,20,.3);animation:pop .25s cubic-bezier(.22,.9,.36,1);}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:none;}}
+.modal h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:26px;margin-bottom:6px;}
+.modal h3 em{font-style:italic;color:var(--blue);}
+.modal .m-sub{color:var(--sub);font-size:13px;margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--sub);margin-bottom:6px;letter-spacing:.06em;}
+.field input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .15s ease;}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.09);}
+.m-actions{display:flex;gap:10px;margin-top:22px;}
+.m-actions .btn{flex:1;}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--sub);padding:12px;}
+.btn-ghost:hover{color:var(--ink);}
+
+/* ---------- responsive ---------- */
+@media(max-width:900px){
+  .board-layout{grid-template-columns:1fr;}
+  .feed{position:static;}
+  .metrics-grid{grid-template-columns:repeat(2,1fr);}
+  .metric:nth-child(2){border-right:none;}
+  .metric{border-bottom:1px solid var(--line);}
+  .metric:nth-child(n+3){border-bottom:none;}
+  .steps,.why-grid,.rules-grid{grid-template-columns:1fr;}
+  .step,.why-item{border-right:none!important;border-bottom:1px solid var(--line)!important;}
+  .step:last-child,.why-item:last-child{border-bottom:none!important;}
+}
+@media(max-width:720px){
+  .board-cols{display:none;}
+  .row{grid-template-columns:40px 1fr;grid-template-rows:auto auto;row-gap:10px;padding:16px;}
+  .bid-cell{text-align:left;}
+  .claim{text-align:left;}
+  .clicks{text-align:left;}
+  .outbid{justify-self:start;grid-column:2;}
+  .nav-links{display:none;}
+  .hero{padding:60px 0 44px;}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">DEMO PREVIEW — sample listings &amp; simulated bids for design review · <b>no real payments</b></div>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a href="#" class="logo"><span class="logo-mark">✳</span>SmartSeek<span class="star">*</span></a>
+    <div class="nav-links">
+      <a href="#index">The Index</a>
+      <a href="#how">How seeking works</a>
+      <a href="#why">Why seek here</a>
+      <a href="#">Ledger</a>
+    </div>
+    <button class="btn btn-dark" onclick="openClaim()">Claim a spot</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span>✳</span> THE LEADERBOARD FOR INTELLIGENT THINGS</div>
+    <h1>Find the <em>smartest</em> things<br>on Earth.</h1>
+    <p>AI tools, agents, robots, platforms, people, businesses, opportunities — ranked by what believers actually paid. <b>Every bid public. Every click counted.</b></p>
+    <div class="hero-ctas">
+      <button class="btn btn-blue" onclick="openClaim()">Claim a spot — from $1</button>
+      <a href="#how" class="btn btn-outline">How seeking works</a>
+    </div>
+  </div>
+</header>
+
+<div class="metrics">
+  <div class="wrap metrics-grid">
+    <div class="metric"><div class="num" id="m-collected">$0</div><div class="lbl">paid into the index</div></div>
+    <div class="metric"><div class="num" id="m-listings">0</div><div class="lbl">smart things listed</div></div>
+    <div class="metric"><div class="num" id="m-clicks">0</div><div class="lbl">verified clicks sent</div></div>
+    <div class="metric"><div class="num">$1</div><div class="lbl">minimum bid · whole dollars</div></div>
+  </div>
+</div>
+
+<section id="index">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>The <em>Smart</em> Index</h2>
+      <span class="sec-sub mono">rank = total paid · updated live</span>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="board-layout">
+      <div class="board">
+        <div class="board-cols">
+          <span>Rank</span><span>Listing</span><span style="text-align:right">Bid</span><span style="text-align:right">Clicks</span><span style="text-align:right"></span>
+        </div>
+        <div id="rows"></div>
+      </div>
+      <aside class="feed">
+        <div class="feed-head"><span class="live-dot"></span> Live activity</div>
+        <div class="feed-list" id="feed"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="hiw" id="how">
+  <div class="wrap">
+    <div class="sec-head"><h2>How <em>seeking</em> works</h2></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01 — LIST</div>
+        <h3>Paste anything <em>smart</em></h3>
+        <p>A URL or a handle. We fetch the name, icon and description. Your listing goes live in seconds — a real page, indexed by search engines, with a dofollow link.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02 — BID</div>
+        <h3>Back your belief</h3>
+        <p>$1 minimum, whole dollars. Highest total paid sits at #1. A smaller bid still lands you on the board at whatever rank it buys.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03 — DEFEND</div>
+        <h3>Get outbid, climb back</h3>
+        <p>Someone believes harder, you drop. Return anytime and pay only the difference to reclaim your rank. Every dollar stays on the public ledger.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Why <em>seek</em> here</h2>
+      <span class="sec-sub">what no other board gives you</span>
+    </div>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3><span class="tick">✓</span> Full-glass ledger</h3>
+        <p>Every dollar, every timestamp, every takeover — published forever. If a rank changed hands, you see exactly when and for how much.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="tick">✓</span> Verified click counts</h3>
+        <p>Traffic is tracked through our redirect and printed on every listing. Real numbers anyone can audit.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="tick">✓</span> Lasting search value</h3>
+        <p>Listings are indexable pages with dofollow links. A bid buys permanent search equity — not fifteen minutes of meme fame.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="tick">✓</span> Only smart things</h3>
+        <p>Curated to the intelligent universe — AI, agents, robotics, platforms, smart people, real opportunities. No spam. Qualified eyes only.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ticker-section" style="padding-top:24px;">
+  <div class="wrap">
+    <div class="ticker-star">✳</div>
+    <div class="ticker-num" id="ticker-big">$0</div>
+    <div class="ticker-lbl"><span class="live-dot"></span>paid into the smart index since launch — every cent on the public ledger</div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="rules-strip">
+      <h2>House rules, in <em>plain English</em></h2>
+      <ul class="rules-grid">
+        <li>Rank equals total dollars paid. Nothing else moves it.</li>
+        <li>New spots start at $1. Whole dollars only.</li>
+        <li>Taking #1 costs the current top bid plus $1.</li>
+        <li>Raise on your own listing anytime — pay only the difference.</li>
+        <li>Equal bids: the earlier believer keeps the higher rank.</li>
+        <li>Bids are final. Getting outbid is the game, not a bug.</li>
+        <li>Clicks go straight to your URL, counted honestly.</li>
+        <li>Everything is public — bids, history, clicks, totals.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>The smartest spot on the internet<br>is <em>$1 away.</em></h2>
+    <p>Algorithms decide who gets found. Here, the price is public — and anyone can pay it.</p>
+    <button class="btn btn-blue" onclick="openClaim()" style="font-size:16px;padding:15px 32px;">Claim your spot — from $1</button>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span>© 2026 SmartSeek</span>
+    <span class="foot-tag">find the smartest things on earth</span>
+    <div class="foot-links"><a href="#">Rules</a><a href="#">Ledger</a><a href="#">Privacy</a><a href="#">Contact</a></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeClaim()">
+  <div class="modal">
+    <h3>Claim your <em>spot</em></h3>
+    <p class="m-sub">Paste anything smart — a product, a profile, a business, an opportunity. <b>Demo:</b> nothing is charged.</p>
+    <div class="field"><label>URL OR @HANDLE</label><input type="text" id="c-url" placeholder="yourproduct.ai or @yourhandle"></div>
+    <div class="field"><label>DISPLAY NAME</label><input type="text" id="c-name" placeholder="Acme AI"></div>
+    <div class="field"><label>YOUR BID (USD, WHOLE DOLLARS)</label><input type="number" id="c-bid" min="1" step="1" placeholder="1"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeClaim()">Cancel</button>
+      <button class="btn btn-dark" onclick="submitClaim()">Place demo bid</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= demo data ================= */
+const CATS=["All","AI Tools","Agents & Employees","Platforms","Products & Robotics","People","Businesses","Opportunities"];
+let seq=1;
+function L(name,domain,desc,cat,bid,clicks,color,minsAgo){
+  return {id:seq++,name,domain,desc,cat,bid,clicks,color,moved:0,createdAt:Date.now()-minsAgo*60000};
+}
+let listings=[
+  L("Nexus Agents","nexusagents.ai","Hire a team of autonomous AI employees — sales, support, research — run from one console.","Agents & Employees",1240,2143,"#1D4ED8",3),
+  L("Helix Robotics","helixrobotics.com","Warehouse robot arms that learn new pick-and-place tasks from a single demonstration.","Products & Robotics",980,1876,"#101014",11),
+  L("PromptDeck","promptdeck.io","Version-control, test and ship prompts across every LLM like real code.","AI Tools",750,1204,"#6D28D9",26),
+  L("Sarah Chen","x.com/sarahbuilds","AI research engineer · building open agents · ex-DeepMind. Posts daily.","People",500,987,"#BE185D",48),
+  L("DataForge","dataforge.dev","Turn any messy database into a queryable knowledge API for AI agents in minutes.","Platforms",420,654,"#B45309",74),
+  L("Atlas Fund II","atlasopportunities.com","Co-invest alongside operators in pre-seed AI infrastructure deals. Tranche closes soon.","Opportunities",350,431,"#2563EB",102),
+  L("Cognify","getcognify.app","The reasoning-first spreadsheet — formulas that think, plan and cite their work.","AI Tools",280,512,"#047857",133),
+  L("Marcus Reid","linkedin.com/in/marcusreid","Ghostwriter for AI founders · 2.1M impressions/mo · your ideas, in public, weekly.","People",190,289,"#1E40AF",161),
+  L("Quantum Ledger","quantumledger.fi","Real-time fraud detection for payment rails — 40ms decisions, fully explainable.","Platforms",120,176,"#92400E",210),
+  L("SmartK9","smartk9.co","The collar that translates barks, tracks health, and trains with you. Ships spring '27.","Products & Robotics",45,94,"#DC2626",290),
+];
+let collected=listings.reduce((s,l)=>s+l.bid,0);
+const totalClicksBase=12847;
+let feedItems=[];
+
+/* ================= helpers ================= */
+const fmt=n=>'$'+n.toLocaleString('en-US');
+const timeAgo=t=>{const m=Math.max(1,Math.round((Date.now()-t)/60000));
+  if(m<60)return m+'m ago';const h=Math.round(m/60);if(h<24)return h+'h ago';
+  return Math.round(h/24)+'d ago';};
+let activeCat="All";
+function sorted(){return [...listings].sort((a,b)=>b.bid-a.bid||a.createdAt-b.createdAt);}
+
+/* ================= render ================= */
+function render(){
+  const rowsEl=document.getElementById('rows');
+  const prevPos={};rowsEl.querySelectorAll('.row[data-id]').forEach(r=>prevPos[r.dataset.id]=r.getBoundingClientRect().top);
+  const list=sorted().filter(l=>activeCat==="All"||l.cat===activeCat);
+  const globalRank=new Map();sorted().forEach((l,i)=>globalRank.set(l.id,i+1));
+  rowsEl.innerHTML='';
+  list.forEach((l,idx)=>{
+    const rank=globalRank.get(l.id);
+    const above=list[idx-1];
+    const claimTxt=rank===1?`take #1 for ${fmt(l.bid+1)}`:`claim #${rank} for ${fmt(Math.max(above.bid,l.bid)+1)}`;
+    const r=document.createElement('div');
+    r.className='row'+(rank===1?' leader':'');
+    r.dataset.id=l.id;
+    r.innerHTML=`
+      <span class="rank ${rank===1?'top':''}">#${rank}${l.moved>0?`<span class="mv">▲${l.moved}</span>`:''}</span>
+      <div class="listing">
+        <div class="listing-top">
+          <span class="avatar" style="background:${l.color}">${l.name[0]}</span>
+          <span class="l-name">${l.name}</span>
+          ${rank===1?'<span class="crown">№ 1</span>':''}
+        </div>
+        <div class="l-desc">${l.desc}</div>
+        <div class="l-cat">${l.cat} · ${l.domain}</div>
+      </div>
+      <div class="bid-cell">
+        <div class="bid">${fmt(l.bid)}</div>
+        <button class="claim" onclick="quickBid(${l.id})">${claimTxt}</button>
+      </div>
+      <div class="clicks">${l.clicks.toLocaleString('en-US')}</div>
+      <button class="outbid" onclick="togglePanel(${l.id})">Outbid</button>
+      <div class="bid-panel" id="bp-${l.id}">
+        <div class="bid-panel-inner">
+          <span class="bp-label">Raise your bid to</span>
+          <div class="stepper">
+            <button onclick="stepBid(${l.id},-10)">−</button>
+            <input type="number" id="bi-${l.id}" min="${l.bid+1}" step="1" value="${suggest(l)}">
+            <button onclick="stepBid(${l.id},10)">+</button>
+          </div>
+          <button class="btn btn-confirm" onclick="confirmBid(${l.id})">Confirm — demo</button>
+          <span class="bp-note">you'd pay only the difference · whole dollars</span>
+        </div>
+      </div>`;
+    rowsEl.appendChild(r);
+  });
+  requestAnimationFrame(()=>animateMoves(rowsEl,prevPos));
+}
+function suggest(l){
+  const s=sorted();const idx=s.findIndex(x=>x.id===l.id);
+  return idx===0?l.bid+1:s[idx-1].bid+1;
+}
+function animateMoves(container,prevPos){
+  container.querySelectorAll('.row[data-id]').forEach(r=>{
+    const before=prevPos[r.dataset.id];
+    if(before==null){r.style.opacity='0';r.style.transform='translateY(8px)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.opacity='1';r.style.transform='none';}));return;}
+    const delta=before-r.getBoundingClientRect().top;
+    if(Math.abs(delta)>2){r.style.transform=`translateY(${delta}px)`;r.style.transition='none';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.transition='';r.style.transform='none';}));}
+  });
+}
+
+/* ================= actions ================= */
+function togglePanel(id){
+  document.querySelectorAll('.bid-panel.open').forEach(p=>p.classList.remove('open'));
+  document.getElementById('bp-'+id).classList.add('open');
+}
+function stepBid(id,d){
+  const inp=document.getElementById('bi-'+id);
+  inp.value=Math.max(parseInt(inp.min),parseInt(inp.value||inp.min)+d);
+}
+function quickBid(id){
+  togglePanel(id);
+  document.getElementById('bi-'+id).value=suggest(listings.find(l=>l.id===id));
+}
+function confirmBid(id){
+  const l=listings.find(x=>x.id===id);
+  const inp=document.getElementById('bi-'+id);
+  let v=Math.floor(Number(inp.value));
+  if(!v||v<=l.bid){toast('Bid must be higher than '+fmt(l.bid));return;}
+  const oldRank=sorted().findIndex(x=>x.id===id)+1;
+  const prev=l.bid;
+  l.bid=v;
+  collected+=v-prev; /* raiser pays only the difference */
+  const newRank=sorted().findIndex(x=>x.id===id)+1;
+  l.moved=newRank<oldRank?oldRank-newRank:0;
+  feedItems.unshift({t:`<b>${l.name}</b> raised to <span class="fi-amt">${fmt(v)}</span>`,meta:`was #${oldRank} → now #${newRank}`,ts:Date.now()});
+  renderFeed();render();updateMetrics();
+  toast(`${l.name} moved to #${newRank} at ${fmt(v)} — recorded on the ledger`);
+}
+function submitClaim(){
+  const url=document.getElementById('c-url').value.trim();
+  const name=document.getElementById('c-name').value.trim()||url;
+  const bid=Math.floor(Number(document.getElementById('c-bid').value));
+  if(!url){toast('Paste a URL or @handle first');return;}
+  if(!bid||bid<1){toast('Minimum bid is $1');return;}
+  const colors=["#1D4ED8","#101014","#6D28D9","#BE185D","#B45309","#2563EB","#047857","#92400E"];
+  const nl=L(name,url,`Just claimed a spot on SmartSeek — ${url}.`,CATS.includes("Businesses")&&url.startsWith('@')?"People":"Platforms",bid,0,colors[Math.floor(Math.random()*colors.length)],0);
+  listings.push(nl);
+  feedItems.unshift({t:`<b>${nl.name}</b> joined the index at <span class="fi-amt">${fmt(bid)}</span>`,meta:`new listing → #${sorted().findIndex(x=>x.id===nl.id)+1}`,ts:Date.now()});
+  collected+=bid;closeClaim();renderFeed();render();updateMetrics();
+  toast(`${nl.name} listed at ${fmt(bid)} — welcome to the index`);
+  document.getElementById('c-url').value='';document.getElementById('c-name').value='';document.getElementById('c-bid').value='';
+}
+function openClaim(){document.getElementById('modalBack').classList.add('open');}
+function closeClaim(){document.getElementById('modalBack').classList.remove('open');}
+
+/* ================= feed & metrics ================= */
+function renderFeed(){
+  const el=document.getElementById('feed');
+  el.innerHTML=feedItems.slice(0,14).map(f=>`
+    <div class="feed-item"><div class="fi-main">${f.t}</div>
+    <div class="fi-meta"><span>${f.meta}</span><span>${timeAgo(f.ts)}</span></div></div>`).join('')
+    ||'<div class="feed-item"><div class="fi-meta">Waiting for the first believer…</div></div>';
+}
+function seedFeed(){
+  const seeds=[
+    {n:"Nexus Agents",a:1240,m:"took № 1"},
+    {n:"Helix Robotics",a:980,m:"raised from $920"},
+    {n:"PromptDeck",a:750,m:"climbed past DataForge"},
+    {n:"Sarah Chen",a:500,m:"new listing"},
+    {n:"DataForge",a:420,m:"raised from $380"},
+  ];
+  seeds.forEach((s,i)=>feedItems.push({t:`<b>${s.n}</b> at <span class="fi-amt">${fmt(s.a)}</span>`,meta:s.m,ts:Date.now()-(i*7+2)*60000}));
+}
+let shownCollected=0,shownClicks=0;
+function updateMetrics(){
+  document.getElementById('m-listings').textContent=listings.length.toLocaleString('en-US');
+}
+function tickNumbers(){
+  shownCollected+=Math.ceil((collected-shownCollected)*0.12)||0;
+  shownClicks+=Math.ceil((totalClicksBase-shownClicks)*0.12)||0;
+  document.getElementById('m-collected').textContent=fmt(shownCollected);
+  document.getElementById('m-clicks').textContent=shownClicks.toLocaleString('en-US');
+  document.getElementById('ticker-big').textContent=fmt(shownCollected);
+  if(shownCollected!==collected||shownClicks<totalClicksBase)requestAnimationFrame(tickNumbers);
+}
+
+/* ================= toast & filters ================= */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function renderFilters(){
+  const el=document.getElementById('filters');
+  el.innerHTML=CATS.map(c=>{
+    const n=c==="All"?listings.length:listings.filter(l=>l.cat===c).length;
+    return `<button class="chip ${c===activeCat?'active':''}" onclick="setCat('${c}')">${c}${c!=="All"?`<span class="n">${n}</span>`:''}</button>`;}).join('');
+}
+function setCat(c){activeCat=c;renderFilters();render();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeClaim();});
+
+/* ================= boot ================= */
+seedFeed();
+renderFilters();
+render();
+renderFeed();
+updateMetrics();
+shownCollected=Math.floor(collected*0.55);
+shownClicks=Math.floor(totalClicksBase*0.55);
+tickNumbers();
+
+/* ambient life: a stranger outbids someone every ~14s (demo theater) */
+setInterval(()=>{
+  const pool=[...listings].sort(()=>Math.random()-0.5).slice(0,3);
+  const l=pool[Math.floor(Math.random()*pool.length)];
+  const oldRank=sorted().findIndex(x=>x.id===l.id)+1;
+  const old=l.bid;
+  l.bid=l.bid+Math.max(1,Math.floor(l.bid*0.05));
+  const newRank=sorted().findIndex(x=>x.id===l.id)+1;
+  l.moved=newRank<oldRank?oldRank-newRank:0;
+  feedItems.unshift({t:`<b>${l.name}</b> raised to <span class="fi-amt">${fmt(l.bid)}</span>`,
+    meta:newRank<oldRank?`climbed #${oldRank} → #${newRank}`:`raised at #${newRank}`,ts:Date.now()});
+  collected+=l.bid-old;
+  renderFeed();render();updateMetrics();
+},14000);
+</script>
+</body>
+</html>

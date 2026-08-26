@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSeek — The market for intelligent things</title>
+<meta name="description" content="Every smart thing carries a public price. AI tools, agents, robots, people, businesses, opportunities — ranked by what believers paid. Every bid public. Every click counted.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF8;
+  --card:#FFFFFF;
+  --ink:#17130E;
+  --sub:#59544C;
+  --faint:#A39C91;
+  --line:#E8E4DC;
+  --line-soft:#F0EDE6;
+  --soft:#F5F3EE;
+  --red:#9F1239;
+  --red-deep:#7E0E2D;
+  --red-wash:#FCF4F1;
+  --red-line:#EDD5CD;
+  --gold:#A16207;
+  --gold-soft:#FDF9EC;
+  --gold-line:#EFE3BC;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;}
+::selection{background:var(--red);color:#fff;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px;}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:2px;}
+
+/* ---------- demo bar ---------- */
+.demo-bar{background:var(--ink);color:#D8D2C7;text-align:center;font-size:11px;padding:7px 16px;letter-spacing:.05em;font-family:var(--mono);}
+.demo-bar b{color:#FBD38D;font-weight:500;}
+
+/* ---------- masthead ---------- */
+header.mast{position:sticky;top:0;z-index:50;background:rgba(250,250,248,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.mast-in{display:flex;align-items:center;height:64px;gap:36px;}
+.wordmark{font-family:var(--serif);font-size:21px;font-weight:500;letter-spacing:-.01em;}
+.wordmark i{font-style:normal;color:var(--red);}
+.nav{display:flex;gap:28px;margin-left:auto;font-size:13px;color:var(--sub);font-weight:500;letter-spacing:.01em;}
+.nav a:hover{color:var(--ink);}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border:none;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:transform .12s ease,background-color .15s ease,border-color .15s ease,color .15s ease;}
+.btn:active{transform:scale(.96);}
+.btn-red{background:var(--red);color:#fff;padding:11px 24px;}
+.btn-red:hover{background:var(--red-deep);}
+.btn-sm{padding:8px 18px;font-size:13px;min-height:38px;}
+.link-btn{background:none;border:none;color:var(--sub);font-size:14px;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line);padding:10px 4px;}
+.link-btn:hover{color:var(--ink);text-decoration-color:var(--red);}
+
+/* ---------- exchange status strip ---------- */
+.strip{border-bottom:1px solid var(--line);background:var(--card);}
+.strip-in{display:flex;align-items:center;gap:0;overflow-x:auto;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--sub);}
+.stat{display:flex;align-items:baseline;gap:8px;padding:11px 22px;border-right:1px solid var(--line);white-space:nowrap;}
+.stat:first-child{padding-left:0;}
+.stat b{color:var(--ink);font-weight:600;font-size:12.5px;}
+.stat.live{color:var(--red);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0;transform:translateY(-1px);}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(159,18,57,.35);}70%{box-shadow:0 0 0 6px rgba(159,18,57,0);}100%{box-shadow:0 0 0 0 rgba(159,18,57,0);}}
+
+/* ---------- manifesto ---------- */
+.manifesto{border-bottom:1px solid var(--line);padding:9px 0;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--faint);}
+.manifesto span{margin:0 14px;}
+
+/* ---------- opening spread ---------- */
+.opening{padding:88px 0 72px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:end;}
+.kicker{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.2em;color:var(--red);margin-bottom:26px;}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(46px,5.8vw,78px);line-height:1.02;letter-spacing:-.015em;margin-bottom:26px;text-wrap:balance;}
+h1 em{font-style:italic;color:var(--red);}
+.lede{font-size:16.5px;color:var(--sub);max-width:520px;margin-bottom:34px;text-wrap:pretty;}
+.lede b{color:var(--ink);font-weight:600;}
+.cta-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+
+/* opening side note */
+.open-side{border-left:1px solid var(--line);padding-left:32px;padding-bottom:6px;}
+.os-num{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--faint);margin-bottom:10px;}
+.os-body{font-family:var(--serif);font-size:19px;line-height:1.5;color:var(--ink);text-wrap:pretty;}
+.os-body em{color:var(--red);}
+.os-src{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--faint);margin-top:14px;}
+
+/* ---------- section headers ---------- */
+section{padding:72px 0;}
+.sec-bar{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-top:1px solid var(--ink);padding-top:14px;margin-bottom:30px;}
+.sec-bar h2{font-family:var(--serif);font-weight:400;font-size:31px;letter-spacing:-.01em;}
+.sec-bar h2 em{font-style:italic;color:var(--red);}
+.sec-note{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;}
+
+/* ---------- filter tabs ---------- */
+.tabs{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--line);}
+.tab{background:none;border:none;font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);cursor:pointer;padding:10px 2px 12px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s ease,border-color .15s ease;}
+.tab:hover{color:var(--ink);}
+.tab.on{color:var(--ink);border-bottom-color:var(--red);}
+.tab .n{color:var(--red);margin-left:4px;font-size:10.5px;}
+
+/* ---------- the index ---------- */
+.index-layout{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:28px;align-items:start;}
+.table{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden;}
+.t-head,.row{display:grid;grid-template-columns:58px minmax(0,1fr) 116px 86px 108px;gap:14px;align-items:center;padding:15px 22px;}
+.t-head{background:var(--soft);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;padding-top:12px;padding-bottom:12px;}
+.row{border-bottom:1px solid var(--line-soft);background:var(--card);transition:background-color .15s ease,opacity .4s ease;}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--paper);}
+.row.leader{background:linear-gradient(90deg,var(--gold-soft) 0%,var(--card) 42%);}
+.rk{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--faint);display:flex;flex-direction:column;line-height:1.25;}
+.rk.top{color:var(--gold);font-weight:600;}
+.rk .up{font-size:9.5px;color:var(--red);font-weight:600;}
+.pos{min-width:0;}
+.pos-top{display:flex;align-items:center;gap:11px;}
+.av{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12.5px;font-family:var(--mono);}
+.p-name{font-weight:600;font-size:14.5px;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.medal{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--gold);background:var(--gold-soft);border:1px solid var(--gold-line);padding:2.5px 8px;border-radius:999px;flex-shrink:0;}
+.p-desc{font-size:12.5px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-meta{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px;}
+.bid-c{text-align:right;}
+.bid{font-family:var(--mono);font-size:15.5px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.claim-lbl{display:block;width:100%;margin-top:3px;background:none;border:none;font-size:10.5px;color:var(--red);font-weight:500;cursor:pointer;padding:2px 0 0;text-align:right;}
+.claim-lbl:hover{text-decoration:underline;text-underline-offset:3px;}
+.clicks{font-family:var(--mono);font-size:12.5px;color:var(--sub);text-align:right;font-variant-numeric:tabular-nums;}
+.bid-btn{justify-self:end;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:600;padding:8px 18px;min-height:36px;border-radius:999px;cursor:pointer;transition:border-color .15s ease,color .15s ease,background-color .15s ease,transform .12s ease;}
+.bid-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-wash);}
+.bid-btn:active{transform:scale(.96);}
+
+/* raise panel */
+.raiser{grid-column:1/-1;background:var(--red-wash);border-top:1px dashed var(--red-line);margin:0 -22px -15px;padding:14px 22px;display:none;}
+.raiser.open{display:block;}
+.raiser-in{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.rz-lbl{font-size:12.5px;color:var(--ink);font-weight:500;}
+.stepper{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.stepper button{width:34px;height:36px;background:none;border:none;font-size:16px;color:var(--sub);cursor:pointer;transition:background-color .12s ease;}
+.stepper button:hover{background:var(--soft);color:var(--ink);}
+.stepper input{width:90px;height:36px;border:none;text-align:center;font-family:var(--mono);font-size:14.5px;font-weight:600;color:var(--ink);outline:none;font-variant-numeric:tabular-nums;}
+.rz-note{font-size:11px;color:var(--faint);}
+.rz-go{background:var(--red);color:#fff;border:none;padding:9px 18px;min-height:36px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;transition:background-color .15s ease,transform .12s ease;}
+.rz-go:hover{background:var(--red-deep);}
+.rz-go:active{transform:scale(.96);}
+
+/* ---------- order book ---------- */
+.book{border:1px solid var(--line);border-radius:10px;background:var(--card);position:sticky;top:88px;}
+.book-h{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;}
+.book-h .dot{margin-left:auto;}
+.book-list{max-height:540px;overflow-y:auto;}
+.trade{padding:12px 18px;border-bottom:1px solid var(--line-soft);font-size:12px;transition:background-color .15s ease;}
+.trade:last-child{border-bottom:none;}
+.tr-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.tr-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-amt{font-family:var(--mono);color:var(--red);font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.tr-sub{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:3px;}
+
+/* ---------- house rules ---------- */
+.rules-layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;}
+.rules-left{position:sticky;top:104px;align-self:start;}
+.rules-left p{color:var(--sub);font-size:15px;margin-top:16px;max-width:380px;text-wrap:pretty;}
+.rule-list{list-style:none;}
+.rule{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:17px 0;border-bottom:1px solid var(--line-soft);}
+.rule:last-child{border-bottom:none;}
+.rule-no{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--faint);}
+.rule-t{font-size:14.5px;color:var(--ink);}
+.rule-t b{font-weight:600;}
+
+/* ---------- why (editorial) ---------- */
+.essay{max-width:880px;}
+.essay-lede{font-family:var(--serif);font-size:clamp(26px,3.4vw,38px);line-height:1.25;font-weight:400;letter-spacing:-.01em;text-wrap:balance;margin-bottom:34px;}
+.essay-lede em{font-style:italic;color:var(--red);}
+.fnotes{display:flex;flex-direction:column;gap:0;max-width:720px;}
+.fnote{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:15px 0;border-top:1px solid var(--line-soft);font-size:13.5px;color:var(--sub);line-height:1.65;}
+.fnote sup{font-family:var(--serif);font-style:italic;color:var(--red);font-size:15px;}
+.fnote b{color:var(--ink);font-weight:600;}
+.essay-close{margin-top:36px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;}
+
+/* ---------- quiet close ---------- */
+.close-sec{border-top:1px solid var(--line);padding:64px 0 72px;display:flex;align-items:baseline;justify-content:space-between;gap:28px;flex-wrap:wrap;}
+.close-line{font-family:var(--serif);font-size:clamp(26px,3.2vw,38px);font-weight:400;letter-spacing:-.01em;text-wrap:balance;}
+.close-line em{font-style:italic;color:var(--red);}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:30px 0;background:var(--card);}
+.foot-in{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--faint);}
+.foot-tag{font-family:var(--serif);font-style:italic;color:var(--sub);font-size:13.5px;}
+.foot-links{display:flex;gap:22px;}
+.foot-links a:hover{color:var(--ink);}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#F5F2EC;padding:12px 22px;border-radius:999px;font-size:13px;font-weight:500;z-index:99;box-shadow:0 10px 34px rgba(23,19,14,.28);transition:transform .3s cubic-bezier(.22,.9,.36,1);max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast .mono{font-family:var(--mono);color:#F0ABCB;}
+
+/* ---------- modal ---------- */
+.modal-back{position:fixed;inset:0;background:rgba(23,19,14,.44);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal-back.open{display:flex;}
+.modal{background:var(--card);border-radius:14px;padding:34px;width:100%;max-width:430px;box-shadow:0 28px 80px rgba(23,19,14,.3);}
+.modal h3{font-family:var(--serif);font-weight:400;font-size:27px;margin-bottom:6px;}
+.modal h3 em{font-style:italic;color:var(--red);}
+.m-sub{color:var(--sub);font-size:13px;margin-bottom:24px;line-height:1.6;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--sub);margin-bottom:7px;text-transform:uppercase;}
+.field input{width:100%;height:46px;border:1px solid var(--line);border-radius:10px;padding:0 15px;font-size:14.5px;font-family:var(--sans);outline:none;background:var(--paper);transition:border-color .15s ease,box-shadow .15s ease;}
+.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(159,18,57,.08);background:var(--card);}
+.m-actions{display:flex;gap:10px;margin-top:24px;}
+.m-actions .btn{flex:1;}
+.btn-ghost{background:var(--card);border:1px solid var(--line);color:var(--sub);padding:12px;}
+.btn-ghost:hover{color:var(--ink);border-color:var(--faint);}
+
+/* ---------- motion ---------- */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+}
+
+/* ---------- responsive ---------- */
+@media(max-width:960px){
+  .index-layout{grid-template-columns:1fr;}
+  .book{position:static;}
+  .opening{grid-template-columns:1fr;gap:36px;padding:64px 0 56px;}
+  .open-side{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:24px;}
+  .rules-layout{grid-template-columns:1fr;gap:28px;}
+  .rules-left{position:static;}
+}
+@media(max-width:720px){
+  .t-head{display:none;}
+  .row{grid-template-columns:44px 1fr;row-gap:12px;padding:16px;}
+  .bid-c,.clicks{text-align:left;}
+  .claim-lbl{text-align:left;}
+  .bid-btn{justify-self:start;grid-column:2;}
+  .nav{display:none;}
+  .stat{padding:10px 14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">DESIGN PREVIEW · SAMPLE POSITIONS &amp; SIMULATED TRADES · <b>NO REAL MONEY MOVES</b></div>
+
+<header class="mast">
+  <div class="wrap mast-in">
+    <span class="wordmark">SmartSeek<i>.</i></span>
+    <nav class="nav">
+      <a href="#index">The Index</a>
+      <a href="#rules">House Rules</a>
+      <a href="#why">Why</a>
+      <a href="#">Ledger</a>
+    </nav>
+    <button class="btn btn-red btn-sm" onclick="openClaim()">Bid on the index</button>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap strip-in">
+    <div class="stat"><b id="m-total">$0</b><span>index total</span></div>
+    <div class="stat"><b id="m-count">0</b><span>positions</span></div>
+    <div class="stat"><b id="m-clicks">0</b><span>clicks sent</span></div>
+    <div class="stat"><b>$1</b><span>floor</span></div>
+    <div class="stat live"><span class="dot"></span><span>LIVE</span></div>
+  </div>
+</div>
+
+<div class="manifesto">no algorithm<span>·</span>no ads<span>·</span>no votes<span>·</span>the price is public</div>
+
+<div class="wrap opening">
+  <div>
+    <div class="kicker">THE MARKET FOR INTELLIGENT THINGS</div>
+    <h1>What is <em>smart</em> worth?</h1>
+    <p class="lede">On this exchange: exactly what someone paid. Every position carries a public price — set by whoever believes in it most, beaten by whoever believes harder.</p>
+    <div class="cta-row">
+      <button class="btn btn-red" onclick="openClaim()">Claim a position — from $1</button>
+      <button class="link-btn" onclick="document.getElementById('rules').scrollIntoView({behavior:'smooth'})">Read the house rules</button>
+    </div>
+  </div>
+  <aside class="open-side">
+    <div class="os-num">from the prospectus</div>
+    <div class="os-body">Rankings everywhere are an opinion. Here, a rank is a <em>receipt</em> — dollars paid, timestamps kept, clicks delivered.</div>
+    <div class="os-src">SMARTSEEK · HOUSE LEDGER · PUBLIC FOREVER</div>
+  </aside>
+</div>
+
+<section id="index" style="padding-top:8px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>The <em>Index</em></h2>
+      <span class="sec-note">rank = total paid · settles instantly</span>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="index-layout">
+      <div class="table">
+        <div class="t-head"><span>№</span><span>Position</span><span style="text-align:right">Paid</span><span style="text-align:right">Clicks</span><span></span></div>
+        <div id="rows"></div>
+      </div>
+      <aside class="book">
+        <div class="book-h">Order book<span class="dot"></span></div>
+        <div class="book-list" id="feed"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="rules" style="padding-top:24px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>House <em>rules</em></h2>
+      <span class="sec-note">eight lines · no fine print</span>
+    </div>
+    <div class="rules-layout">
+      <div class="rules-left">
+        <h3 style="font-family:var(--serif);font-weight:400;font-size:24px;">One rule does everything:</h3>
+        <p>A position's rank is the total dollars behind it. Everything below is just how that rule stays honest.</p>
+      </div>
+      <ol class="rule-list">
+        <li class="rule"><span class="rule-no">01</span><span class="rule-t"><b>Money is the only ranking.</b> No algorithm, no jury, no engagement metrics.</span></li>
+        <li class="rule"><span class="rule-no">02</span><span class="rule-t"><b>New positions start at $1.</b> Whole dollars only — we keep arithmetic honest.</span></li>
+        <li class="rule"><span class="rule-no">03</span><span class="rule-t"><b>Taking № 1 costs the leader plus $1.</b> Lower bids still buy whatever rank they can reach.</span></li>
+        <li class="rule"><span class="rule-no">04</span><span class="rule-t"><b>Raise anytime, pay the difference.</b> Your past belief stays banked on the ledger.</span></li>
+        <li class="rule"><span class="rule-no">05</span><span class="rule-t"><b>Ties go to the earlier believer.</b> Conviction that arrives first keeps the higher seat.</span></li>
+        <li class="rule"><span class="rule-no">06</span><span class="rule-t"><b>Bids are final.</b> Getting outbid isn't a loss — it's the market working.</span></li>
+        <li class="rule"><span class="rule-no">07</span><span class="rule-t"><b>Clicks pass straight through,</b> counted honestly and printed beside your name.</span></li>
+        <li class="rule"><span class="rule-no">08</span><span class="rule-t"><b>Everything is published.</b> Bids, history, totals — the ledger belongs to everyone.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="why" style="padding-top:8px;">
+  <div class="wrap">
+    <div class="sec-bar">
+      <h2>Why an <em>exchange</em></h2>
+      <span class="sec-note">four footnotes · zero promises</span>
+    </div>
+    <div class="essay">
+      <p class="essay-lede">Discovery on the internet got outsourced to machines guessing what you might click. We priced it instead: bring money, bring belief, <em>take your seat.</em></p>
+      <div class="fnotes">
+        <div class="fnote"><sup>¹</sup><span><b>The full-glass ledger.</b> Every dollar carries a timestamp and a public record. If a seat changed hands, you see exactly when and for how much — auditable forever.</span></div>
+        <div class="fnote"><sup>²</sup><span><b>Verified clicks.</b> Traffic passes through our redirect; the count prints beside every position. Results aren't claimed, they're shown.</span></div>
+        <div class="fnote"><sup>³</sup><span><b>Permanent equity.</b> Positions are real indexed pages with dofollow links. A bid buys lasting search presence — not fifteen minutes at the top of a meme.</span></div>
+        <div class="fnote"><sup>⁴</sup><span><b>Admission is curated to the intelligent:</b> AI tools, agents, robotics, platforms, smart people, businesses, opportunities. Qualified eyes only.</span></div>
+      </div>
+      <div class="essay-close">Smartseek · est. 2026 · the market for intelligent things</div>
+    </div>
+  </div>
+</section>
+
+<div class="close-sec">
+  <div class="wrap" style="display:flex;align-items:baseline;justify-content:space-between;gap:28px;flex-wrap:wrap;">
+    <div class="close-line">Take the seat, at the price<br>you <em>believe in.</em></div>
+    <button class="btn btn-red" onclick="openClaim()">Bid on the index</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>© 2026 SmartSeek</span>
+    <span class="foot-tag">what is smart worth?</span>
+    <div class="foot-links"><a href="#">Rules</a><a href="#">Ledger</a><a href="#">Privacy</a><a href="#">Contact</a></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeClaim()">
+  <div class="modal">
+    <h3>Open a <em>position</em></h3>
+    <p class="m-sub">Anything intelligent qualifies — a product, a profile, a business, an opportunity. <b>Design preview:</b> nothing is charged.</p>
+    <div class="field"><label>Url or @handle</label><input type="text" id="c-url" placeholder="yourproduct.ai or @yourhandle"></div>
+    <div class="field"><label>Display name</label><input type="text" id="c-name" placeholder="Acme AI"></div>
+    <div class="field"><label>Your bid · USD whole dollars</label><input type="number" id="c-bid" min="1" step="1" placeholder="1"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeClaim()">Cancel</button>
+      <button class="btn btn-red" onclick="submitClaim()">Place demo bid</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ demo positions ============ */
+const CATS=["All","AI Tools","Agents","Platforms","Robotics","People","Businesses","Opportunities"];
+let seq=1;
+function P(name,domain,desc,cat,bid,clicks,color,minsAgo){
+  return {id:seq++,name,domain,desc,cat,bid,clicks,color,moved:0,createdAt:Date.now()-minsAgo*60000};
+}
+let positions=[
+  P("Nexus Agents","nexusagents.ai","Autonomous AI employees for sales, support and research — run from one console.","Agents",1240,2143,"#9F1239",3),
+  P("Helix Robotics","helixrobotics.com","Warehouse arms that learn pick-and-place from a single demonstration.","Robotics",980,1876,"#17130E",11),
+  P("PromptDeck","promptdeck.io","Version-control, test and ship prompts across every LLM like real code.","AI Tools",750,1204,"#5B21B6",26),
+  P("Sarah Chen","x.com/sarahbuilds","AI research engineer · building open agents · ex-DeepMind. Daily posts.","People",500,987,"#BE185D",48),
+  P("DataForge","dataforge.dev","Any messy database becomes a queryable knowledge API for agents.","Platforms",420,654,"#A16207",74),
+  P("Atlas Fund II","atlasopportunities.com","Co-invest in pre-seed AI infrastructure deals. Tranche closing soon.","Opportunities",350,431,"#1D4ED8",102),
+  P("Cognify","getcognify.app","The reasoning spreadsheet — formulas that plan, check and cite their work.","AI Tools",280,512,"#0F766E",133),
+  P("Marcus Reid","linkedin.com/in/marcusreid","Ghostwriter for AI founders · 2.1M impressions/mo · weekly in public.","People",190,289,"#3730A3",161),
+  P("Quantum Ledger","quantumledger.fi","Fraud decisions on payment rails in 40ms — fully explainable.","Platforms",120,176,"#92400E",210),
+  P("SmartK9","smartk9.co","Collar that translates barks, tracks health, trains with you. Ships '27.","Businesses",45,94,"#B91C1C",290),
+];
+let total=positions.reduce((s,p)=>s+p.bid,0);
+const CLICKS_BASE=12847;
+let trades=[];
+
+/* ============ helpers ============ */
+const fmt=n=>'$'+n.toLocaleString('en-US');
+const timeAgo=t=>{const m=Math.max(1,Math.round((Date.now()-t)/60000));
+  if(m<60)return m+'m ago';const h=Math.round(m/60);
+  return h<24?h+'h ago':Math.round(h/24)+'d ago';};
+const sorted=()=>[...positions].sort((a,b)=>b.bid-a.bid||a.createdAt-b.createdAt);
+let activeCat="All";
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============ render index ============ */
+function render(){
+  const rowsEl=document.getElementById('rows');
+  const prev={};rowsEl.querySelectorAll('.row[data-id]').forEach(r=>prev[r.dataset.id]=r.getBoundingClientRect().top);
+  const view=sorted().filter(p=>activeCat==="All"||p.cat===activeCat);
+  const gRank=new Map();sorted().forEach((p,i)=>gRank.set(p.id,i+1));
+  rowsEl.innerHTML='';
+  view.forEach((p,idx)=>{
+    const rank=gRank.get(p.id);
+    const above=view[idx-1];
+    const cost=rank===1?p.bid+1:Math.max(above.bid,p.bid)+1;
+    const r=document.createElement('div');
+    r.className='row'+(rank===1?' leader':'');
+    r.dataset.id=p.id;
+    r.innerHTML=`
+      <span class="rk ${rank===1?'top':''}">#${rank}${p.moved>0?`<span class="up">▲${p.moved}</span>`:''}</span>
+      <div class="pos">
+        <div class="pos-top">
+          <span class="av" style="background:${p.color}">${p.name[0]}</span>
+          <span class="p-name">${p.name}</span>
+          ${rank===1?'<span class="medal">№ 1</span>':''}
+        </div>
+        <div class="p-desc">${p.desc}</div>
+        <div class="p-meta">${p.cat.toUpperCase()} · ${p.domain}</div>
+      </div>
+      <div class="bid-c">
+        <div class="bid">${fmt(p.bid)}</div>
+        <button class="claim-lbl" onclick="quickRaise(${p.id})">${rank===1?'take №1':'claim #'+rank} · ${fmt(cost)}</button>
+      </div>
+      <div class="clicks">${p.clicks.toLocaleString('en-US')}</div>
+      <button class="bid-btn" onclick="toggleRaiser(${p.id})">Bid&nbsp;↑</button>
+      <div class="raiser" id="rz-${p.id}">
+        <div class="raiser-in">
+          <span class="rz-lbl">Raise to</span>
+          <div class="stepper">
+            <button onclick="step(${p.id},-10)" aria-label="minus">−</button>
+            <input type="number" id="bi-${p.id}" min="${p.bid+1}" step="1" value="${suggest(p)}">
+            <button onclick="step(${p.id},10)" aria-label="plus">+</button>
+          </div>
+          <button class="rz-go" onclick="confirmRaise(${p.id})">Confirm — demo</button>
+          <span class="rz-note">you pay only the difference</span>
+        </div>
+      </div>`;
+    rowsEl.appendChild(r);
+  });
+  if(!reduceMotion)requestAnimationFrame(()=>flip(rowsEl,prev));
+}
+function flip(container,prev){
+  container.querySelectorAll('.row[data-id]').forEach(r=>{
+    const before=prev[r.dataset.id];
+    if(before==null){r.style.opacity='0';r.style.transform='translateY(8px)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.opacity='1';r.style.transform='none';}));return;}
+    const d=before-r.getBoundingClientRect().top;
+    if(Math.abs(d)>2){r.style.transition='none';r.style.transform=`translateY(${d}px)`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.transition='';r.style.transform='none';}));}
+  });
+}
+function suggest(p){
+  const s=sorted();const i=s.findIndex(x=>x.id===p.id);
+  return i===0?p.bid+1:s[i-1].bid+1;
+}
+
+/* ============ actions ============ */
+function toggleRaiser(id){
+  document.querySelectorAll('.raiser.open').forEach(x=>x.classList.remove('open'));
+  document.getElementById('rz-'+id).classList.add('open');
+}
+function step(id,d){
+  const el=document.getElementById('bi-'+id);
+  el.value=Math.max(parseInt(el.min),parseInt(el.value||el.min)+d);
+}
+function quickRaise(id){
+  toggleRaiser(id);
+  document.getElementById('bi-'+id).value=suggest(positions.find(p=>p.id===id));
+}
+function confirmRaise(id){
+  const p=positions.find(x=>x.id===id);
+  const el=document.getElementById('bi-'+id);
+  const v=Math.floor(Number(el.value));
+  if(!v||v<=p.bid){toast('Must exceed '+fmt(p.bid));return;}
+  const oldRank=sorted().findIndex(x=>x.id===id)+1;
+  const diff=v-p.bid;
+  p.bid=v;total+=diff;
+  const newRank=sorted().findIndex(x=>x.id===id)+1;
+  p.moved=newRank<oldRank?oldRank-newRank:0;
+  logTrade(`<span class="tr-name">${p.name}</span><span class="tr-amt">+${fmt(diff)}</span>`,
+           `<span>#${oldRank}→#${newRank}</span><span>${timeAgo(Date.now())}</span>`);
+  paint();toast(`${p.name} now #${newRank} · raised ${fmt(diff)} · settled`);
+}
+function submitClaim(){
+  const url=document.getElementById('c-url').value.trim();
+  const name=document.getElementById('c-name').value.trim()||url;
+  const bid=Math.floor(Number(document.getElementById('c-bid').value));
+  if(!url){toast('Paste a URL or @handle first');return;}
+  if(!bid||bid<1){toast('Floor is $1');return;}
+  const palette=["#9F1239","#17130E","#5B21B6","#BE185D","#A16207","#1D4ED8","#0F766E","#B91C1C"];
+  const np=P(name,url,`Newly listed on SmartSeek — ${url}.`,CATS.includes("People")&&url.startsWith('@')?"People":"Platforms",bid,0,palette[Math.floor(Math.random()*palette.length)],0);
+  positions.push(np);total+=bid;
+  logTrade(`<span class="tr-name">${np.name}</span><span class="tr-amt">${fmt(bid)}</span>`,
+           `<span>listed → #${sorted().findIndex(x=>x.id===np.id)+1}</span><span>${timeAgo(Date.now())}</span>`);
+  closeClaim();paint();
+  toast(`${np.name} opened at ${fmt(bid)} — welcome to the index`);
+  ['c-url','c-name','c-bid'].forEach(i=>document.getElementById(i).value='');
+}
+function openClaim(){document.getElementById('modalBack').classList.add('open');}
+function closeClaim(){document.getElementById('modalBack').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeClaim();});
+
+/* ============ order book ============ */
+function logTrade(line,sub){trades.unshift({line,sub});renderBook();}
+function renderBook(){
+  document.getElementById('feed').innerHTML=trades.slice(0,16).map(t=>`
+    <div class="trade"><div class="tr-line">${t.line}</div><div class="tr-sub">${t.sub}</div></div>`).join('')
+    ||'<div class="trade"><div class="tr-sub">Awaiting the first trade…</div></div>';
+}
+function seedBook(){
+  const s=[
+    ["Nexus Agents","+1,240","took № 1"],
+    ["Helix Robotics","+60","raised from $920"],
+    ["PromptDeck","+70","passed DataForge"],
+    ["Sarah Chen","$500","listed"],
+    ["DataForge","+40","raised from $380"],
+  ];
+  s.forEach((t,i)=>{
+    trades.push({line:`<span class="tr-name">${t[0]}</span><span class="tr-amt">${t[1].startsWith('+')?fmt(parseInt(t[1].slice(1))):fmt(parseInt(t[1].replace(/\D/g,'')))}</span>`,
+                 sub:`<span>${t[2]}</span><span>${timeAgo(Date.now()-(i*7+2)*60000)}</span>`});
+  });
+}
+
+/* ============ metrics & tabs ============ */
+let shownT=0,shownK=0;
+function paint(){
+  document.getElementById('m-count').textContent=positions.length;
+  renderBook();render();countTabs();
+}
+function tickNumbers(){
+  shownT+=Math.ceil((total-shownT)*0.12)||0;
+  shownK+=Math.ceil((CLICKS_BASE-shownK)*0.12)||0;
+  document.getElementById('m-total').textContent=fmt(shownT);
+  document.getElementById('m-clicks').textContent=shownK.toLocaleString('en-US');
+  if(shownT!==total||shownK<CLICKS_BASE&&!reduceMotion)requestAnimationFrame(tickNumbers);
+}
+function countTabs(){
+  document.getElementById('tabs').innerHTML=CATS.map(c=>{
+    const n=c==="All"?positions.length:positions.filter(p=>p.cat===c).length;
+    return `<button class="tab ${c===activeCat?'on':''}" onclick="setCat('${c}')">${c}${c!=="All"?`<span class="n">${n}</span>`:`<span class="n">${n}</span>`}</button>`;
+  }).join('');
+}
+function setCat(c){activeCat=c;countTabs();render();}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ============ boot ============ */
+seedBook();
+renderBook();
+countTabs();
+render();
+shownT=Math.floor(total*0.55);shownK=Math.floor(CLICKS_BASE*0.55);
+tickNumbers();
+
+/* ambient market life (skipped if user prefers reduced motion) */
+if(!reduceMotion)setInterval(()=>{
+  const pool=[...positions].sort(()=>Math.random()-0.5).slice(0,3);
+  const p=pool[Math.floor(Math.random()*pool.length)];
+  const oldRank=sorted().findIndex(x=>x.id===p.id)+1;
+  const old=p.bid;
+  p.bid=p.bid+Math.max(1,Math.floor(p.bid*0.05));
+  total+=p.bid-old;
+  const newRank=sorted().findIndex(x=>x.id===p.id)+1;
+  p.moved=newRank<oldRank?oldRank-newRank:0;
+  logTrade(`<span class="tr-name">${p.name}</span><span class="tr-amt">+${fmt(p.bid-old)}</span>`,
+           `<span>${newRank<oldRank?`#${oldRank}→#${newRank}`:'raised at #'+newRank}</span><span>${timeAgo(Date.now())}</span>`);
+  paint();
+},14000);
+</script>
+</body>
+</html>
