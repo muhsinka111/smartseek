@@ -1,0 +1,1 @@
+{"service":"smartseek-platform","environments":{"production":{"variables":{"PORT":"8080"}}}}
