@@ -218,7 +218,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       <div class="bhero">
         <div class="bhero-l">
           <h1>One board.<br>One rule.<br><span class="hl">Highest bid wins.</span></h1>
-          <p class="tagline"><b>This is the simplest marketing channel left.</b> No API keys. No account. No dashboard. You pay, you rank, you get direct visibility. <b>$1</b> puts you on the board today.</p>
+          <p class="tagline"><b>SmartSeek is the pay-to-rank board for everything smart.</b> No algorithm, no waiting — the rank you pay for is the rank you get, live and in front of everyone. <b>$1</b> puts you on the board today.</p>
           <div class="mini">
             <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>#1 IS TAKEABLE</span><span>REAL ANALYTICS</span>
           </div>
@@ -250,7 +250,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       </table></div>
 
       <div class="board-foot">
-        <p>Higher bid = higher rank. Updated live.<span>You only need $1 more than the listing above you — no packages, no BS.</span></p>
+        <p>Higher bid = higher rank. Updated live.<span>Start at $1 — live the second you pay.</span></p>
         <button class="btn acc" onclick="openBid(-1)">Place a bid →</button>
       </div>
 
@@ -258,9 +258,9 @@ tr:nth-child(1) .rnk{background:var(--lime)}
     </div>
 
     <div class="strip" id="how">
-      <div class="scell"><div class="ic">🚀</div><div><b>No API keys, no account</b><span>Paste your URL, add $1, pay, and you’re live in 60 seconds.</span></div></div>
-      <div class="scell"><div class="ic">🏁</div><div><b>One dollar more is all it takes</b><span>Want to jump a competitor? Bid exactly $1 above them — no packages, no auctions.</span></div></div>
-      <div class="scell"><div class="ic">📊</div><div><b>Real clicks, real rank, real analytics</b><span>Every click is counted. Every rank is public. Every dollar is shown.</span></div></div>
+      <div class="scell"><div class="ic">🚀</div><div><b>Instant visibility</b><span>Live in 60s — no review, no waiting</span></div></div>
+      <div class="scell"><div class="ic">🏁</div><div><b>Beat your competitors</b><span>Take any position — even #1 — anytime</span></div></div>
+      <div class="scell"><div class="ic">📊</div><div><b>Marketing that proves itself</b><span>Public clicks, CTR &amp; rank history</span></div></div>
     </div>
 
     <div class="metrics" id="metrics">
@@ -398,7 +398,7 @@ function openBid(i){
   bidTarget=i;
   if(i>=0){
     slider.value=Math.min(maxBid,items[i].b+1);
-    document.getElementById('target').textContent=`OUTBIDDING ${items[i].n.toUpperCase()} — JUST $1 MORE TAKES THEIR SPOT`;
+    document.getElementById('target').textContent=`OUTBIDDING ${items[i].n.toUpperCase()} — #${items.indexOf(items[i])+1} AT $${fmt(items[i].b)}`;
   } else document.getElementById('target').textContent='';
   upd();
   document.querySelector('.console').scrollIntoView({behavior:'smooth',block:'center'});
@@ -413,8 +413,8 @@ function upd(){
   if(lastRank!==null&&rank!==lastRank){pv.classList.remove('up-anim');void pv.offsetWidth;pv.classList.add('up-anim');}
   lastRank=rank;
   document.getElementById('beats').textContent = rank===1
-    ? (items.length? `TAKES #1 FROM ${items[0].n.toUpperCase()} — JUST $1 MORE` : 'CLAIMS #1 — first on the board')
-    : `JUST $1 MORE TAKES #${rank-1} FROM ${items[above-1]?.n?.toUpperCase() || 'the listing above'}`;
+    ? (items.length? `TAKES #1 FROM ${items[0].n.toUpperCase()} ($${fmt(items[0].b)})` : 'CLAIMS #1 — first on the board')
+    : `BEATS ${items.length-above} PRODUCTS · +$${fmt(items[above-1].b-v+1)} TAKES #${rank-1}`;
 }
 slider.addEventListener('input',upd);
 document.getElementById('urlIn').addEventListener('keydown',e=>{if(e.key==='Enter')payBid();});
@@ -441,11 +441,7 @@ async function payBid(){
     const bj=await br.json();
     if(!br.ok){ toast(bj.detail||"Bid failed."); return; }
     if(bj.checkout_url){ window.location.href=bj.checkout_url; }
-    else {
-      const msg = bj.rank ? `Paid demo $${bj.delta}. You are #${bj.rank}.` : 'Demo mode — payment simulated.';
-      toast(msg);
-      load();
-    }
+    else { toast('Demo mode — payment simulated.'); load(); }
   }catch(e){ toast('Network error — try again.'); }
 }
 

@@ -242,7 +242,33 @@ def place_bid(body: BidIn, db: Session = Depends(get_db)):
     rank = db.query(func.count(func.distinct(Position.id))).join(Bid).filter(
         Bid.status == "paid", Bid.amount > new_total
     ).scalar() + 1
-    return {"ok": True, "rank": rank, "total_paid": new_total, "position_id": p.id, "delta": delta}
+
+    if STRIPE_SECRET:
+        base = PUBLIC_BASE_URL.rstrip("/")
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "unit_amount": delta * 100,
+                    "product_data": {"name": f"Rank #{rank} — {p.name} (total ${new_total + delta})"},
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=f"{base}/success?bid_id={b.id}",
+            cancel_url=f"{base}/cancel?position_id={p.id}",
+            metadata={"bid_id": str(b.id), "position_id": str(p.id)},
+        )
+        b.stripe_pid = session.id
+        db.commit()
+        return {"checkout_url": session.url, "demo": False, "bid_id": b.id, "rank": rank, "total_paid": new_total, "position_id": p.id, "delta": delta}
+    else:
+        b.status = "paid"
+        b.paid_at = datetime.now(timezone.utc)
+        db.add(TradeLog(position_id=p.id, delta=delta, note="payment confirmed (demo)"))
+        db.commit()
+        return {"checkout_url": None, "demo": True, "bid_id": b.id, "rank": rank, "total_paid": new_total, "position_id": p.id, "delta": delta}
 
 @app.post("/api/claim")
 def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
