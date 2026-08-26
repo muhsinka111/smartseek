@@ -11,14 +11,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- Global site tag: replace G-XXXXXXXXXX with your GA4 Measurement ID -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{GA4_MEASUREMENT_ID}}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '{{GA4_MEASUREMENT_ID}}', { anonymize_ip: true });
-</script>
 <style>
 :root{
   --paper:#F4F2EA;
@@ -169,7 +161,13 @@ tr:nth-child(1) .rnk{background:var(--lime)}
   font-weight:700;box-shadow:var(--shadow);animation:ti .25s}
 @keyframes ti{from{transform:translateY(8px);opacity:0}}
 
-.shadow{filter:grayscale(1) brightness(1.1)}
+.footer{border-top:var(--bd);padding:18px 0;margin-top:18px;background:var(--paper)}
+.footer .shell{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.foot-cell{border:var(--bd);background:var(--card);box-shadow:var(--shadow);padding:10px 12px}
+.foot-cell h4{margin:0 0 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.foot-cell p{margin:0;font-size:11px;color:var(--sub);line-height:1.55}
+.foot-cell a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
 .empty{text-align:center;padding:34px 10px;color:var(--sub);font-weight:600}
 
 @media(max-width:1080px){
@@ -180,6 +178,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
   .console{border-left:0;border-top:var(--bd)}
   .strip{grid-template-columns:1fr}
   .nav-links{display:none}
+  .footer .shell{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -245,7 +244,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       </div>
     </div>
 
-    <div class="strip">
+    <div class="strip" id="how">
       <div class="scell"><div class="ic">🚀</div><div><b>Instant visibility</b><span>Live in 60s — no review, no waiting</span></div></div>
       <div class="scell"><div class="ic">🏁</div><div><b>Beat your competitors</b><span>Take any position — even #1 — anytime</span></div></div>
       <div class="scell"><div class="ic">📊</div><div><b>Marketing that proves itself</b><span>Public clicks, CTR &amp; rank history</span></div></div>
@@ -258,16 +257,33 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 <div class="toasts" id="toasts"></div>
 <noscript><div style="padding:14px;text-align:center;font-weight:700">SmartSeek needs JavaScript for the live board.</div></noscript>
 
+<footer class="footer">
+  <div class="shell">
+    <div class="foot-cell">
+      <h4>Rules</h4>
+      <p>Rank is determined by total paid. Highest bid wins. Minimum bid is $1. Bids are public. Being outbid is part of the game.</p>
+    </div>
+    <div class="foot-cell">
+      <h4>Revenue</h4>
+      <p>SmartSeek collects a small platform fee on paid bids. The rest stays with the listing owner. All fees are shown before checkout.</p>
+    </div>
+    <div class="foot-cell">
+      <h4>Contact</h4>
+      <p><a href="mailto:info@smartseek.com">info@smartseek.com</a><br><a href="/cancel">Cancel / refund policy</a><br><a href="/success">Payment success demo</a></p>
+    </div>
+  </div>
+</footer>
+
 <script>
-  const API = "";
-  const GA4_ID = "{{GA4_MEASUREMENT_ID}}";
-  function ga(event, params) {
-    if (typeof gtag === "function" && GA4_ID && GA4_ID !== "{{GA4_MEASUREMENT_ID}}") {
-      gtag("event", event, params || {});
-    }
+const API = "";
+const GA4_ID = "";
+function ga(event, params) {
+  if (typeof gtag === "function" && GA4_ID) {
+    gtag("event", event, params || {});
   }
-  ga("page_view", { page_title: document.title, page_location: location.href });
-</script>
+}
+ga("page_view", { page_title: document.title, page_location: location.href });
+
 const C=["#111111","#E44B31","#1E9E5A","#2F5FE3","#B03BC4","#E39B12","#0E7C7B","#77777D","#2563EB","#7C3AED"];
 let items=[];
 let cats=[];
@@ -320,7 +336,6 @@ function render(flash){
   }).join('');
 }
 
-/* rails — ad spots (real inventory, booking flow is placeholder) */
 const ADS_L=[
  {bg:"#2F5FE3",icon:"🌄",h:"Grow your startup. Get more customers.",l:"growflow.com"},
  {bg:"#B03BC4",icon:"✨",h:"AI that works for your business.",l:"tryflowai.com"}
@@ -337,7 +352,6 @@ document.getElementById('railL').innerHTML=ADS_L.map(ad).join('')+
 document.getElementById('railR').innerHTML=ADS_R.map(ad).join('')+
  `<div class="book"><p>Sponsor a category · $490/mo</p><button class="btn" onclick="toast('Open: all categories.')">Sponsor</button></div>`;
 
-/* console */
 function openBid(i){
   bidTarget=i;
   if(i>=0){
@@ -370,7 +384,6 @@ async function payBid(){
   const d=raw.startsWith('@')?raw:raw.replace(/^https?:\/\//,'').split('/')[0];
   const nm=raw.startsWith('@')?raw:d.replace(/^www\./,'');
   try{
-    // create/ensure listing then bid
     let pid;
     const existed=items.find(i=>i.d===d || i.slug===d);
     if(existed){ pid=existed.id; }
