@@ -150,11 +150,33 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 .board-foot p{margin:0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .board-foot p span{display:block;font-weight:500;font-size:10px;color:var(--sub);text-transform:none;letter-spacing:0}
 
+.ticker{border-top:var(--bd);overflow:hidden;white-space:nowrap;background:var(--ink);color:var(--lime);
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:7px 0}
+.ticker-inner{display:inline-block;padding-left:100%}
+.ticker-inner.anim{animation:tick 18s linear infinite}
+@keyframes tick{to{transform:translateX(-100%)}}
+
 .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
 .scell{background:var(--card);border:var(--bd);box-shadow:var(--shadow);padding:10px 12px;display:flex;gap:9px;align-items:center}
 .scell .ic{width:26px;height:26px;border:var(--bd);background:var(--lime);display:grid;place-items:center;font-size:12px;flex:none}
 .scell b{font-size:11px;display:block;text-transform:uppercase;letter-spacing:.03em}
 .scell span{font-size:10px;color:var(--sub)}
+
+.alert-band{border-top:var(--bd);background:var(--ink);color:var(--paper);padding:14px;margin-top:14px}
+.alert-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.alert-inner b{color:var(--lime)}
+.alert-form{display:flex;gap:8px;flex-wrap:wrap}
+.alert-form input{border:var(--bd);background:var(--card);color:var(--ink);padding:9px 10px;font:inherit;min-width:220px}
+.activity-band{border-top:var(--bd);padding:14px 0;margin-top:14px}
+.act-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.act-head b{font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.act-head span{font-size:10px;color:var(--sub)}
+
+.page-shell{max-width:900px;margin:0 auto;padding:28px 18px}
+.page-shell h1{font-size:28px;font-weight:900;text-transform:uppercase;margin:0 0 12px;letter-spacing:-.02em}
+.page-shell h2{font-size:16px;font-weight:800;margin:22px 0 8px}
+.page-shell p{font-size:13px;color:var(--sub);line-height:1.7;margin:0 0 12px}
+.page-shell a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
 .mcell{background:var(--card);border:var(--bd);box-shadow:var(--shadow);padding:10px 12px}
@@ -222,6 +244,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
           <div class="mini">
             <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>#1 IS TAKEABLE</span><span>REAL ANALYTICS</span>
           </div>
+          <div class="ticker"><div class="ticker-inner" id="ticker">$0 collected since launch — be the first bid.</div></div>
         </div>
         <div class="console">
           <p class="target" id="target"></p>
@@ -269,6 +292,27 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       <div class="mcell"><div class="mlbl">POT</div><div class="mval" id="mPot">—</div></div>
       <div class="mcell"><div class="mlbl">PLATFORM</div><div class="mval" id="mFee">—</div></div>
     </div>
+
+    <div class="alert-band">
+      <div class="alert-inner">
+        <div>
+          <b>Get outbid? We’ll tell you.</b>
+          <span>One email when someone beats your spot. No spam, no account needed.</span>
+        </div>
+        <form class="alert-form" onsubmit="event.preventDefault();toast('Alert signup coming soon.');">
+          <input id="alertEmail" type="email" placeholder="you@example.com" required>
+          <button class="btn acc" type="submit">Watch this spot</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="activity-band">
+      <div class="act-head"><b>Live activity</b><span>Latest bids &amp; moves</span></div>
+      <div class="tscroll"><table>
+        <thead><tr><th>Event</th><th>Listing</th><th>Time</th></tr></thead>
+        <tbody id="actRows"><tr><td colspan="3" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
   </main>
 
   <aside class="rail" id="railR"></aside>
@@ -290,6 +334,10 @@ tr:nth-child(1) .rnk{background:var(--lime)}
     <div class="foot-cell">
       <h4>Contact</h4>
       <p><a href="mailto:info@smartseek.com">info@smartseek.com</a><br><a href="/cancel">Cancel / refund policy</a><br><a href="/success">Payment success demo</a></p>
+    </div>
+    <div class="foot-cell">
+      <h4>Pages</h4>
+      <p><a href="/about">About</a><br><a href="/rules">Rules</a><br><a href="/advertise">Advertise</a></p>
     </div>
   </div>
 </footer>
@@ -331,7 +379,7 @@ async function load(){
     cats=['All',...new Set(items.map(i=>i.c))];
     buildTabs(); render();
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
-    loadAnalytics();
+    loadAnalytics(); loadRevenue(); loadActivity();
   }catch(e){ tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr>'; }
 }
 
@@ -415,6 +463,30 @@ function upd(){
   document.getElementById('beats').textContent = rank===1
     ? (items.length? `TAKES #1 FROM ${items[0].n.toUpperCase()} — JUST $1 MORE` : 'CLAIMS #1 — first on the board')
     : `JUST $1 MORE TAKES #${rank-1} FROM ${items[above-1]?.n?.toUpperCase() || 'the listing above'}`;
+}
+
+async function loadRevenue(){
+  try{
+    const r=await fetch(API+"/api/analytics/summary");
+    const d=await r.json();
+    const ticker=document.getElementById('ticker');
+    if(ticker){
+      const pot=d.pot||0;
+      const msg=`$${pot.toLocaleString()} collected — ${d.positions||0} listings — ${(d.clicks||0).toLocaleString()} clicks`;
+      ticker.textContent=msg;
+      ticker.classList.add('anim');
+    }
+  }catch(e){}
+}
+
+async function loadActivity(){
+  try{
+    const r=await fetch(API+"/api/activity?limit=8");
+    const rows=await r.json();
+    const el=document.getElementById('actRows'); if(!el) return;
+    if(!rows.length){ el.innerHTML='<tr><td colspan="3" class="empty">No activity yet.</td></tr>'; return; }
+    el.innerHTML=rows.map(x=>`<tr><td>${x.note||'bid'}</td><td>${x.name||''}</td><td>${new Date(x.ts).toLocaleString()}</td></tr>`).join('');
+  }catch(e){}
 }
 slider.addEventListener('input',upd);
 document.getElementById('urlIn').addEventListener('keydown',e=>{if(e.key==='Enter')payBid();});

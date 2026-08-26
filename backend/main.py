@@ -165,6 +165,18 @@ def success():
 def cancel():
     return FileResponse(WEB_DIR / "cancel.html", media_type="text/html")
 
+@app.get("/about")
+def about():
+    return FileResponse(WEB_DIR / "about.html", media_type="text/html")
+
+@app.get("/rules")
+def rules():
+    return FileResponse(WEB_DIR / "rules.html", media_type="text/html")
+
+@app.get("/advertise")
+def advertise():
+    return FileResponse(WEB_DIR / "advertise.html", media_type="text/html")
+
 @app.get("/api/config")
 def config():
     return {
