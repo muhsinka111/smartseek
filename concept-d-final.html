@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartSeek — Take the №1 spot. Right now.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#f7f3ec; --cream2:#efe9de; --ink:#161310; --ink2:#3d382f;
+  --mut:#857c6d; --hair:#d9d1c1; --gold:#a07617; --gold2:#c99b2e;
+  --green:#2e7d4f; --red:#b3402a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+.wrap{max-width:1440px;margin:0 auto;padding:0 36px}
+@media(max-width:1100px){.rail{display:none}.shell{grid-template-columns:minmax(0,1fr)!important}}
+
+/* ---------- nav ---------- */
+nav{border-bottom:1px solid var(--hair)}
+.nrow{display:flex;align-items:center;height:64px;gap:30px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .name{font-family:'Playfair Display',serif;font-size:20px;font-weight:600}
+.brand .est{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--mut);text-transform:uppercase}
+.nlinks{margin-left:auto;display:flex;gap:26px;font-size:13px;color:var(--ink2)}
+.nlinks a:hover{color:var(--gold)}
+.navbid{border:1px solid var(--ink);padding:9px 18px;font-size:12.5px;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:.15s;background:transparent;color:var(--ink)}
+.navbid:hover{background:var(--ink);color:var(--cream)}
+
+/* ---------- ticker ---------- */
+.liveline{border-bottom:1px solid var(--hair);background:var(--cream2);overflow:hidden;white-space:nowrap}
+.livetrack{display:inline-flex;gap:48px;padding:8px 0;animation:mv 46s linear infinite;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--mut);text-transform:uppercase}
+.livetrack b{color:var(--ink);font-weight:500}
+.livetrack .up{color:var(--green)}
+@keyframes mv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- page shell with ad rails ---------- */
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr) 240px;gap:28px;align-items:start}
+.rail{position:sticky;top:82px;display:flex;flex-direction:column;gap:18px;padding-top:34px}
+
+/* ---------- premium ad cards ---------- */
+.adcard{background:#fff;border:1px solid var(--hair);border-radius:2px;box-shadow:0 1px 2px rgba(22,19,16,.04),0 8px 24px -14px rgba(22,19,16,.16);overflow:hidden;transition:.2s}
+.adcard:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(22,19,16,.05),0 18px 40px -14px rgba(22,19,16,.22)}
+.adhead{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;border-bottom:1px solid var(--hair);background:rgba(239,233,222,.45)}
+.adhead .lot{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.adhead .sp{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:500}
+.adart{height:136px;margin:0;position:relative;overflow:hidden}
+.adart .art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.adfoot{padding:14px 16px 15px}
+.adfoot h4{font-family:'Playfair Display',serif;font-size:15px;font-weight:500;line-height:1.35;letter-spacing:-.005em}
+.adfoot .lnk{display:inline-flex;align-items:center;gap:4px;margin-top:7px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;font-weight:500}
+.adfoot .lnk:hover{color:var(--ink)}
+.adfoot .meta{display:flex;align-items:center;justify-content:space-between;margin-top:11px;padding-top:10px;border-top:1px solid var(--hair);font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.adfoot .meta b{color:var(--green);font-weight:500}
+
+/* open slot */
+.slot{border:1px dashed var(--gold2);background:linear-gradient(180deg,#fffdf5,#fff 40%);border-radius:2px;padding:28px 18px;text-align:center;transition:.2s}
+.slot:hover{border-color:var(--gold);box-shadow:0 2px 4px rgba(22,19,16,.05),0 18px 40px -14px rgba(160,118,23,.22)}
+.slot .plus{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:1px solid var(--gold2);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:300}
+.slot b{display:block;font-family:'Playfair Display',serif;font-size:15px;font-weight:500;letter-spacing:-.005em}
+.slot p{margin-top:6px;font-size:11.5px;color:var(--mut);line-height:1.55}
+.slot p i{font-style:normal;color:var(--gold);font-weight:600}
+.slot button{margin-top:14px;width:100%;background:var(--ink);color:var(--cream);border:none;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:.15s}
+.slot button:hover{background:var(--gold)}
+.railnote{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:2px 4px;line-height:1.6}
+
+/* ---------- hero ---------- */
+.hero{position:relative;text-align:center;padding:80px 0 72px;overflow:hidden}
+.hero .ghostno{position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  font-family:'Playfair Display',serif;font-weight:700;font-size:540px;line-height:1;color:rgba(160,118,23,.05);
+  pointer-events:none;user-select:none;letter-spacing:-.03em}
+.kicker{position:relative;display:inline-flex;align-items:center;gap:14px;font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+.kicker::before,.kicker::after{content:"";width:44px;height:1px;background:var(--gold2)}
+h1{position:relative;margin-top:34px;font-family:'Playfair Display',serif;font-weight:500;
+  font-size:clamp(52px,7.4vw,92px);line-height:1.06;letter-spacing:-.015em}
+h1 .it{font-style:italic;font-weight:400}
+h1 .no{color:var(--gold);white-space:nowrap}
+
+/* lot line */
+.lotline{position:relative;margin:44px auto 0;display:inline-flex;align-items:center;gap:24px;
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:18px 38px}
+.lotline .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--mut)}
+.lotline .price{font-family:'Playfair Display',serif;font-size:44px;font-weight:600;letter-spacing:-.01em;color:var(--ink);
+  min-width:190px;transition:color .5s}
+.lotline .price.bump{color:var(--gold)}
+.lotline .holder{font-size:13px;color:var(--ink2);text-align:left;line-height:1.5}
+.lotline .holder b{font-weight:600}
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;flex:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+.ctas{position:relative;margin-top:38px;display:flex;justify-content:center;gap:16px}
+.btn-ink{background:var(--ink);color:var(--cream);border:1px solid var(--ink);padding:15px 30px;
+  font-size:13.5px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:.18s;font-family:'Inter',sans-serif}
+.btn-ink:hover{background:var(--gold);border-color:var(--gold)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);padding:15px 30px;
+  font-size:13.5px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:.18s;font-family:'Inter',sans-serif}
+.btn-ghost:hover{background:rgba(22,19,16,.06)}
+.herofine{position:relative;margin-top:22px;font-size:12.5px;color:var(--mut);max-width:620px;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* ---------- catalogue ---------- */
+.catalogue{padding:72px 0 90px;border-top:1px solid var(--hair)}
+.cat-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.cat-head h2{font-family:'Playfair Display',serif;font-size:34px;font-weight:500;letter-spacing:-.01em}
+.cat-head .sub{font-size:13px;color:var(--mut)}
+.session{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:8px;margin-bottom:26px}
+
+.lot{display:grid;grid-template-columns:64px 46px minmax(0,1fr) auto;gap:18px;align-items:center;
+  padding:19px 6px;border-bottom:1px solid var(--hair);transition:background .15s}
+.lot:first-of-type{border-top:1px solid var(--hair)}
+.lot:hover{background:rgba(217,209,193,.2)}
+.lotno{font-family:'Playfair Display',serif;font-style:italic;font-size:21px;color:var(--mut)}
+.lot:first-of-type .lotno{color:var(--gold);font-weight:600}
+.mono-badge{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--cream)}
+.lot-name b{display:block;font-family:'Playfair Display',serif;font-size:19px;font-weight:500;letter-spacing:-.005em}
+.lot-name span{font-size:12px;color:var(--mut)}
+.bidcell{text-align:right;display:flex;align-items:center;gap:26px}
+.amount b{display:block;font-family:'Playfair Display',serif;font-size:22px;font-weight:600}
+.amount span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.biddit{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold);border-bottom:1px solid var(--gold2);padding-bottom:2px;white-space:nowrap;cursor:pointer}
+.biddit:hover{color:var(--ink);border-color:var(--ink)}
+
+/* proof strip */
+.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border-block:1px solid var(--hair)}
+.pcard{background:var(--cream);padding:32px 28px}
+.pcard .num{font-family:'Playfair Display',serif;font-size:38px;font-weight:600;letter-spacing:-.01em}
+.pcard p{margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.6}
+.pcard p i{font-style:normal;color:var(--gold);font-weight:600}
+
+footer{padding:36px 0 50px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap nrow">
+  <span class="brand"><span class="name">SmartSeek</span><span class="est">Est. 2026 · Attention Auction House</span></span>
+  <div class="nlinks"><a href="#">Catalogue</a><a href="#">How bidding works</a><a href="#">Results</a></div>
+  <button class="navbid">Place a bid</button>
+</div></nav>
+
+<div class="liveline"><div class="livetrack" id="lv"></div></div>
+
+<div class="shell">
+
+  <!-- LEFT AD RAIL -->
+  <aside class="rail">
+    <div class="adcard">
+      <div class="adhead"><span class="lot">Ad Lot · 01</span><span class="sp">Sponsored</span></div>
+      <div class="adart" style="background:linear-gradient(135deg,#0ea5e9,#1e3a8a)">
+        <svg width="72" height="60" viewBox="0 0 86 72" fill="none" style="position:relative;z-index:1">
+          <path d="M6 62 L30 26 L46 44 L62 14 L80 34" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="62" cy="14" r="6" fill="#fff"/>
+          <path d="M0 62 H86" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="adfoot">
+        <h4>Grow your startup. Win more customers.</h4>
+        <a class="lnk" href="#">→ growflow.com</a>
+        <div class="meta"><span>Left wall · prime lot</span><span>bids from <b>$8</b></span></div>
+      </div>
+    </div>
+
+    <div class="adcard">
+      <div class="adhead"><span class="lot">Ad Lot · 02</span><span class="sp">Sponsored</span></div>
+      <div class="adart" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">
+        <svg width="82" height="58" viewBox="0 0 96 70" fill="none" style="position:relative;z-index:1">
+          <rect x="18" y="16" width="60" height="38" rx="9" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.85)" stroke-width="3"/>
+          <circle cx="37" cy="35" r="4.5" fill="#fff"/><circle cx="59" cy="35" r="4.5" fill="#fff"/>
+          <path d="M30 47 Q48 55 66 47" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="adfoot">
+        <h4>AI proposal writing for government bids.</h4>
+        <a class="lnk" href="#">→ bidwriter.ai</a>
+        <div class="meta"><span>Left wall · prime lot</span><span>bids from <b>$6</b></span></div>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="plus">+</div>
+      <b>Your brand here</b>
+      <p>Open left-wall spot · <i>$8</i> floor<br>12,547 weekly impressions</p>
+      <button>Bid for this lot →</button>
+    </div>
+    <p class="railnote">Ad lots rotate every 30s<br>Highest bidder holds the wall</p>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="ghostno">№1</div>
+      <div class="kicker">Live auction · Session 214</div>
+      <h1>Take the <span class="no">№1</span> spot.<br><span class="it">Right now.</span></h1>
+
+      <div class="lotline">
+        <span class="ldot"></span>
+        <div><div class="lbl">Current bid · Lot №1</div>
+          <div class="price mono" id="price">$501</div></div>
+        <div class="holder">held by <b>OpenAI</b><br><span style="color:var(--mut)">paid $500 · outbid it for <b id="next">$502</b></span></div>
+      </div>
+
+      <div class="ctas">
+        <button class="btn-ink">Place your bid — $502</button>
+        <button class="btn-ghost">View tonight’s catalogue</button>
+      </div>
+      <p class="herofine">No setup. No dashboard. No API integrations. Just choose your target, outbid the holder by $1, and the board re-routes every click to your link. Works across all platforms. $1 minimum. Instant redirect.</p>
+    </section>
+
+    <!-- CATALOGUE -->
+    <section class="catalogue">
+      <div class="cat-head"><h2>Tonight’s catalogue</h2><span class="sub">Ranked by conviction — the highest bidder holds the rank.</span></div>
+      <div class="session"><span class="ldot"></span> Session 214 · ends never · bids settle instantly</div>
+
+      <div class="lot">
+        <span class="lotno">Lot №1</span>
+        <span class="mono-badge" style="background:linear-gradient(135deg,#0f766e,#134e4a)">O</span>
+        <div class="lot-name"><b>OpenAI — ChatGPT &amp; the API platform</b><span>openai.com · AI Tools · held 2 days · 4,312 clicks sent</span></div>
+        <div class="bidcell">
+          <div class="amount"><b>$501</b><span>current bid</span></div>
+          <a class="biddit" href="#">Bid $502 →</a>
+        </div>
+      </div>
+
+      <div class="lot">
+        <span class="lotno">Lot №2</span>
+        <span class="mono-badge" style="background:linear-gradient(135deg,#4338ca,#312e81)">T</span>
+        <div class="lot-name"><b>Tutti — monetize your influence</b><span>tutti.so · Marketing · held 2 days · 1,678 clicks sent</span></div>
+        <div class="bidcell">
+          <div class="amount"><b>$160</b><span>current bid</span></div>
+          <a class="biddit" href="#">Bid $161 →</a>
+        </div>
+      </div>
+
+      <div class="lot">
+        <span class="lotno">Lot №3</span>
+        <span class="mono-badge" style="background:linear-gradient(135deg,#b45309,#78350f)">J</span>
+        <div class="lot-name"><b>JONI — your personal AI computer</b><span>joni.ai · Agents · held 3 days · 2,941 clicks sent</span></div>
+        <div class="bidcell">
+          <div class="amount"><b>$84</b><span>current bid</span></div>
+          <a class="biddit" href="#">Bid $85 →</a>
+        </div>
+      </div>
+
+      <div class="lot">
+        <span class="lotno">Lot №4</span>
+        <span class="mono-badge" style="background:linear-gradient(135deg,#0369a1,#0c4a6e)">R</span>
+        <div class="lot-name"><b>Outrank — organic traffic on autopilot</b><span>outrank.so · SEO · held 4 days · 16,462 clicks sent</span></div>
+        <div class="bidcell">
+          <div class="amount"><b>$41</b><span>current bid</span></div>
+          <a class="biddit" href="#">Bid $42 →</a>
+        </div>
+      </div>
+
+      <div class="lot">
+        <span class="lotno">Lot №5</span>
+        <span class="mono-badge" style="background:linear-gradient(135deg,#6d28d9,#4c1d95)">C</span>
+        <div class="lot-name"><b>Comp AI — compliance on cruise control</b><span>trycomp.ai · Security · held 5 days · 13,666 clicks sent</span></div>
+        <div class="bidcell">
+          <div class="amount"><b>$28</b><span>current bid</span></div>
+          <a class="biddit" href="#">Bid $29 →</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RIGHT AD RAIL -->
+  <aside class="rail">
+    <div class="adcard">
+      <div class="adhead"><span class="lot">Ad Lot · 03</span><span class="sp">Sponsored</span></div>
+      <div class="adart" style="background:linear-gradient(135deg,#38bdf8,#1e40af)">
+        <svg width="64" height="64" viewBox="0 0 74 74" fill="none" style="position:relative;z-index:1">
+          <g transform="rotate(45 37 37)">
+            <path d="M37 8c7 6 10 15 10 24l-4 14h-12l-4-14c0-9 3-18 10-24z" fill="#fff" opacity=".92"/>
+            <circle cx="37" cy="30" r="5.5" fill="#1e40af"/>
+            <path d="M27 42c-5 2-8 7-8 12 5 0 10-3 12-8M47 42c5 2 8 7 8 12-5 0-10-3-12-8" fill="#fff" opacity=".7"/>
+          </g>
+        </svg>
+      </div>
+      <div class="adfoot">
+        <h4>Launch faster. We handle compliance.</h4>
+        <a class="lnk" href="#">→ launchfed.dev</a>
+        <div class="meta"><span>Right wall · prime lot</span><span>bids from <b>$11</b></span></div>
+      </div>
+    </div>
+
+    <div class="adcard">
+      <div class="adhead"><span class="lot">Ad Lot · 04</span><span class="sp">Sponsored</span></div>
+      <div class="adart" style="background:linear-gradient(135deg,#fb7185,#881337)">
+        <svg width="78" height="56" viewBox="0 0 90 68" fill="none" style="position:relative;z-index:1">
+          <rect x="15" y="14" width="60" height="40" rx="8" fill="#fff" opacity=".94"/>
+          <path d="M17 18l28 20 28-20" stroke="#881337" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="76" cy="16" r="9" fill="#fde047"/><path d="M73 16l2.5 2.5L80 13.5" stroke="#a16207" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="adfoot">
+        <h4>Tender alerts that reach you first.</h4>
+        <a class="lnk" href="#">→ alertmail.com</a>
+        <div class="meta"><span>Right wall · prime lot</span><span>bids from <b>$9</b></span></div>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="plus">+</div>
+      <b>Your brand here</b>
+      <p>Open right-wall spot · <i>$11</i> floor<br>12,547 weekly impressions</p>
+      <button>Bid for this lot →</button>
+    </div>
+    <p class="railnote">4 premium wall lots · $1 increments<br><a href="#" style="color:var(--gold);font-weight:600">See all placements →</a></p>
+  </aside>
+
+</div>
+
+<!-- PROOF STRIP -->
+<section class="proof">
+  <div class="pcard"><div class="num">$211K+</div><p>won by believers since launch — <i>CrowdReply turned a $127 bid into 1,800 signups</i>.</p></div>
+  <div class="pcard"><div class="num">12,547</div><p>clicks redirected to bidders' products. Real visitors, counted publicly, <i>updated every 30 seconds</i>.</p></div>
+  <div class="pcard"><div class="num">$1</div><p>is all the leverage you need. David outbids Goliath here <i>every single day</i>.</p></div>
+</section>
+
+<footer class="wrap">
+  <span>© 2026 SmartSeek — the attention auction house.</span>
+  <span>“Conviction, quoted daily.”</span>
+</footer>
+
+<script>
+let price=501;
+const fmt=n=>'$'+n.toLocaleString('en-US');
+const feed=[
+  ['Vercel','#7','89'],['Cursor','#12','63'],['Perplexity','#4','204'],
+  ['Midjourney','#9','77'],['Raycast','#15','31'],['Notion','#6','142']
+];
+function renderFeed(){
+  const t=document.getElementById('lv');
+  const items=feed.map(f=>`<span><b>${f[0]}</b> raised Lot ${f[1]} to <span class="up">${fmt(+f[2])}</span></span>`).join('');
+  t.innerHTML=items+items;
+}
+renderFeed();
+setInterval(()=>{
+  price++;
+  const el=document.getElementById('price');
+  el.classList.add('bump');
+  const from=price-1,to=price,t0=performance.now();
+  (function step(t){const p=Math.min((t-t0)/520,1);
+    el.textContent=fmt(Math.round(from+(to-from)*p));
+    if(p<1)requestAnimationFrame(step);else setTimeout(()=>el.classList.remove('bump'),450);})(t0);
+  document.getElementById('next').textContent=fmt(price+1);
+},8000);
+</script>
+</body>
+</html>
