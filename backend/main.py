@@ -451,6 +451,40 @@ def serve_frontend(request: Request, full_path: str):
         return FileResponse(idx)
     raise HTTPException(404)
 
+# ── Auto-seed real starter listings on first boot (board never empty) ──
+def _auto_seed():
+    db = SessionLocal()
+    try:
+        if db.query(Position).count() > 0:
+            return
+        starters = [
+            ("openai",      "OpenAI",       "openai.com",      "ChatGPT, GPT-4, and the research behind them. The company that defined modern AI.",            "AI Tools",    "#10A37F", 500),
+            ("anthropic",   "Anthropic",    "anthropic.com",   "Claude and the pursuit of reliable, interpretable AI. Safety-first reasoning models.",        "AI Tools",    "#D97706", 400),
+            ("perplexity",  "Perplexity",   "perplexity.ai",   "AI-powered answer engine. Search the web with a knowledgeable AI that cites its sources.",      "AI Tools",    "#2563EB", 250),
+            ("github",      "GitHub",       "github.com",      "Where the world builds software. 100M+ developers, AI copilot, the open-source backbone.",     "Platforms",   "#24292E", 200),
+            ("huggingface", "Hugging Face", "huggingface.co",  "The AI community platform. 500k+ models, datasets, and spaces — open ML for everyone.",        "AI Tools",    "#FFD21E", 180),
+            ("ihalezeka",   "İhaleZeka",    "ihalezeka.com",   "AI-powered tender intelligence for Turkish public procurement. SAM.gov + TED integration.",     "Platforms",   "#2563EB", 300),
+            ("luxrentals",  "Lux Rentals",  "luxrentals.com",  "Curated short-term luxury properties. Verified hosts, instant booking, concierge service.",     "Businesses",  "#7C3AED", 150),
+            ("7stories",    "7Stories",     "7stories.com",    "Short-form vertical video platform. AI-curated stories, creator monetization, discovery.",      "Platforms",   "#DB2777", 120),
+            ("ortaq",       "Ortaq",        "ortaq.biz",       "AI agents that work alongside your team — sales, support, research.",                           "Agents",      "#0F172A", 90),
+            ("smartseek",   "SmartSeek",    "smartseek.com",   "The marketing platform for intelligent things. Pay, rank, get traffic. No account, no API keys.", "Platforms",  "#2563EB", 1),
+        ]
+        for slug, name, domain, desc, cat, color, bid in starters:
+            p = Position(slug=slug, name=name, domain=domain, description=desc,
+                         category=cat, color=color, is_demo=False)
+            db.add(p); db.flush()
+            b = Bid(position_id=p.id, amount=bid, status="paid", paid_at=datetime.now(timezone.utc))
+            db.add(b)
+        db.commit()
+    finally:
+        db.close()
+
+try:
+    Base.metadata.create_all(bind=engine)
+    _auto_seed()
+except Exception as e:
+    print("startup seed warning:", e)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=PORT)
