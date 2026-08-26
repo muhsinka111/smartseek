@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /r/
+
+Sitemap: https://smartseek.com/sitemap.xml
