@@ -377,7 +377,7 @@ async function load(){
       slider.max=maxBid;
     }
     cats=['All',...new Set(items.map(i=>i.c))];
-    buildTabs(); render(); renderRail('railL',0); renderRail('railR',8);
+    buildTabs(); render();
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
     loadAnalytics(); loadRevenue(); loadActivity();
   }catch(e){ tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr>'; }
@@ -423,35 +423,28 @@ function render(flash){
     </tr>`;
   }).join('');
   pager.innerHTML=`<button ${page<=1?'disabled':''} onclick="goPage(${page-1})">← Prev</button><span class="info">Page ${page} / ${totalPages}</span><button ${page>=totalPages?'disabled':''} onclick="goPage(${page+1})">Next →</button>`;
-  renderRail('railL', 0);
-  renderRail('railR', 8);
 }
 function goPage(p){page=p;render(); window.location.hash='board';}
 
-const ADS_L=[];
+const ADS_L=[
+ {bg:"#F4F2EA",icon:"/ads/smartseek.svg",h:"SmartSeek",l:"smartseek.com"},
+ {bg:"#F4F2EA",icon:"/ads/ihalezeka.svg",h:"İhaleZeka",l:"ihalezeka.com"},
+ {bg:"#F4F2EA",icon:"/ads/ortaq.svg",h:"Ortaq",l:"ortaq.biz"},
+ {bg:"#F4F2EA",icon:"/ads/7stories.svg",h:"7Stories",l:"7stories.com"}
+];
 const ADS_R=[
  {bg:"#F4F2EA",icon:"/ads/higgsfield.svg",h:"Higgsfield",l:"Higgsfield ad — link coming soon"},
- {bg:"#F4F2EA",icon:"/ads/railway.svg",h:"Railway",l:"railway.com"}
+ {bg:"#F4F2EA",icon:"/ads/hermes.svg",h:"Hermes",l:"Hermes agent"},
+ {bg:"#F4F2EA",icon:"/ads/railway.svg",h:"Railway",l:"railway.com"},
+ {bg:"#F4F2EA",icon:"?",h:"Your brand here",l:"Reserve this spot"}
 ];
 function ad(a){return `<div class="ad"><span class="tag">AD SPOT</span>
   <div class="visual" style="background:${a.bg};color:#111"><img src="${a.icon}" alt="" style="max-height:44px;max-width:90%;display:block;margin:0 auto"></div>
   <div class="body"><h5>${a.h}</h5><a href="#">→ ${a.l}</a></div></div>`;}
-function renderRail(railId, startRank){
-  const rail=document.getElementById(railId);
-  if(!rail) return;
-  const sorted=[...items].sort((a,b)=>b.b-a.b);
-  const pageItems = activeCat==='All'
-    ? sorted
-    : sorted.filter(i=>i.c===activeCat);
-  const slice = pageItems.slice(startRank, startRank+8);
-  const rows = slice.map((it, idx)=>`<div class="rp" onclick="event.stopPropagation();openBid(${items.indexOf(it)})">
-    <div class="rnk">${startRank+idx+1}</div>
-    <div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${it.n[0]}</div><div><div class="t1">${it.n}</div><div class="t2">${it.d}</div></div></div>
-    <div class="rb">$${fmt(it.b)}</div>
-  </div>`).join('');
-  const adBlock = railId==='railR' && ADS_R.length ? ADS_R.map(ad).join('') : '';
-  rail.innerHTML = rows + adBlock;
-}
+document.getElementById('railL').innerHTML=ADS_L.map(ad).join('')+
+ `<div class="book"><p>Left rail: 2 of 4 slots open</p><button class="btn" onclick="toast('Send your brand assets to info@smartseek.com')">Reserve</button></div>`;
+document.getElementById('railR').innerHTML=ADS_R.map(ad).join('')+
+ `<div class="book"><p>Right rail: 2 of 4 slots open</p><button class="btn" onclick="toast('Send your brand assets to info@smartseek.com')">Reserve</button></div>`;
 
 function openBid(i){
   bidTarget=i;
