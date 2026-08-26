@@ -279,6 +279,45 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
         return {"checkout_url": None, "demo": True, "bid_id": b.id,
                 "amount": need, "position_id": p.id, "delta": delta}
 
+
+# ─────────────────────────────────────────────────────────────
+# stripe webhook — real payments land here
+# ─────────────────────────────────────────────────────────────
+from fastapi import Request
+
+@app.post("/webhooks/stripe")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    payload = await request.body()
+    sig = request.headers.get("stripe-signature", "")
+    whsec = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+    event = None
+    if whsec and sig:
+        try:
+            event = stripe.Webhook.construct_event(payload, sig, whsec)
+        except Exception:
+            raise HTTPException(400, "Invalid signature")
+    else:
+        # test mode convenience: unsigned payloads accepted when no whsec configured
+        import json as _json
+        try:
+            event = _json.loads(payload)
+        except Exception:
+            raise HTTPException(400, "Bad payload")
+
+    if event.get("type") == "checkout.session.completed":
+        obj = event["data"]["object"]
+        meta = obj.get("metadata") or {}
+        bid_id = int(meta.get("bid_id", 0) or 0)
+        b = db.query(Bid).filter(Bid.id == bid_id).first() if bid_id else None
+        if b and b.status != "paid":
+            b.status = "paid"
+            b.paid_at = datetime.now(timezone.utc)
+            b.stripe_pid = obj.get("id")
+            db.add(TradeLog(position_id=b.position_id, delta=b.amount,
+                            note="payment confirmed (stripe)"))
+            db.commit()
+    return {"received": True}
+
 @app.post("/api/bid/{bid_id}/confirm")
 def confirm_bid_demo(bid_id: int, db: Session = Depends(get_db)):
     b = db.query(Bid).filter(Bid.id == bid_id).first()
