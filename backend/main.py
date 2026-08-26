@@ -128,13 +128,32 @@ def get_db():
         db.close()
 
 def slugify(s: str) -> str:
-    s = re.sub(r"https?://(www\.)?", "", s).split("/")[0].split("?")[0]
+    s = str(s or "").strip()
+    if s.startswith("@"):
+        s = "x.com/" + s[1:]
+    s = re.sub(r"^https?://", "", s, flags=re.I)
+    s = s.split("?")[0].split("#")[0].strip("/")
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:100]
 
 def total_paid(db: Session, position_id: int) -> int:
     return db.query(func.coalesce(func.sum(Bid.amount), 0)).filter(
         Bid.position_id == position_id, Bid.status == "paid"
     ).scalar() or 0
+
+def paid_totals(db: Session) -> dict:
+    rows = db.query(Bid.position_id, func.coalesce(func.sum(Bid.amount), 0)).filter(
+        Bid.status == "paid"
+    ).group_by(Bid.position_id).all()
+    return {position_id: int(total or 0) for position_id, total in rows}
+
+def rank_for(db: Session, position_id: int, proposed_total: Optional[int] = None) -> int:
+    totals = paid_totals(db)
+    if proposed_total is not None:
+        totals[position_id] = int(proposed_total)
+    positions = db.query(Position).filter(Position.id.in_(list(totals.keys()))).all() if totals else []
+    order = {p.id: p.id for p in positions}  # id is creation order; older wins ties
+    ranked = sorted(totals, key=lambda pid: (-totals[pid], order.get(pid, pid)))
+    return ranked.index(position_id) + 1 if position_id in ranked else len(ranked) + 1
 
 # ─────────────────────────────────────────────────────────────
 # app
@@ -203,11 +222,11 @@ def list_positions(
     if q:
         like = f"%{q}%"
         qset = qset.filter(Position.name.ilike(like) | Position.domain.ilike(like))
-    total = qset.count()
-    rows = qset.order_by(Position.id.desc()).offset((page - 1) * limit).limit(limit).all()
+    all_positions = qset.all()
+    totals = paid_totals(db)
     out = []
-    for p in rows:
-        paid = total_paid(db, p.id)
+    for p in all_positions:
+        paid = int(totals.get(p.id, 0))
         clicks = db.query(Click).filter(Click.position_id == p.id).count()
         out.append({
             "id": p.id, "slug": p.slug, "name": p.name, "domain": p.domain,
@@ -216,7 +235,9 @@ def list_positions(
             "total_paid": paid, "clicks": clicks,
         })
     out.sort(key=lambda x: (-x["total_paid"], x["id"]))
-    return {"items": out, "total": total, "page": page, "limit": limit}
+    total = len(out)
+    start = (page - 1) * limit
+    return {"items": out[start:start + limit], "total": total, "page": page, "limit": limit}
 
 @app.post("/api/positions")
 def create_position(body: PositionIn, db: Session = Depends(get_db)):

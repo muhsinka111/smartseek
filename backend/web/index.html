@@ -427,15 +427,19 @@ function render(flash){
 function goPage(p){page=p;render(); window.location.hash='board';}
 
 const ADS_L=[
- {bg:"#F4F2EA",icon:"?",h:"Your brand here — left rail",l:"Coming soon"},
- {bg:"#F4F2EA",icon:"?",h:"Reserved slot — left rail",l:"Coming soon"}
+ {bg:"#F4F2EA",icon:"/ads/smartseek.svg",h:"SmartSeek",l:"smartseek.com"},
+ {bg:"#F4F2EA",icon:"/ads/ihalezeka.svg",h:"İhaleZeka",l:"ihalezeka.com"},
+ {bg:"#F4F2EA",icon:"/ads/ortaq.svg",h:"Ortaq",l:"ortaq.biz"},
+ {bg:"#F4F2EA",icon:"/ads/7stories.svg",h:"7Stories",l:"7stories.com"}
 ];
 const ADS_R=[
- {bg:"#F4F2EA",icon:"?",h:"Your brand here — right rail",l:"Coming soon"},
- {bg:"#F4F2EA",icon:"?",h:"Reserved slot — right rail",l:"Coming soon"}
+ {bg:"#F4F2EA",icon:"/ads/higgsfield.svg",h:"Higgsfield",l:"Higgsfield ad — link coming soon"},
+ {bg:"#F4F2EA",icon:"/ads/hermes.svg",h:"Hermes",l:"Hermes agent"},
+ {bg:"#F4F2EA",icon:"/ads/railway.svg",h:"Railway",l:"railway.com"},
+ {bg:"#F4F2EA",icon:"?",h:"Your brand here",l:"Reserve this spot"}
 ];
 function ad(a){return `<div class="ad"><span class="tag">AD SPOT</span>
-  <div class="visual" style="background:${a.bg};color:#111">${a.icon}</div>
+  <div class="visual" style="background:${a.bg};color:#111"><img src="${a.icon}" alt="" style="max-height:44px;max-width:90%;display:block;margin:0 auto"></div>
   <div class="body"><h5>${a.h}</h5><a href="#">→ ${a.l}</a></div></div>`;}
 document.getElementById('railL').innerHTML=ADS_L.map(ad).join('')+
  `<div class="book"><p>Left rail: 2 of 4 slots open</p><button class="btn" onclick="toast('Send your brand assets to info@smartseek.com')">Reserve</button></div>`;
