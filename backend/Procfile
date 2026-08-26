@@ -1,1 +1,1 @@
-web: .venv/Scripts/python.exe main.py
+web: python main.py

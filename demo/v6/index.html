@@ -50,8 +50,8 @@ a{color:inherit;text-decoration:none;}
 .btn-outline:hover{border-color:#CBD5E1;color:#0F172A;}
 
 /* ---------- claim hero ---------- */
-.claim-hero{background:linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 100%);border-bottom:1px solid #E2E8F0;padding:52px 0 46px;}
-.claim-grid{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:48px;align-items:center;}
+.claim-hero{background:linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 100%);border-bottom:1px solid #E2E8F0;padding:60px 0 54px;}
+.claim-grid{display:grid;grid-template-columns:minmax(0,1fr) 420px minmax(0,1fr);gap:48px;align-items:center;}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#2563EB;margin-bottom:16px;}
 .eyebrow::before{content:"";width:18px;height:2px;background:#2563EB;border-radius:2px;}
 h1{font-size:clamp(32px,4.4vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08;text-wrap:balance;}
@@ -240,6 +240,19 @@ footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
 .s-actions{display:flex;gap:10px;}
 .s-actions .btn{flex:1;}
 
+/* ---------- ad cards ---------- */
+.ad-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:1px solid;margin-top:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:transform .15s ease,box-shadow .15s ease;}
+.ad-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);}
+.ad-icon{width:34px;height:34px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ad-title{font-weight:700;font-size:13px;letter-spacing:-.01em;line-height:1.3;}
+.ad-sub{font-size:11.5px;color:#64748B;margin-top:1px;line-height:1.4;}
+.ad-link{font-size:11px;font-weight:600;color:#2563EB;margin-left:auto;white-space:nowrap;text-decoration:underline;text-underline-offset:2px;}
+.ad-link:hover{color:#1D4ED8;}
+.ad-bid-btn{background:#D97706;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s ease;}
+.ad-bid-btn:hover{background:#B45309;}
+.ad-rotate-label{font-size:10.5px;color:#94A3B8;margin-top:10px;text-align:center;font-weight:500;}
+.wall-card{background:#FFFBEB;border-color:#FDE68A;}
+
 /* toast + modal */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:#0F172A;color:#F8FAFC;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:99;box-shadow:0 10px 34px rgba(15,23,42,.3);transition:transform .3s cubic-bezier(.22,.9,.36,1);max-width:90vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -275,7 +288,7 @@ footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
 <nav class="nav">
   <div class="wrap nav-in">
     <a href="#" class="logo">
-      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="12" r="2.4" fill="#fff"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+      <span class="logo-mark" style="background:linear-gradient(135deg,#9F1239,#7F1D1D);width:28px;height:28px;border-radius:8px;"><svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><circle cx="12" cy="12" r="8.5" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="1.8" fill="#FBBF24"/></svg></span>
       Smart<i>Seek</i>
     </a>
     <div class="nav-links">
@@ -290,42 +303,85 @@ footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
 
 <!-- ================= CLAIM HERO ================= -->
 <header class="claim-hero" id="claim">
-  <div class="wrap claim-grid">
-    <div>
-      <span class="eyebrow">The marketing platform for smart products</span>
-      <h1>Anything smart can hold rank №1.<br><span class="hl">Anyone can take it.</span></h1>
-      <p class="sub">AI tools, agents, robots, platforms, people, businesses. Pick a target, pay $1 more than the current believer, and your product sits at the top of a public board — sending every visitor straight to your link.</p>
-      <div class="hero-proof">
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>12,547</b>&nbsp;clicks sent</span>
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>$1</b>&nbsp;to get on the board</span>
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>No account needed</span>
+  <div class="wrap">
+<div class="claim-grid" style="grid-template-columns: 220px 1fr 220px; gap: 32px; align-items: start;">
+    <!-- LEFT: ad panels only -->
+    <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:80px;">
+      <div class="ad-card" style="background:linear-gradient(180deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:14px;padding:16px 18px;">
+        <div style="font-size:10px;font-weight:700;color:#2563EB;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;">Ad Spot 01</div>
+        <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">Ship faster.</div>
+        <div style="font-size:11.5px;color:#475569;line-height:1.5;">AI-native compliance for GOVCON & enterprise bids.</div>
+        <div style="margin-top:8px;font-size:10px;color:#94A3B8;font-weight:600;">coming soon</div>
+      </div>
+      <div class="ad-card" style="background:linear-gradient(180deg,#F5F3FF,#EDE9FE);border:1px solid #DDD6FE;border-radius:14px;padding:16px 18px;">
+        <div style="font-size:10px;font-weight:700;color:#7C3AED;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;">Ad Spot 02</div>
+        <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">Win the №1 mindshare.</div>
+        <div style="font-size:11.5px;color:#475569;line-height:1.5;">Agent-led outreach on X, LinkedIn, Telegram.</div>
+        <div style="margin-top:8px;font-size:10px;color:#94A3B8;font-weight:600;">coming soon</div>
       </div>
     </div>
 
-    <aside class="claim-card">
-      <div class="cc-head">
-        <span class="cc-title">Take rank № 1</span>
-        <span class="cc-live"><span class="dot"></span>LIVE AUCTION</span>
+    <!-- CENTER: main content -->
+    <div>
+      <span class="eyebrow">The marketing platform for smart products</span>
+      <h1>Take the №1 spot. <span class="hl">Right now.</span></h1>
+      <p class="sub">No setup. No dashboard. No API integrations. Just choose your target, outbid the holder by $1, and the board re-routes every click to your link.</p>
+      <div class="hero-proof">
+        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Works across all platforms</b></span>
+        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>$1</b>&nbsp;minimum bid</span>
+        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Instant redirect</b></span>
       </div>
-      <div class="cc-price">
-        <div class="lbl">Current price of № 1</div>
-        <div class="amt" id="topPrice">$0</div>
-      </div>
-      <div class="cc-holder">held by <b id="topName">—</b> · <span class="mono" id="topPaid">$0</span> paid</div>
-      <div class="cc-form">
-        <div class="fld"><label>Your target — URL or @handle</label><input type="text" id="g-url" placeholder="yourproduct.ai · x.com/you"></div>
-        <div class="bid-row">
-          <div class="fld bid-cur"><label>Your bid · USD</label><span>$</span><input type="number" id="g-bid" min="1" step="1"></div>
-          <div class="fld" style="max-width:150px;"><label>Category</label>
-            <select id="g-cat">
-              <option>AI Tools</option><option>Agents</option><option>Platforms</option><option>Robotics</option><option>People</option><option>Businesses</option><option>Opportunities</option>
-            </select>
-          </div>
+
+      <!-- claim card -->
+      <aside class="claim-card" style="margin-top:24px;">
+        <div class="cc-head">
+          <span class="cc-title">Take rank № 1</span>
+          <span class="cc-live"><span class="dot"></span>LIVE AUCTION</span>
         </div>
-        <button class="btn btn-primary cc-go" onclick="quickClaim()">Outbid &amp; take № 1 →</button>
+        <div class="cc-price">
+          <div class="lbl">Current price of № 1</div>
+          <div class="amt" id="topPrice">$0</div>
+        </div>
+        <div class="cc-holder">held by <b id="topName">—</b> · <span class="mono" id="topPaid">$0</span> paid</div>
+        <div class="cc-form">
+          <div class="fld"><label>Your target — URL or @handle</label><input type="text" id="g-url" placeholder="yourproduct.ai · x.com/you"></div>
+          <div class="bid-row">
+            <div class="fld bid-cur"><label>Your bid · USD</label><span>$</span><input type="number" id="g-bid" min="1" step="1"></div>
+            <div class="fld" style="max-width:150px;"><label>Category</label>
+              <select id="g-cat">
+                <option>AI Tools</option><option>Agents</option><option>Platforms</option><option>Robotics</option><option>People</option><option>Businesses</option><option>Opportunities</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary cc-go" onclick="quickClaim()">Outbid &amp; take № 1 →</button>
+        </div>
+        <div class="cc-foot">Lower bids still make the board at whatever rank they reach. Already listed? Enter the same URL to <b>raise your bid</b>.</div>
+      </aside>
+    </div>
+
+    <!-- RIGHT: ad panels only -->
+    <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:80px;">
+      <div class="ad-card" style="background:linear-gradient(180deg,#ECFDF5,#D1FAE5);border:1px solid #A7F3D0;border-radius:14px;padding:16px 18px;">
+        <div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;">Ad Spot 03</div>
+        <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">Verified click analytics.</div>
+        <div style="font-size:11.5px;color:#475569;line-height:1.5;">Know exactly who clicked, when, where — before you bid.</div>
+        <div style="margin-top:8px;font-size:10px;color:#94A3B8;font-weight:600;">coming soon</div>
       </div>
-      <div class="cc-foot">Lower bids still make the board at whatever rank they reach. Already listed? Enter the same URL to <b>raise your bid</b>.</div>
-    </aside>
+      <div class="ad-card" style="background:linear-gradient(180deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A;border-radius:14px;padding:16px 18px;">
+        <div style="font-size:10px;font-weight:700;color:#D97706;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;">Wall Spot</div>
+        <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">Your brand here.</div>
+        <div style="font-size:11.5px;color:#475569;line-height:1.5;">Side spots rotate every 30s. Highest bidder holds the wall.</div>
+        <div style="margin-top:8px;font-size:10px;color:#94A3B8;font-weight:600;">coming soon</div>
+      </div>
+      <div style="background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:12px;padding:16px 18px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">Sample analytics</div>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:#0F172A;">12,547 visitors</div>
+        <div style="font-size:11px;color:#64748B;margin-top:3px;">$5 · bid for this block</div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;" onclick="alert('Wall spots open soon.')">Bid for this slot</button>
+      </div>
+    </div>
+  </div>
+</header>
   </div>
 </header>
 
@@ -386,7 +442,7 @@ footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
     <div class="detail-card">
       <div class="d-head" onclick="toggleDetail()">
         <span class="fav" style="background:#2563EB;width:34px;height:34px;font-size:13px;">N</span>
-        <div><div class="d-name">Nexus Agents — position analytics</div><div class="d-meta">nexusagents.ai · Agents · held rank № 1 for 3 days</div></div>
+        <div><div class="d-name">Nexus Agents — position analytics</div><div class="d-meta">nexusagents.ai · Agents · held rank № 1 for 3 days</div><span style="font-size:10px;font-weight:600;color:#D97706;background:#FFFBEB;border:1px solid #FDE68A;padding:2px 8px;border-radius:999px;margin-left:8px;">SAMPLE ANALYTICS — LIVE AFTER FIRST BID</span></div>
         <div class="d-bid" id="dBid">$12,405</div>
         <span class="d-arrow" id="dArrow">▼</span>
       </div>
@@ -415,7 +471,7 @@ footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
 <!-- ================= PROOF ================= -->
 <section id="proof">
   <div class="wrap">
-    <div class="sec-head"><h2>From the people who took № 1</h2><p>Sample results based on typical pay-to-rank outcomes. Yours will publish here, verifiable on-chain of bids.</p></div>
+    <div class="sec-head"><h2>From the people who took № 1</h2><p>Sample results based on typical pay-to-rank outcomes. Real metrics publish here, verifiable on the bid ledger.</p></div>
     <div class="tw-grid">
       <div class="tw">
         <div class="tw-head"><span class="tw-av" style="background:#2563EB;">MT</span><div><div class="tw-name">MakerThrive</div><div class="tw-handle">@makerthrive</div></div></div>
@@ -788,6 +844,32 @@ if(!reduceMotion)setInterval(()=>{
   logTrade(t,'+'+fmt(diff),nr===1&&old!==1?'TOOK № 1':(nr<old?`up to #${nr}`:`holds #${nr}`));
   paintAll();
 },13000);
+
+// Auto-fetch logos from domain URLs
+async function fetchLogo(url) {
+  try {
+    const domain = new URL(url).hostname;
+    // Try Google's favicon service first (reliable, no CORS)
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      setTimeout(reject, 3000);
+    });
+    return logoUrl;
+  } catch {
+    return null;
+  }
+}
+
+// Render position with auto-fetched logo
+async function renderPositionWithLogo(pos) {
+  const logo = await fetchLogo(pos.domain);
+  const favicon = logo ? `<img src="${logo}" style="width:32px;height:32px;border-radius:8px;margin-right:10px;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+  return favicon;
+}
 </script>
 </body>
 </html>
