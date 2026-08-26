@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartSeek — Payment confirmed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F4F2EA;--ink:#111;--sub:#55524A;--card:#fff;--lime:#C8F04B;--green:#1E9E5A;--red:#E44B31;--bd:2px solid var(--ink);--shadow:4px 4px 0 var(--ink);--mono:'Space Mono',monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Archivo,system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+.shell{max-width:900px;margin:0 auto;padding:60px 18px}
+.card{background:var(--card);border:var(--bd);box-shadow:var(--shadow);padding:22px 22px 18px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:var(--bd);padding:6px 10px;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+h1{margin:18px 0 8px;font-size:28px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase}
+.p{color:var(--sub);line-height:1.6;max-width:60ch;margin:0 0 16px;font-weight:500}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border:var(--bd);background:var(--card);color:var(--ink);padding:10px 14px;cursor:pointer;box-shadow:var(--shadow);text-decoration:none;display:inline-block}
+.btn.acc{background:var(--lime)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="card">
+    <div class="badge"><span>✔</span> Payment confirmed</div>
+    <h1>You’re on the board.</h1>
+    <p class="p">Your bid is live. If you just claimed №1, the board will update shortly. You can also check your listing analytics from your seat.</p>
+    <div class="row">
+      <a class="btn acc" href="/">Open the board</a>
+      <a class="btn" href="/#board">See my listing</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

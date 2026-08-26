@@ -11,6 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Global site tag: replace G-XXXXXXXXXX with your GA4 Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{GA4_MEASUREMENT_ID}}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{GA4_MEASUREMENT_ID}}', { anonymize_ip: true });
+</script>
 <style>
 :root{
   --paper:#F4F2EA;
@@ -251,7 +259,15 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 <noscript><div style="padding:14px;text-align:center;font-weight:700">SmartSeek needs JavaScript for the live board.</div></noscript>
 
 <script>
-const API = "";  // same-origin on smartseek.com
+  const API = "";
+  const GA4_ID = "{{GA4_MEASUREMENT_ID}}";
+  function ga(event, params) {
+    if (typeof gtag === "function" && GA4_ID && GA4_ID !== "{{GA4_MEASUREMENT_ID}}") {
+      gtag("event", event, params || {});
+    }
+  }
+  ga("page_view", { page_title: document.title, page_location: location.href });
+</script>
 const C=["#111111","#E44B31","#1E9E5A","#2F5FE3","#B03BC4","#E39B12","#0E7C7B","#77777D","#2563EB","#7C3AED"];
 let items=[];
 let cats=[];

@@ -8,14 +8,14 @@ from sqlalchemy.orm import sessionmaker, Session, relationship
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional, List
-import hashlib, secrets, re, pathlib
+import hashlib, secrets, re, pathlib, os
 import stripe
 
 # ─────────────────────────────────────────────────────────────
 # config — all from env; backend/.env supported (KEY=VALUE lines)
 # swap SQLite for Postgres by setting DATABASE_URL at deploy
 # ─────────────────────────────────────────────────────────────
-import os
+import os as _os
 
 def _load_dotenv(path=".env"):
     try:
@@ -23,15 +23,18 @@ def _load_dotenv(path=".env"):
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 k, v = line.split("=", 1)
-                os.environ.setdefault(k.strip(), v.strip())
+                _os.environ.setdefault(k.strip(), v.strip())
     except FileNotFoundError:
         pass
 
 _load_dotenv()
 
-DATABASE_URL    = os.environ.get("DATABASE_URL", "sqlite:///./smartseek.db")
-STRIPE_SECRET   = os.environ.get("STRIPE_SECRET_KEY", "")
-PORT            = int(os.environ.get("PORT", "9091"))
+DATABASE_URL    = _os.environ.get("DATABASE_URL", "sqlite:///./smartseek.db")
+STRIPE_SECRET   = _os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = _os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+PUBLIC_BASE_URL = _os.environ.get("PUBLIC_BASE_URL", "http://127.0.0.1:9091")
+GA4_MEASUREMENT_ID = _os.environ.get("GA4_MEASUREMENT_ID", "")
+PORT            = int(_os.environ.get("PORT", "9091"))
 # demo mode = no stripe key configured
 DEMO_MODE = not bool(STRIPE_SECRET)
 stripe.api_key = STRIPE_SECRET
@@ -64,10 +67,10 @@ class Bid(Base):
     __tablename__ = "bids"
     id          = Column(Integer, primary_key=True, index=True)
     position_id = Column(Integer, ForeignKey("positions.id"), nullable=False)
-    amount      = Column(Integer, nullable=False)          # whole USD cents stored as integer
-    status      = Column(String(20), default="pending")    # pending | paid | refunded
+    amount      = Column(Integer, nullable=False)
+    status      = Column(String(20), default="pending")
     stripe_pid  = Column(String(120), nullable=True)
-    ip_hash     = Column(String(64), nullable=True)        # sha256 for fraud dedupe
+    ip_hash     = Column(String(64), nullable=True)
     created_at  = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     paid_at     = Column(DateTime, nullable=True)
     position    = relationship("Position", back_populates="bids")
@@ -76,7 +79,7 @@ class Click(Base):
     __tablename__ = "clicks"
     id          = Column(Integer, primary_key=True, index=True)
     position_id = Column(Integer, ForeignKey("positions.id"), nullable=False)
-    source      = Column(String(40), default="direct")     # x | google | linkedin | direct
+    source      = Column(String(40), default="direct")
     country     = Column(String(4),  default="--")
     referer     = Column(String(400), nullable=True)
     created_at  = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -125,7 +128,7 @@ def get_db():
         db.close()
 
 def slugify(s: str) -> str:
-    s = re.sub(r"https?://(www\\.)?", "", s).split("/")[0].split("?")[0]
+    s = re.sub(r"https?://(www\.)?", "", s).split("/")[0].split("?")[0]
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:100]
 
 def total_paid(db: Session, position_id: int) -> int:
@@ -136,7 +139,7 @@ def total_paid(db: Session, position_id: int) -> int:
 # ─────────────────────────────────────────────────────────────
 # app
 # ─────────────────────────────────────────────────────────────
-app = FastAPI(title="SmartSeek API", version="0.1.0")
+app = FastAPI(title="SmartSeek API", version="0.2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -154,12 +157,21 @@ WEB_DIR = pathlib.Path(__file__).parent / "web"
 def home():
     return FileResponse(WEB_DIR / "index.html", media_type="text/html")
 
+@app.get("/success")
+def success():
+    return FileResponse(WEB_DIR / "success.html", media_type="text/html")
+
+@app.get("/cancel")
+def cancel():
+    return FileResponse(WEB_DIR / "cancel.html", media_type="text/html")
+
 @app.get("/api/config")
 def config():
     return {
         "demo": DEMO_MODE,
         "stripe_live": bool(STRIPE_SECRET),
-        "positions": None,
+        "ga4": GA4_MEASUREMENT_ID,
+        "public_base_url": PUBLIC_BASE_URL,
     }
 
 # ─────────────────────────────────────────────────────────────
@@ -169,7 +181,9 @@ def config():
 def list_positions(
     category: str = "",
     q: str = "",
-    db: Session = Depends(get_db)
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
 ):
     qset = db.query(Position)
     if category:
@@ -177,9 +191,10 @@ def list_positions(
     if q:
         like = f"%{q}%"
         qset = qset.filter(Position.name.ilike(like) | Position.domain.ilike(like))
-    positions = qset.all()
+    total = qset.count()
+    rows = qset.order_by(Position.id.desc()).offset((page - 1) * limit).limit(limit).all()
     out = []
-    for p in positions:
+    for p in rows:
         paid = total_paid(db, p.id)
         clicks = db.query(Click).filter(Click.position_id == p.id).count()
         out.append({
@@ -189,7 +204,7 @@ def list_positions(
             "total_paid": paid, "clicks": clicks,
         })
     out.sort(key=lambda x: (-x["total_paid"], x["id"]))
-    return out
+    return {"items": out, "total": total, "page": page, "limit": limit}
 
 @app.post("/api/positions")
 def create_position(body: PositionIn, db: Session = Depends(get_db)):
@@ -219,8 +234,7 @@ def place_bid(body: BidIn, db: Session = Depends(get_db)):
         raise HTTPException(400, f"Must be at least ${need} to rank here")
     delta = body.amount - current
     b = Bid(position_id=p.id, amount=delta, status="paid", paid_at=datetime.now(timezone.utc))
-    db.add(b)
-    db.flush()
+    db.add(b); db.flush()
     db.add(TradeLog(position_id=p.id, delta=delta,
                     note=f"raised by ${delta} → total ${body.amount}"))
     db.commit()
@@ -246,7 +260,6 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
                      description=body.description, category=body.category, color=body.color)
         db.add(p); db.flush()
 
-    # find the highest total_paid across all positions
     leader_total = db.query(func.coalesce(func.sum(Bid.amount), 0)).join(Position).filter(
         Bid.status == "paid"
     ).scalar() or 0
@@ -260,25 +273,28 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
     db.add(b); db.commit()
 
     if STRIPE_SECRET:
-        base = os.environ.get("PUBLIC_BASE_URL", "http://127.0.0.1:9091")
+        base = PUBLIC_BASE_URL.rstrip("/")
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
-            line_items=[{"price_data": {"currency": "usd", "unit_amount": delta * 100,
-                                       "product_data": {"name": f"Rank №1 — {p.name} (total ${need})"}},
-                         "quantity": 1}],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "unit_amount": delta * 100,
+                    "product_data": {"name": f"Rank №1 — {p.name} (total ${need})"},
+                },
+                "quantity": 1,
+            }],
             mode="payment",
             success_url=f"{base}/success?bid_id={b.id}",
-            cancel_url=f"{base}/claim",
+            cancel_url=f"{base}/cancel?position_id={p.id}",
             metadata={"bid_id": str(b.id), "position_id": str(p.id)},
         )
         b.stripe_pid = session.id
         db.commit()
         return {"checkout_url": session.url, "demo": False, "bid_id": b.id}
     else:
-        # DEMO fallback — auto-confirm after 1.2s from front-end
         return {"checkout_url": None, "demo": True, "bid_id": b.id,
                 "amount": need, "position_id": p.id, "delta": delta}
-
 
 # ─────────────────────────────────────────────────────────────
 # stripe webhook — real payments land here
@@ -289,7 +305,7 @@ from fastapi import Request
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     payload = await request.body()
     sig = request.headers.get("stripe-signature", "")
-    whsec = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+    whsec = STRIPE_WEBHOOK_SECRET
     event = None
     if whsec and sig:
         try:
@@ -297,7 +313,6 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         except Exception:
             raise HTTPException(400, "Invalid signature")
     else:
-        # test mode convenience: unsigned payloads accepted when no whsec configured
         import json as _json
         try:
             event = _json.loads(payload)
@@ -337,17 +352,21 @@ def confirm_bid_demo(bid_id: int, db: Session = Depends(get_db)):
     return {"ok": True, "rank": rank, "total_paid": new_total, "position_id": b.position_id}
 
 # ─────────────────────────────────────────────────────────────
-# click redirect — honest counting
+# click redirect — honest counting + real destination
 # ─────────────────────────────────────────────────────────────
 @app.get("/r/{slug}")
-def redirect_slug(slug: str, db: Session = Depends(get_db)):
+def redirect_slug(slug: str, request: Request, db: Session = Depends(get_db)):
     p = db.query(Position).filter(Position.slug == slug).first()
     if not p:
         raise HTTPException(404, "Not found")
-    c = Click(position_id=p.id, source="direct", country="--")
+    c = Click(
+        position_id=p.id,
+        source=request.headers.get("x-forwarded-for", "direct").split(",")[0].strip() or "direct",
+        country=request.headers.get("cf-ipcountry", "--"),
+        referer=request.headers.get("referer", ""),
+    )
     db.add(c); db.commit()
-    # in prod replace with real URL; for demo use https example
-    dest = "https://example.com" if p.domain.startswith("http") else f"https://{p.domain}"
+    dest = p.domain if p.domain.startswith("http") else f"https://{p.domain}"
     return RedirectResponse(dest, status_code=302)
 
 @app.get("/api/clicks/{position_id}")
@@ -362,7 +381,7 @@ def clicks_for(position_id: int, db: Session = Depends(get_db)):
     return {"position_id": position_id, "total": clicks, "by_country": by_country}
 
 # ─────────────────────────────────────────────────────────────
-# analytics summary
+# analytics + platform earnings
 # ─────────────────────────────────────────────────────────────
 @app.get("/api/analytics/summary")
 def analytics_summary(db: Session = Depends(get_db)):
@@ -372,16 +391,34 @@ def analytics_summary(db: Session = Depends(get_db)):
     seats_today = db.query(Position).filter(
         Position.created_at >= datetime.now(timezone.utc).replace(hour=0, minute=0, second=0)
     ).count()
+    platform_earnings = int(pot * 0.03)
     return {
         "positions": total_positions,
         "clicks": total_clicks,
         "pot": pot,
+        "platform_earnings": platform_earnings,
         "seats_today": seats_today,
+    }
+
+@app.get("/api/analytics/positions/{position_id}")
+def position_analytics(position_id: int, db: Session = Depends(get_db)):
+    p = db.query(Position).filter(Position.id == position_id).first()
+    if not p:
+        raise HTTPException(404, "Not found")
+    clicks = db.query(Click).filter(Click.position_id == position_id).count()
+    paid = total_paid(db, position_id)
+    return {
+        "position_id": position_id,
+        "name": p.name,
+        "domain": p.domain,
+        "total_paid": paid,
+        "clicks": clicks,
+        "category": p.category,
+        "color": p.color,
     }
 
 @app.get("/api/activity")
 def activity(limit: int = Query(14, le=50), db: Session = Depends(get_db)):
-    """Public ledger tail: latest trades for the activity feed."""
     rows = db.query(TradeLog, Position).join(
         Position, TradeLog.position_id == Position.id
     ).order_by(TradeLog.created_at.desc()).limit(limit).all()
@@ -395,23 +432,43 @@ def activity(limit: int = Query(14, le=50), db: Session = Depends(get_db)):
     } for t, p in rows]
 
 # ─────────────────────────────────────────────────────────────
-# seed
+# seed / reset
 # ─────────────────────────────────────────────────────────────
 @app.post("/api/seed")
 def seed_demo(db: Session = Depends(get_db)):
     if db.query(Position).filter(Position.is_demo == True).count() > 0:
         return {"ok": True, "message": "demo data already present"}
     demo = [
-        ("smartseek",    "SmartSeek",           "smartseek.com",     "The marketing platform for intelligent things. AI tools, agents, robots, people, businesses — ranked by what backers paid. No account. No API keys. Pay, rank, get traffic.", "Platforms",    "#2563EB",   1),
-        ("ortaq",        "Ortaq",               "ortaq.biz",          "AI agents that work alongside your team — sales, support, research. Autonomous employees that learn and adapt.", "Agents",      "#0F172A",   2),
-        ("openai",       "OpenAI",              "openai.com",         "ChatGPT, GPT-4, and the research behind them. The company that defined modern AI.", "AI Tools",    "#10A37F", 500),
-        ("anthropic",    "Anthropic",           "anthropic.com",      "Claude and the pursuit of reliable, interpretable AI. Safety-first reasoning models.", "AI Tools",    "#D97706", 400),
-        ("ihalezeka",    "İhaleZeka",           "ihalezeka.com",      "AI-powered tender intelligence for Turkish public procurement. SAM.gov + TED integration. 6 years of live data.", "Platforms",    "#2563EB", 300),
-        ("luxrentals",   "Lux Rentals",         "luxrentals.com",     "Curated short-term luxury properties. Verified hosts, instant booking, concierge service.", "Businesses",  "#7C3AED", 150),
-        ("7stories",     "7Stories",            "7stories.com",       "Short-form vertical video platform. AI-curated stories, creator monetization, viral discovery.", "Platforms",    "#DB2777", 120),
-        ("github",       "GitHub",              "github.com",         "Where the world builds software. 100M+ developers, AI copilot, the open-source backbone.", "Platforms",    "#24292E", 200),
-        ("huggingface",  "Hugging Face",        "huggingface.co",     "The AI community platform. 500k+ models, datasets, and spaces — open ML for everyone.", "AI Tools",    "#FFD21E", 180),
-        ("perplexity",   "Perplexity",          "perplexity.ai",      "AI-powered answer engine. Search the web with a knowledgeable AI that cites its sources.", "AI Tools",    "#2563EB", 250),
+        ("smartseek", "SmartSeek", "smartseek.com",
+         "The marketing platform for intelligent things. Pay, rank, get traffic.",
+         "Platforms", "#2563EB", 1),
+        ("ortaq", "Ortaq", "ortaq.biz",
+         "AI agents that work alongside your team — sales, support, research.",
+         "Agents", "#0F172A", 2),
+        ("openai", "OpenAI", "openai.com",
+         "ChatGPT, GPT-4, and the research behind them.",
+         "AI Tools", "#10A37F", 500),
+        ("anthropic", "Anthropic", "anthropic.com",
+         "Claude and the pursuit of reliable, interpretable AI.",
+         "AI Tools", "#D97706", 400),
+        ("ihalezeka", "İhaleZeka", "ihalezeka.com",
+         "AI-powered tender intelligence for Turkish public procurement.",
+         "Platforms", "#2563EB", 300),
+        ("luxrentals", "Lux Rentals", "luxrentals.com",
+         "Curated short-term luxury properties.",
+         "Businesses", "#7C3AED", 150),
+        ("7stories", "7Stories", "7stories.com",
+         "Short-form vertical video platform.",
+         "Platforms", "#DB2777", 120),
+        ("github", "GitHub", "github.com",
+         "Where the world builds software.",
+         "Platforms", "#24292E", 200),
+        ("huggingface", "Hugging Face", "huggingface.co",
+         "The AI community platform.",
+         "AI Tools", "#FFD21E", 180),
+        ("perplexity", "Perplexity", "perplexity.ai",
+         "AI-powered answer engine.",
+         "AI Tools", "#2563EB", 250),
     ]
     for slug, name, domain, desc, cat, color, bid in demo:
         p = Position(slug=slug, name=name, domain=domain, description=desc,
@@ -425,7 +482,6 @@ def seed_demo(db: Session = Depends(get_db)):
 
 @app.post("/api/reset")
 def reset_and_seed(db: Session = Depends(get_db)):
-    """Demo-mode only: wipe everything and reseed with real starter listings."""
     if not DEMO_MODE:
         raise HTTPException(403, "Reset disabled outside demo mode")
     db.query(TradeLog).delete()
@@ -435,39 +491,51 @@ def reset_and_seed(db: Session = Depends(get_db)):
     db.commit()
     return seed_demo(db)
 
-# Serve built front-end from backend/web/ (brutalist landing page)
+# ─────────────────────────────────────────────────────────────
+# Front-end serving
+# ─────────────────────────────────────────────────────────────
 from pathlib import Path as _Path
 FRONTEND_DIR = _Path(__file__).resolve().parent / "web"
 
 @app.get("/{full_path:path}")
 def serve_frontend(request: Request, full_path: str):
     rel = full_path.lstrip("/")
-    target = FRONTEND_DIR / rel if rel else FRONTEND_DIR / "index.html"
+    if rel in {"", "index.html"}:
+        return FileResponse(FRONTEND_DIR / "index.html", media_type="text/html")
+    target = FRONTEND_DIR / rel
     if target.is_file() and target.suffix in {".html",".js",".css",".png",".svg",".ico",".json",".txt",".xml",".map"}:
-        from fastapi.responses import FileResponse
         return FileResponse(target)
-    idx = FRONTEND_DIR / "index.html"
-    if idx.exists():
-        return FileResponse(idx)
-    raise HTTPException(404)
+    return FileResponse(FRONTEND_DIR / "index.html", media_type="text/html")
 
-# ── Auto-seed real starter listings on first boot (board never empty) ──
+# ─────────────────────────────────────────────────────────────
+# Auto-seed real starter listings on first boot (board never empty)
+# ─────────────────────────────────────────────────────────────
 def _auto_seed():
     db = SessionLocal()
     try:
         if db.query(Position).count() > 0:
             return
         starters = [
-            ("openai",      "OpenAI",       "openai.com",      "ChatGPT, GPT-4, and the research behind them. The company that defined modern AI.",            "AI Tools",    "#10A37F", 500),
-            ("anthropic",   "Anthropic",    "anthropic.com",   "Claude and the pursuit of reliable, interpretable AI. Safety-first reasoning models.",        "AI Tools",    "#D97706", 400),
-            ("perplexity",  "Perplexity",   "perplexity.ai",   "AI-powered answer engine. Search the web with a knowledgeable AI that cites its sources.",      "AI Tools",    "#2563EB", 250),
-            ("github",      "GitHub",       "github.com",      "Where the world builds software. 100M+ developers, AI copilot, the open-source backbone.",     "Platforms",   "#24292E", 200),
-            ("huggingface", "Hugging Face", "huggingface.co",  "The AI community platform. 500k+ models, datasets, and spaces — open ML for everyone.",        "AI Tools",    "#FFD21E", 180),
-            ("ihalezeka",   "İhaleZeka",    "ihalezeka.com",   "AI-powered tender intelligence for Turkish public procurement. SAM.gov + TED integration.",     "Platforms",   "#2563EB", 300),
-            ("luxrentals",  "Lux Rentals",  "luxrentals.com",  "Curated short-term luxury properties. Verified hosts, instant booking, concierge service.",     "Businesses",  "#7C3AED", 150),
-            ("7stories",    "7Stories",     "7stories.com",    "Short-form vertical video platform. AI-curated stories, creator monetization, discovery.",      "Platforms",   "#DB2777", 120),
-            ("ortaq",       "Ortaq",        "ortaq.biz",       "AI agents that work alongside your team — sales, support, research.",                           "Agents",      "#0F172A", 90),
-            ("smartseek",   "SmartSeek",    "smartseek.com",   "The marketing platform for intelligent things. Pay, rank, get traffic. No account, no API keys.", "Platforms",  "#2563EB", 1),
+            ("openai", "OpenAI", "openai.com",
+             "ChatGPT, GPT-4, and the research behind them.", "AI Tools", "#10A37F", 500),
+            ("anthropic", "Anthropic", "anthropic.com",
+             "Claude and the pursuit of reliable, interpretable AI.", "AI Tools", "#D97706", 400),
+            ("perplexity", "Perplexity", "perplexity.ai",
+             "AI-powered answer engine.", "AI Tools", "#2563EB", 250),
+            ("github", "GitHub", "github.com",
+             "Where the world builds software.", "Platforms", "#24292E", 200),
+            ("huggingface", "Hugging Face", "huggingface.co",
+             "The AI community platform.", "AI Tools", "#FFD21E", 180),
+            ("ihalezeka", "İhaleZeka", "ihalezeka.com",
+             "AI-powered tender intelligence.", "Platforms", "#2563EB", 300),
+            ("luxrentals", "Lux Rentals", "luxrentals.com",
+             "Curated short-term luxury properties.", "Businesses", "#7C3AED", 150),
+            ("7stories", "7Stories", "7stories.com",
+             "Short-form vertical video platform.", "Platforms", "#DB2777", 120),
+            ("ortaq", "Ortaq", "ortaq.biz",
+             "AI agents that work alongside your team.", "Agents", "#0F172A", 90),
+            ("smartseek", "SmartSeek", "smartseek.com",
+             "The marketing platform for intelligent things.", "Platforms", "#2563EB", 1),
         ]
         for slug, name, domain, desc, cat, color, bid in starters:
             p = Position(slug=slug, name=name, domain=domain, description=desc,
