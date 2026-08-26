@@ -156,6 +156,16 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 .scell b{font-size:11px;display:block;text-transform:uppercase;letter-spacing:.03em}
 .scell span{font-size:10px;color:var(--sub)}
 
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.mcell{background:var(--card);border:var(--bd);box-shadow:var(--shadow);padding:10px 12px}
+.mlbl{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;color:var(--sub);margin-bottom:4px}
+.mval{font-size:18px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.pager button{font:inherit;font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;border:var(--bd);background:var(--card);color:var(--ink);padding:8px 12px;cursor:pointer;box-shadow:var(--shadow)}
+.pager button:disabled{opacity:.45;cursor:not-allowed}
+.pager .info{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--sub)}
+
 .toasts{position:fixed;right:16px;bottom:16px;z-index:300;display:flex;flex-direction:column;gap:8px}
 .toast{background:var(--ink);color:var(--paper);border:2px solid var(--lime);padding:10px 14px;font-size:11.5px;
   font-weight:700;box-shadow:var(--shadow);animation:ti .25s}
@@ -177,6 +187,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
   .bhero{grid-template-columns:1fr}
   .console{border-left:0;border-top:var(--bd)}
   .strip{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
   .nav-links{display:none}
   .footer .shell{grid-template-columns:1fr}
 }
@@ -242,12 +253,21 @@ tr:nth-child(1) .rnk{background:var(--lime)}
         <p>Higher bid = higher rank. Updated live.<span>Start at $1 — live the second you pay.</span></p>
         <button class="btn acc" onclick="openBid(-1)">Place a bid →</button>
       </div>
+
+      <div id="pager" class="pager"></div>
     </div>
 
     <div class="strip" id="how">
       <div class="scell"><div class="ic">🚀</div><div><b>Instant visibility</b><span>Live in 60s — no review, no waiting</span></div></div>
       <div class="scell"><div class="ic">🏁</div><div><b>Beat your competitors</b><span>Take any position — even #1 — anytime</span></div></div>
       <div class="scell"><div class="ic">📊</div><div><b>Marketing that proves itself</b><span>Public clicks, CTR &amp; rank history</span></div></div>
+    </div>
+
+    <div class="metrics" id="metrics">
+      <div class="mcell"><div class="mlbl">LISTINGS</div><div class="mval" id="mPos">—</div></div>
+      <div class="mcell"><div class="mlbl">CLICKS</div><div class="mval" id="mClicks">—</div></div>
+      <div class="mcell"><div class="mlbl">POT</div><div class="mval" id="mPot">—</div></div>
+      <div class="mcell"><div class="mlbl">PLATFORM</div><div class="mval" id="mFee">—</div></div>
     </div>
   </main>
 
@@ -288,16 +308,19 @@ const C=["#111111","#E44B31","#1E9E5A","#2F5FE3","#B03BC4","#E39B12","#0E7C7B","
 let items=[];
 let cats=[];
 let activeCat="All", bidTarget=-1, lastRank=null, maxBid=900;
+let page=1, limit=12, totalPages=1;
 const fmt=n=>n.toLocaleString();
 const tb=document.getElementById('tb');
 const tabsEl=document.getElementById('tabs');
 const slider=document.getElementById('slider');
+const pager=document.getElementById('pager');
 
 async function load(){
   try{
-    const r=await fetch(API+"/api/positions");
+    const r=await fetch(API+"/api/positions?limit=200");
     const data=await r.json();
-    items=data.map(p=>({
+    const all=data.items||data;
+    items=all.map(p=>({
       id:p.id, n:p.name, d:p.domain, t:p.description||"", c:p.category||"Other",
       b:p.total_paid||0, k:p.clicks||0, slug:p.slug, color:p.color||"#2563EB", mine:false
     }));
@@ -308,7 +331,20 @@ async function load(){
     cats=['All',...new Set(items.map(i=>i.c))];
     buildTabs(); render();
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
+    loadAnalytics();
   }catch(e){ tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr>'; }
+}
+
+async function loadAnalytics(){
+  try{
+    const r=await fetch(API+"/api/analytics/summary");
+    const d=await r.json();
+    const el=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+    el('mPos', d.positions ?? '—');
+    el('mClicks', (d.clicks ?? 0).toLocaleString());
+    el('mPot', '$'+(d.pot ?? 0).toLocaleString());
+    el('mFee', '$'+((d.platform_earnings ?? 0).toLocaleString()));
+  }catch(e){}
 }
 
 function buildTabs(){
@@ -317,13 +353,17 @@ function buildTabs(){
 function setTab(c){activeCat=c;buildTabs();render();}
 
 function render(flash){
-  if(!items.length){ tb.innerHTML='<tr><td colspan="6" class="empty">The board is empty. Be the first — list at $1.</td></tr>'; return; }
+  if(!items.length){ tb.innerHTML='<tr><td colspan="6" class="empty">The board is empty. Be the first — list at $1.</td></tr>'; pager.innerHTML=''; return; }
   items.sort((a,b)=>b.b-a.b);
   const list=activeCat==='All'?items:items.filter(i=>i.c===activeCat);
-  tb.innerHTML=list.map((it,i)=>{
+  totalPages=Math.max(1, Math.ceil(list.length/limit));
+  page=Math.min(page, totalPages);
+  const start=(page-1)*limit;
+  const pageItems=list.slice(start, start+limit);
+  tb.innerHTML=pageItems.map((it,i)=>{
     const gi=items.indexOf(it), mv=it.mv||0;
     return `<tr class="${it.n===flash?'flash':''}" onclick="openBid(${gi})">
-      <td><div class="rnk">${i+1}</div></td>
+      <td><div class="rnk">${start+i+1}</div></td>
       <td><div class="pl">
         <div class="thumb" style="background:${it.color||C[gi%C.length]}">${it.n[0]}</div>
         <div><div class="t1">${it.n}</div><a class="t2" href="#" onclick="event.stopPropagation()">→ ${it.d}</a></div>
@@ -334,23 +374,25 @@ function render(flash){
       <td style="text-align:right"><button class="obtn" onclick="event.stopPropagation();openBid(${gi})">Outbid</button></td>
     </tr>`;
   }).join('');
+  pager.innerHTML=`<button ${page<=1?'disabled':''} onclick="goPage(${page-1})">← Prev</button><span class="info">Page ${page} / ${totalPages}</span><button ${page>=totalPages?'disabled':''} onclick="goPage(${page+1})">Next →</button>`;
 }
+function goPage(p){page=p;render(); window.location.hash='board';}
 
 const ADS_L=[
- {bg:"#2F5FE3",icon:"🌄",h:"Grow your startup. Get more customers.",l:"growflow.com"},
- {bg:"#B03BC4",icon:"✨",h:"AI that works for your business.",l:"tryflowai.com"}
+ {bg:"#F4F2EA",icon:"?",h:"Your brand here — left rail",l:"Coming soon"},
+ {bg:"#F4F2EA",icon:"?",h:"Reserved slot — left rail",l:"Coming soon"}
 ];
 const ADS_R=[
- {bg:"#111111",icon:"🚀",h:"Launch faster. We'll handle DevOps.",l:"launchops.dev"},
- {bg:"#E39B12",icon:"✉️",h:"Email marketing that grows with you.",l:"mailscale.com"}
+ {bg:"#F4F2EA",icon:"?",h:"Your brand here — right rail",l:"Coming soon"},
+ {bg:"#F4F2EA",icon:"?",h:"Reserved slot — right rail",l:"Coming soon"}
 ];
 function ad(a){return `<div class="ad"><span class="tag">AD SPOT</span>
-  <div class="visual" style="background:${a.bg}">${a.icon}</div>
+  <div class="visual" style="background:${a.bg};color:#111">${a.icon}</div>
   <div class="body"><h5>${a.h}</h5><a href="#">→ ${a.l}</a></div></div>`;}
 document.getElementById('railL').innerHTML=ADS_L.map(ad).join('')+
- `<div class="book"><p>This spot: $149/wk</p><button class="btn" onclick="toast('Sidebar slots: 2 of 4 available this week.')">Book it</button></div>`;
+ `<div class="book"><p>Left rail: 2 of 4 slots open</p><button class="btn" onclick="toast('Send your brand assets to info@smartseek.com')">Reserve</button></div>`;
 document.getElementById('railR').innerHTML=ADS_R.map(ad).join('')+
- `<div class="book"><p>Sponsor a category · $490/mo</p><button class="btn" onclick="toast('Open: all categories.')">Sponsor</button></div>`;
+ `<div class="book"><p>Right rail: 2 of 4 slots open</p><button class="btn" onclick="toast('Send your brand assets to info@smartseek.com')">Reserve</button></div>`;
 
 function openBid(i){
   bidTarget=i;
