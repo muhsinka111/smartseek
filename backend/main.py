@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, func
@@ -147,6 +147,12 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"ok": True, "demo": DEMO_MODE}
+
+WEB_DIR = pathlib.Path(__file__).parent / "web"
+
+@app.get("/")
+def home():
+    return FileResponse(WEB_DIR / "index.html", media_type="text/html")
 
 @app.get("/api/config")
 def config():
@@ -389,6 +395,22 @@ def reset_and_seed(db: Session = Depends(get_db)):
     db.query(Position).delete()
     db.commit()
     return seed_demo(db)
+
+# Serve built front-end from ../demo/v6 if present
+from pathlib import Path as _Path
+FRONTEND_DIR = _Path(__file__).resolve().parent.parent / "demo" / "v6"
+
+@app.get("/{full_path:path}")
+def serve_frontend(request: Request, full_path: str):
+    rel = full_path.lstrip("/")
+    target = FRONTEND_DIR / rel if rel else FRONTEND_DIR / "index.html"
+    if target.is_file() and target.suffix in {".html",".js",".css",".png",".svg",".ico",".json",".txt",".xml",".map"}:
+        from fastapi.responses import FileResponse
+        return FileResponse(target)
+    idx = FRONTEND_DIR / "index.html"
+    if idx.exists():
+        return FileResponse(idx)
+    raise HTTPException(404)
 
 if __name__ == "__main__":
     import uvicorn
