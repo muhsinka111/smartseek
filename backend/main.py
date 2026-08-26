@@ -435,9 +435,9 @@ def reset_and_seed(db: Session = Depends(get_db)):
     db.commit()
     return seed_demo(db)
 
-# Serve built front-end from ../demo/v6 if present
+# Serve built front-end from backend/web/ (brutalist landing page)
 from pathlib import Path as _Path
-FRONTEND_DIR = _Path(__file__).resolve().parent.parent / "demo" / "v6"
+FRONTEND_DIR = _Path(__file__).resolve().parent / "web"
 
 @app.get("/{full_path:path}")
 def serve_frontend(request: Request, full_path: str):

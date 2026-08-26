@@ -1,793 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartSeek — Claim rank №1 for anything smart</title>
-<meta name="description" content="The marketing platform for smart products. AI tools, agents, robots, people, businesses — ranked by what backers paid. No account. No API keys. Pay, rank, get traffic.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartSeek — One board. One rule. Highest bid wins.</title>
+<meta name="description" content="SmartSeek is the pay-to-rank discovery marketplace for AI tools, apps and smart things. Bid from $1, see your rank before you pay, go live in 60 seconds. Every price is public.">
+<meta property="og:title" content="SmartSeek — Highest bid wins.">
+<meta property="og:description" content="Bid. Climb. Get discovered. The transparent pay-to-rank board for everything smart. From $1.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFFFFF;--bg-alt:#F8FAFC;--card:#FFFFFF;
-  --ink:#0F172A;--sub:#475569;--faint:#94A3B8;
-  --line:#E2E8F0;--line-soft:#EEF2F7;
-  --blue:#2563EB;--blue-deep:#1D4EDB;--blue-wash:#EFF6FF;--blue-line:#BFDBFE;
-  --green:#059669;--green-wash:#ECFDF5;
-  --gold:#D97706;--gold-wash:#FFFBEB;
-  --sans:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+  --paper:#F4F2EA;
+  --ink:#111111;
+  --sub:#55524A;
+  --card:#FFFFFF;
+  --lime:#C8F04B;
+  --lime-d:#A8D42E;
+  --red:#E44B31;
+  --green:#1E9E5A;
+  --bd:2px solid var(--ink);
+  --shadow:4px 4px 0 var(--ink);
+  --shadow-lg:6px 6px 0 var(--ink);
+  --mono:'Space Mono',monospace;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:#fff;color:#0F172A;font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;}
-::selection{background:#2563EB;color:#fff;}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-:focus-visible{outline:2px solid #2563EB;outline-offset:2px;border-radius:4px;}
-button{font-family:inherit;cursor:pointer;}
-a{color:inherit;text-decoration:none;}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Archivo,system-ui,sans-serif;
+  font-size:13px;-webkit-font-smoothing:antialiased}
+.shell{max-width:1300px;margin:0 auto;padding:0 18px}
 
-/* ---------- preview bar ---------- */
-.demo-bar{background:#F1F5F9;border-bottom:1px solid #E2E8F0;color:#64748B;text-align:center;font-size:11px;padding:6px 16px;letter-spacing:.06em;font-weight:500;}
-.demo-bar b{color:#0F172A;}
+nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-index:50}
+.nav-in{display:flex;align-items:center;gap:22px;height:56px}
+.logo{font-weight:900;font-size:19px;letter-spacing:-.03em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.logo .sq{width:16px;height:16px;background:var(--lime);border:var(--bd);display:inline-block}
+.nav-links{display:flex;gap:2px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.nav-links a{text-decoration:none;color:var(--ink);padding:7px 12px;border:2px solid transparent}
+.nav-links a:hover{border:var(--bd);background:var(--card)}
+.nav-live{font-family:var(--mono);font-size:10.5px;display:flex;align-items:center;gap:6px;font-weight:700}
+.dot{width:8px;height:8px;background:var(--green);border:2px solid var(--ink);border-radius:0;animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+.nav-right{margin-left:auto;display:flex;gap:10px}
+.btn{font:inherit;font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  border:var(--bd);background:var(--card);color:var(--ink);padding:9px 16px;cursor:pointer;
+  box-shadow:var(--shadow);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn:focus-visible,.paybtn:focus-visible,.obtn:focus-visible,.step:focus-visible,.tab:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.btn.acc{background:var(--lime)}
+.btn.dark{background:var(--ink);color:var(--paper)}
 
-/* ---------- nav ---------- */
-.nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid #E2E8F0;}
-.nav-in{display:flex;align-items:center;height:62px;gap:28px;}
-.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17.5px;letter-spacing:-.02em;}
-.logo-mark{width:26px;height:26px;border-radius:7px;background:#2563EB;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
-.logo-mark svg{width:15px;height:15px;}
-.logo i{font-style:normal;color:#2563EB;}
-.nav-links{display:flex;gap:22px;margin-left:auto;font-size:13.5px;font-weight:500;color:#475569;}
-.nav-links a:hover{color:#0F172A;}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border:none;border-radius:10px;font-weight:600;font-size:14px;transition:transform .12s ease,background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease;}
-.btn:active{transform:scale(.97);}
-.btn-primary{background:#2563EB;color:#fff;padding:10px 20px;box-shadow:0 1px 2px rgba(37,99,235,.25);}
-.btn-primary:hover{background:#1D4ED8;}
-.btn-sm{padding:8px 16px;min-height:38px;font-size:13.5px;border-radius:9px;}
-.btn-outline{background:#fff;border:1px solid #E2E8F0;color:#334155;padding:10px 18px;}
-.btn-outline:hover{border-color:#CBD5E1;color:#0F172A;}
+.layout{display:grid;grid-template-columns:185px 1fr 185px;gap:16px;padding:16px 0 30px;align-items:start}
+.rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:72px}
 
-/* ---------- claim hero ---------- */
-.claim-hero{background:linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 100%);border-bottom:1px solid #E2E8F0;padding:52px 0 46px;}
-.claim-grid{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:48px;align-items:center;}
-.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#2563EB;margin-bottom:16px;}
-.eyebrow::before{content:"";width:18px;height:2px;background:#2563EB;border-radius:2px;}
-h1{font-size:clamp(32px,4.4vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08;text-wrap:balance;}
-h1 .hl{color:#2563EB;}
-.sub{font-size:16px;color:#475569;margin-top:14px;max-width:480px;text-wrap:pretty;}
-.hero-proof{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap;}
-.proof{display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;font-weight:500;}
-.proof b{color:#0F172A;font-family:var(--mono);font-weight:600;}
-.proof svg{width:15px;height:15px;color:#059669;flex-shrink:0;}
+.ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
+.ad .tag{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;background:var(--ink);color:var(--paper);
+  padding:4px 8px;display:inline-block;margin:8px 0 0 8px}
+.ad .visual{margin:7px 8px 0;height:74px;border:var(--bd);display:grid;place-items:center;font-size:26px}
+.ad .body{padding:8px 10px 10px}
+.ad .body h5{margin:0 0 2px;font-size:12px;font-weight:800;line-height:1.25}
+.ad .body a{font-family:var(--mono);font-size:9.5px;color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.book{border:2px dashed var(--ink);padding:10px;text-align:center;background:transparent}
+.book p{margin:0 0 7px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.book .btn{box-shadow:none;padding:7px 10px;font-size:10px}
 
-/* claim card */
-.claim-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 16px 44px -18px rgba(15,23,42,.14);overflow:hidden;}
-.cc-head{padding:18px 22px 14px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;gap:10px;}
-.cc-title{font-size:13px;font-weight:700;letter-spacing:-.01em;}
-.cc-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#059669;}
-.dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse 2s infinite;}
-.dot-red{background:#EF4444;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.35);}70%{box-shadow:0 0 0 6px rgba(16,185,129,0);}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);}}
-.cc-price{padding:20px 22px 6px;text-align:center;}
-.cc-price .lbl{font-size:11.5px;font-weight:600;color:#64748B;letter-spacing:.02em;}
-.cc-price .amt{font-family:var(--mono);font-size:44px;font-weight:700;letter-spacing:-.03em;color:#0F172A;line-height:1.1;font-variant-numeric:tabular-nums;}
-.cc-holder{text-align:center;font-size:12.5px;color:#64748B;padding:0 22px 16px;}
-.cc-holder b{color:#0F172A;font-weight:600;}
-.cc-form{padding:4px 22px 20px;display:flex;flex-direction:column;gap:10px;}
-.fld label{display:block;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:5px;}
-.fld input,.fld select{width:100%;height:44px;border:1px solid #E2E8F0;border-radius:10px;padding:0 13px;font-size:14px;font-family:inherit;outline:none;background:#fff;transition:border-color .15s ease,box-shadow .15s ease;color:#0F172A;}
-.fld input:focus,.fld select:focus{border-color:#2563EB;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.bid-row{display:flex;gap:10px;}
-.bid-row .fld{flex:1;}
-.bid-cur{position:relative;}
-.bid-cur span{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-weight:600;color:#64748B;}
-.bid-cur input{padding-left:28px;font-family:var(--mono);font-weight:600;}
-.cc-go{width:100%;height:48px;font-size:15px;border-radius:11px;}
-.cc-foot{padding:0 22px 18px;text-align:center;font-size:12px;color:#64748B;}
-.cc-foot b{color:#0F172A;}
+.board{background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg)}
 
-/* ---------- strip ---------- */
-.strip{border-bottom:1px solid #E2E8F0;background:#fff;}
-.strip-in{display:flex;align-items:center;font-family:var(--mono);font-size:11.5px;color:#64748B;overflow-x:auto;}
-.stat{display:flex;align-items:baseline;gap:8px;padding:11px 20px;border-right:1px solid #F1F5F9;white-space:nowrap;}
-.stat:first-child{padding-left:0;}
-.stat b{color:#0F172A;font-weight:600;font-size:12.5px;font-variant-numeric:tabular-nums;}
-.stat.live{color:#059669;font-family:var(--sans);font-weight:600;font-size:11px;letter-spacing:.06em;}
+.bhero{display:grid;grid-template-columns:1fr 370px;border-bottom:var(--bd)}
+.bhero-l{padding:20px 22px 16px;position:relative}
+.bhero h1{font-size:clamp(24px,3vw,34px);font-weight:900;letter-spacing:-.03em;line-height:.98;margin:0;text-transform:uppercase}
+.bhero h1 .hl{background:var(--lime);padding:0 6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.tagline{font-size:12px;color:var(--sub);margin:10px 0 0;line-height:1.6;max-width:48ch;font-weight:500}
+.tagline b{color:var(--ink);font-weight:800}
+.mini{display:flex;gap:0;margin-top:12px;flex-wrap:wrap}
+.mini span{font-family:var(--mono);font-size:9px;font-weight:700;border:var(--bd);padding:4px 8px;margin:0 6px 6px 0;background:var(--paper)}
 
-/* ---------- board ---------- */
-#board{padding:44px 0 56px;}
-.board-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
-.board-top h2{font-size:22px;font-weight:800;letter-spacing:-.02em;}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;}
-.tab{background:#fff;border:1px solid #E2E8F0;border-radius:999px;font-size:12px;font-weight:600;color:#475569;padding:7px 14px;transition:all .15s ease;}
-.tab:hover{border-color:#CBD5E1;color:#0F172A;}
-.tab.on{background:#0F172A;border-color:#0F172A;color:#fff;}
-.tab .n{opacity:.55;margin-left:4px;font-weight:500;}
-.board-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;}
-.rows-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;padding:18px 20px 16px;border-bottom:1px solid #F1F5F9;transition:background-color .15s ease;position:relative;}
-.row:hover{background:#F8FAFC;}
-.row:last-child{border-bottom:none;}
-.row.r1{background:linear-gradient(90deg,#FFFBEB 0%,#fff 45%);}
-.r-left{min-width:0;display:flex;gap:13px;}
-.rank{font-family:var(--mono);font-size:13px;font-weight:600;color:#94A3B8;width:30px;flex-shrink:0;padding-top:3px;position:relative;}
-.row.r1 .rank{color:#D97706;}
-.medal{position:absolute;top:-9px;left:22px;font-size:8.5px;font-weight:700;letter-spacing:.08em;color:#D97706;background:#FFFBEB;border:1px solid #FDE68A;padding:1.5px 7px;border-radius:999px;}
-.fav{width:38px;height:38px;border-radius:9px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;font-family:var(--mono);margin-top:1px;}
-.p-main{min-width:0;}
-.p-name{font-weight:700;font-size:14.5px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p-name .dom{color:#94A3B8;font-weight:500;font-size:12.5px;}
-.p-desc{font-size:13px;color:#475569;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.p-meta{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:11.5px;color:#94A3B8;flex-wrap:wrap;}
-.chip{font-size:10.5px;font-weight:600;color:#2563EB;background:#EFF6FF;border:1px solid #DBEAFE;padding:2px 9px;border-radius:999px;}
-.clicks-chip{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#059669;}
-.clicks-chip svg{width:12px;height:12px;}
-.p-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:10px;}
-.price{font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
-.claim-btn{background:#fff;border:1px solid #E2E8F0;color:#0F172A;font-size:12.5px;font-weight:600;padding:8px 15px;min-height:36px;border-radius:9px;white-space:nowrap;transition:border-color .15s,color .15s,background-color .15s;}
-.claim-btn:hover{border-color:#2563EB;color:#2563EB;background:#EFF6FF;}
-.raiser{grid-column:1/-1;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:10px;margin-top:2px;padding:13px 16px;display:none;}
-.raiser.open{display:block;}
-.raiser-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.stepper{display:flex;align-items:center;background:#fff;border:1px solid #E2E8F0;border-radius:9px;overflow:hidden;}
-.stepper button{width:34px;height:38px;background:none;border:none;font-size:16px;color:#64748B;}
-.stepper button:hover{background:#F1F5F9;color:#0F172A;}
-.stepper input{width:96px;height:38px;border:none;text-align:center;font-family:var(--mono);font-size:14px;font-weight:600;outline:none;}
-.rz-note{font-size:11.5px;color:#94A3B8;}
+.console{border-left:var(--bd);padding:16px 18px 14px;background:repeating-linear-gradient(-45deg,var(--card) 0 10px,#FAF8F0 10px 20px)}
+.clab{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)}
+.target{font-family:var(--mono);font-size:9.5px;font-weight:700;min-height:14px;margin:0 0 4px;color:var(--red)}
+.amount{display:flex;align-items:center;gap:8px;margin:4px 0 4px}
+.bignum{font-size:34px;font-weight:900;letter-spacing:-.03em;min-width:86px;font-variant-numeric:tabular-nums}
+.step{width:28px;height:28px;border:var(--bd);background:var(--card);font-size:15px;font-weight:900;cursor:pointer;
+  box-shadow:2px 2px 0 var(--ink);transition:transform .08s}
+.step:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.projchip{margin-left:auto;text-align:right;background:var(--ink);color:var(--lime);padding:6px 10px;border:var(--bd)}
+.projchip .clab{color:#8b8b7d;display:block}
+.projchip .v{font-family:var(--mono);font-size:19px;font-weight:700;line-height:1.1}
+.projchip .v.up-anim{animation:bump .3s}
+@keyframes bump{50%{transform:scale(1.14)}}
+input[type=range]{width:100%;-webkit-appearance:none;height:10px;background:var(--card);border:var(--bd);margin:10px 0 4px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--lime);border:var(--bd);cursor:grab;box-shadow:2px 2px 0 var(--ink)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;background:var(--lime);border:var(--bd);border-radius:0;cursor:grab;box-shadow:2px 2px 0 var(--ink)}
+input[type=range]::-moz-range-track{height:10px;background:var(--card);border:var(--bd)}
+input[type=range]:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--sub)}
+.beats{font-family:var(--mono);font-size:9.5px;color:var(--sub);min-height:26px;margin:6px 0 8px;line-height:1.5}
+.urlfield{display:flex;align-items:center;gap:7px;background:var(--card);border:var(--bd);padding:8px 10px;margin:0 0 8px}
+.urlfield .at{font-family:var(--mono);font-size:10px;font-weight:700}
+.urlfield input{border:0;outline:0;font:inherit;font-size:11.5px;width:100%;background:none;font-weight:600}
+.urlfield input::placeholder{color:#9a968a;font-weight:500}
+.paybtn{width:100%;font:inherit;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+  background:var(--lime);border:var(--bd);padding:12px;cursor:pointer;box-shadow:var(--shadow);transition:transform .08s,box-shadow .08s}
+.paybtn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.paybtn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 
-/* ---------- activity rail ---------- */
-.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:80px;}
-.panel{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.panel-h{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #F1F5F9;font-size:12px;font-weight:700;}
-.trade{padding:11px 16px;border-bottom:1px solid #F8FAFC;font-size:12.5px;display:flex;gap:10px;align-items:center;}
-.trade:last-child{border-bottom:none;}
-.t-fav{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;font-family:var(--mono);}
-.t-body{min-width:0;flex:1;}
-.t-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.t-sub{font-size:11px;color:#94A3B8;}
-.t-amt{font-family:var(--mono);font-weight:600;font-size:12.5px;color:#059669;white-space:nowrap;}
-.rev-panel{background:#0F172A;border-color:#0F172A;color:#fff;}
-.rev-panel .panel-h{border-bottom-color:rgba(255,255,255,.08);color:#fff;}
-.rev-amt{font-family:var(--mono);font-size:27px;font-weight:700;letter-spacing:-.02em;padding:16px 16px 4px;font-variant-numeric:tabular-nums;}
-.rev-sub{padding:0 16px 15px;font-size:11.5px;color:#94A3B8;}
+.competeband{display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:8px 14px;
+  font-size:11px;font-weight:700;border-bottom:var(--bd)}
+.competeband b{color:var(--lime)}
+.competeband .cta{margin-left:auto;background:var(--lime);color:var(--ink);border:2px solid var(--lime);font:inherit;
+  font-size:9.5px;font-weight:900;text-transform:uppercase;padding:4px 9px;cursor:pointer;letter-spacing:.05em}
 
-/* ---------- analytics ---------- */
-#analytics{padding:52px 0;background:#F8FAFC;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;}
-.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
-.sec-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em;}
-.sec-head p{font-size:13.5px;color:#64748B;max-width:520px;}
-.an-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;}
-.an-card{background:#fff;border:1px solid #E2E8F0;border-radius:13px;padding:18px 20px;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.an-card .lbl{font-size:11.5px;font-weight:600;color:#64748B;}
-.an-card .val{font-family:var(--mono);font-size:25px;font-weight:700;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums;}
-.an-card .delta{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#059669;margin-top:5px;}
-.an-card .delta svg{width:11px;height:11px;}
-.chart-card{background:#fff;border:1px solid #E2E8F0;border-radius:13px;padding:20px 22px;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.chart-title{font-size:12.5px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
-.legend{display:flex;gap:14px;font-size:11px;color:#64748B;font-weight:500;}
-.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:#2563EB;margin-right:5px;}
-.bars{display:flex;align-items:flex-end;gap:8px;height:110px;}
-.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
-.bar{width:100%;max-width:34px;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:5px 5px 0 0;transition:height .5s cubic-bezier(.22,.9,.36,1);position:relative;}
-.bar:hover{filter:brightness(1.08);}
-.bar-lbl{font-size:10px;color:#94A3B8;font-family:var(--mono);}
+.tabs{display:flex;border-bottom:var(--bd);overflow-x:auto}
+.tab{font:inherit;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);
+  background:none;border:0;border-right:var(--bd);padding:10px 14px;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--lime);color:var(--ink)}
 
-/* listing analytics detail */
-.detail-card{background:#fff;border:1px solid #E2E8F0;border-radius:13px;margin-top:16px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
-.d-head{display:flex;align-items:center;gap:13px;padding:15px 20px;cursor:pointer;}
-.d-head:hover{background:#F8FAFC;}
-.d-name{font-weight:700;font-size:14px;}
-.d-meta{font-size:11.5px;color:#94A3B8;}
-.d-bid{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:16px;}
-.d-arrow{font-size:11px;color:#94A3B8;transition:transform .2s ease;}
-.d-arrow.open{transform:rotate(180deg);}
-.d-body{display:none;border-top:1px solid #F1F5F9;padding:18px 20px;grid-template-columns:repeat(3,1fr) minmax(0,1.4fr);gap:18px;}
-.d-body.open{display:grid;}
-.d-stat .l{font-size:11px;font-weight:600;color:#64748B;}
-.d-stat .v{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:4px;}
-.d-stat .s{font-size:11px;color:#059669;font-weight:600;margin-top:2px;}
-.mini-bars{display:flex;align-items:flex-end;gap:4px;height:58px;}
-.mb{flex:1;background:linear-gradient(180deg,#3B82F6,#2563EB);border-radius:3px 3px 0 0;min-height:4px;}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sub);padding:8px 10px;border-bottom:var(--bd);background:var(--paper)}
+td{padding:8px 10px;border-bottom:1px solid #DDD9CC;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover{background:#FBFAF4}
+tbody tr:last-child td{border-bottom:0}
+tr.flash td{animation:fl 1s}
+@keyframes fl{0%{background:var(--lime)}}
+.rnk{width:26px;height:26px;border:var(--bd);display:grid;place-items:center;font-weight:900;font-size:12px;
+  font-family:var(--mono);background:var(--card)}
+tr:nth-child(1) .rnk{background:var(--lime)}
+.pl{display:flex;align-items:center;gap:9px}
+.thumb{width:44px;height:32px;border:var(--bd);display:grid;place-items:center;color:#fff;font-weight:900;font-size:13px;flex:none}
+.t1{font-weight:800;font-size:12px;line-height:1.2}
+.t2{font-family:var(--mono);font-size:9px;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.traffic b{font-family:var(--mono);font-size:11.5px;font-weight:700}
+.traffic span{display:block;font-family:var(--mono);font-size:8px;color:var(--sub)}
+.chg{font-family:var(--mono);font-size:10px;font-weight:700}
+.chg.up{color:var(--green)}.chg.down{color:var(--red)}.chg.flat{color:var(--sub)}
+.bidcell b{font-family:var(--mono);font-size:12.5px;font-weight:700}
+.obtn{font:inherit;font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;
+  border:var(--bd);background:var(--card);padding:6px 10px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .08s}
+.obtn:hover{background:var(--lime)}
+.obtn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 
-/* ---------- how ---------- */
-#how{padding:52px 0;}
-.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.h-card{border:1px solid #E2E8F0;border-radius:14px;padding:24px;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.h-no{width:30px;height:30px;border-radius:8px;background:#EFF6FF;color:#2563EB;font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;}
-.h-card h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;}
-.h-card p{font-size:13.5px;color:#475569;}
+.tscroll{overflow-x:auto}
+.tscroll table{min-width:640px}
 
-/* ---------- testimonials ---------- */
-#proof{padding:8px 0 60px;}
-.tw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-.tw{border:1px solid #E2E8F0;border-radius:14px;padding:20px;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04);}
-.tw-head{display:flex;align-items:center;gap:11px;margin-bottom:12px;}
-.tw-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;}
-.tw-name{font-size:13.5px;font-weight:700;}
-.tw-handle{font-size:12px;color:#94A3B8;}
-.tw p{font-size:13.5px;color:#334155;line-height:1.6;}
-.tw p b{color:#0F172A;}
-.tw-metrics{display:flex;gap:16px;margin-top:14px;padding-top:13px;border-top:1px solid #F1F5F9;font-size:12px;color:#64748B;}
-.tw-metrics b{color:#059669;font-family:var(--mono);font-weight:600;}
+.board-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:var(--bd);
+  padding:10px 14px;background:var(--paper);flex-wrap:wrap}
+.board-foot p{margin:0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.board-foot p span{display:block;font-weight:500;font-size:10px;color:var(--sub);text-transform:none;letter-spacing:0}
 
-/* ---------- closing + footer ---------- */
-.close{border-top:1px solid #E2E8F0;padding:54px 0;text-align:center;background:linear-gradient(180deg,#fff,#F8FAFC);}
-.close h2{font-size:clamp(24px,3vw,34px);font-weight:800;letter-spacing:-.025em;}
-.close p{color:#475569;margin-top:10px;font-size:15px;}
-.close .btn{margin-top:22px;height:48px;padding:0 28px;font-size:15px;}
-footer{border-top:1px solid #E2E8F0;padding:24px 0;background:#fff;}
-.foot-in{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#94A3B8;}
-.foot-links{display:flex;gap:20px;}
-.foot-links a:hover{color:#0F172A;}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.scell{background:var(--card);border:var(--bd);box-shadow:var(--shadow);padding:10px 12px;display:flex;gap:9px;align-items:center}
+.scell .ic{width:26px;height:26px;border:var(--bd);background:var(--lime);display:grid;place-items:center;font-size:12px;flex:none}
+.scell b{font-size:11px;display:block;text-transform:uppercase;letter-spacing:.03em}
+.scell span{font-size:10px;color:var(--sub)}
 
-/* ---------- seated overlay ---------- */
-.seated-back{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:120;padding:20px;}
-.seated-back.open{display:flex;}
-.seated{background:#fff;border-radius:18px;padding:36px 36px 30px;max-width:440px;width:100%;text-align:center;box-shadow:0 30px 90px rgba(15,23,42,.35);animation:pop .4s cubic-bezier(.22,.9,.36,1);}
-@keyframes pop{from{opacity:0;transform:scale(.92) translateY(12px);}to{opacity:1;transform:none;}}
-.s-kick{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#059669;background:#ECFDF5;border:1px solid #A7F3D0;padding:5px 13px;border-radius:999px;margin-bottom:14px;}
-.seated h3{font-size:21px;font-weight:800;letter-spacing:-.02em;}
-.seated h3 em{font-style:normal;color:#2563EB;}
-.s-rank{font-family:var(--mono);font-size:56px;font-weight:700;letter-spacing:-.03em;margin:8px 0 4px;}
-.s-rank.gold{color:#D97706;}
-.s-rank.blue{color:#2563EB;}
-.seated p{font-size:13.5px;color:#475569;margin-bottom:18px;}
-.exposure{display:flex;justify-content:center;gap:28px;padding:14px 0;border-top:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;margin-bottom:18px;}
-.exposure div b{display:block;font-family:var(--mono);font-size:17px;font-weight:700;}
-.exposure div span{font-size:10.5px;color:#94A3B8;font-weight:500;}
-.s-actions{display:flex;gap:10px;}
-.s-actions .btn{flex:1;}
+.toasts{position:fixed;right:16px;bottom:16px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--ink);color:var(--paper);border:2px solid var(--lime);padding:10px 14px;font-size:11.5px;
+  font-weight:700;box-shadow:var(--shadow);animation:ti .25s}
+@keyframes ti{from{transform:translateY(8px);opacity:0}}
 
-/* toast + modal */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:#0F172A;color:#F8FAFC;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:99;box-shadow:0 10px 34px rgba(15,23,42,.3);transition:transform .3s cubic-bezier(.22,.9,.36,1);max-width:90vw;text-align:center;}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.modal-back{position:fixed;inset:0;background:rgba(15,23,42,.44);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
-.modal-back.open{display:flex;}
-.modal{background:#fff;border-radius:16px;padding:30px;width:100%;max-width:420px;box-shadow:0 28px 80px rgba(15,23,42,.3);}
-.modal h3{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px;}
-.m-sub{color:#64748B;font-size:13px;margin-bottom:20px;}
+.shadow{filter:grayscale(1) brightness(1.1)}
+.empty{text-align:center;padding:34px 10px;color:var(--sub);font-weight:600}
 
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
-@media(max-width:1020px){
-  .claim-grid{grid-template-columns:1fr;gap:32px;}
-  .board-wrap{grid-template-columns:1fr;}
-  .rail{position:static;flex-direction:row;}
-  .rail .panel{flex:1;}
-  .an-grid{grid-template-columns:repeat(2,1fr);}
-  .d-body{grid-template-columns:repeat(2,1fr);}
+@media(max-width:1080px){
+  .layout{grid-template-columns:1fr}
+  .rail{position:static;flex-direction:row;overflow-x:auto}
+  .ad{min-width:200px}
+  .bhero{grid-template-columns:1fr}
+  .console{border-left:0;border-top:var(--bd)}
+  .strip{grid-template-columns:1fr}
+  .nav-links{display:none}
 }
-@media(max-width:720px){
-  .nav-links{display:none;}
-  .how-grid,.tw-grid{grid-template-columns:1fr;}
-  .an-grid{grid-template-columns:1fr;}
-  .d-body{grid-template-columns:1fr;}
-  .rail{flex-direction:column;}
-  .p-desc{-webkit-line-clamp:1;}
-}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 
-<div class="demo-bar">DESIGN PREVIEW · <b>SAMPLE DATA</b> · NO REAL MONEY MOVES YET</div>
-
-<nav class="nav">
-  <div class="wrap nav-in">
-    <a href="#" class="logo">
-      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="12" r="2.4" fill="#fff"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
-      Smart<i>Seek</i>
-    </a>
-    <div class="nav-links">
-      <a href="#board">Board</a>
-      <a href="#analytics">Analytics</a>
-      <a href="#how">How it works</a>
-      <a href="#proof">Results</a>
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="document.getElementById('claim').scrollIntoView({behavior:'smooth'})">Claim № 1</button>
+<nav><div class="shell nav-in">
+  <div class="logo"><span class="sq"></span>SmartSeek</div>
+  <div class="nav-links">
+    <a href="#board">Board</a><a href="#how">How it works</a><a href="#" onclick="toast('Advertiser packs coming soon — sidebar spots open.')">Advertisers</a>
   </div>
-</nav>
+  <span class="nav-live"><span class="dot"></span>LIVE BIDS</span>
+  <div class="nav-right">
+    <button class="btn" onclick="toast('Log in is coming soon.')">Log in</button>
+    <button class="btn acc" onclick="openBid(-1)">List &amp; get ranked</button>
+  </div>
+</div></nav>
 
-<!-- ================= CLAIM HERO ================= -->
-<header class="claim-hero" id="claim">
-  <div class="wrap claim-grid">
-    <div>
-      <span class="eyebrow">The marketing platform for smart products</span>
-      <h1>Anything smart can hold rank №1.<br><span class="hl">Anyone can take it.</span></h1>
-      <p class="sub">AI tools, agents, robots, platforms, people, businesses. Pick a target, pay $1 more than the current believer, and your product sits at the top of a public board — sending every visitor straight to your link.</p>
-      <div class="hero-proof">
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>12,547</b>&nbsp;clicks sent</span>
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>$1</b>&nbsp;to get on the board</span>
-        <span class="proof"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>No account needed</span>
-      </div>
-    </div>
+<div class="shell layout" id="board">
 
-    <aside class="claim-card">
-      <div class="cc-head">
-        <span class="cc-title">Take rank № 1</span>
-        <span class="cc-live"><span class="dot"></span>LIVE AUCTION</span>
-      </div>
-      <div class="cc-price">
-        <div class="lbl">Current price of № 1</div>
-        <div class="amt" id="topPrice">$0</div>
-      </div>
-      <div class="cc-holder">held by <b id="topName">—</b> · <span class="mono" id="topPaid">$0</span> paid</div>
-      <div class="cc-form">
-        <div class="fld"><label>Your target — URL or @handle</label><input type="text" id="g-url" placeholder="yourproduct.ai · x.com/you"></div>
-        <div class="bid-row">
-          <div class="fld bid-cur"><label>Your bid · USD</label><span>$</span><input type="number" id="g-bid" min="1" step="1"></div>
-          <div class="fld" style="max-width:150px;"><label>Category</label>
-            <select id="g-cat">
-              <option>AI Tools</option><option>Agents</option><option>Platforms</option><option>Robotics</option><option>People</option><option>Businesses</option><option>Opportunities</option>
-            </select>
+  <aside class="rail" id="railL"></aside>
+
+  <main>
+    <div class="board">
+
+      <div class="bhero">
+        <div class="bhero-l">
+          <h1>One board.<br>One rule.<br><span class="hl">Highest bid wins.</span></h1>
+          <p class="tagline"><b>SmartSeek is the pay-to-rank board for everything smart.</b> No algorithm, no waiting — the rank you pay for is the rank you get, live and in front of everyone. <b>$1</b> puts you on the board today.</p>
+          <div class="mini">
+            <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>#1 IS TAKEABLE</span><span>REAL ANALYTICS</span>
           </div>
         </div>
-        <button class="btn btn-primary cc-go" onclick="quickClaim()">Outbid &amp; take № 1 →</button>
+        <div class="console">
+          <p class="target" id="target"></p>
+          <span class="clab">Your bid</span>
+          <div class="amount">
+            <button class="step" onclick="nudge(-1)" aria-label="Lower bid">−</button>
+            <div class="bignum" id="bidnum">$1</div>
+            <button class="step" onclick="nudge(1)" aria-label="Raise bid">+</button>
+            <div class="projchip"><span class="clab">Projected</span><span class="v" id="proj">#—</span></div>
+          </div>
+          <input id="slider" type="range" min="1" max="900" value="1">
+          <div class="ends"><span>$1</span><span>$900+</span></div>
+          <p class="beats" id="beats">Pick a target, or start at $1 to claim a fresh seat.</p>
+          <div class="urlfield"><span class="at">@</span><input id="urlIn" placeholder="yoursite.com or @handle" autocomplete="off"></div>
+          <button class="paybtn" onclick="payBid()">Pay &amp; go live →</button>
+        </div>
       </div>
-      <div class="cc-foot">Lower bids still make the board at whatever rank they reach. Already listed? Enter the same URL to <b>raise your bid</b>.</div>
-    </aside>
-  </div>
-</header>
 
-<div class="strip">
-  <div class="wrap strip-in">
-    <div class="stat"><b id="m-total">$0</b> in the pot</div>
-    <div class="stat"><b id="m-count">0</b> positions</div>
-    <div class="stat"><b id="m-clicks">0</b> clicks sent</div>
-    <div class="stat"><b id="m-seats">0</b> seats taken today</div>
-    <div class="stat live"><span class="dot dot-red"></span>&nbsp;LIVE — RANKS SETTLE INSTANTLY</div>
-  </div>
-</div>
+      <div class="competeband"><span>🔥</span><span><b id="cbName">Be first.</b> <span id="cbAgo">No bids yet</span> — your competitors will be here.</span><button class="cta" onclick="openBid(-1)">Start at $1</button></div>
 
-<!-- ================= BOARD ================= -->
-<section id="board">
-  <div class="wrap">
-    <div class="board-top">
-      <h2>The board</h2>
       <div class="tabs" id="tabs"></div>
-    </div>
 
-    <div class="board-wrap">
-      <div class="rows-card" id="rows"></div>
+      <div class="tscroll"><table>
+        <thead><tr><th>#</th><th>Product</th><th>Clicks/24h</th><th>Δ</th><th>Bid</th><th></th></tr></thead>
+        <tbody id="tb"><tr><td colspan="6" class="empty">Loading the board…</td></tr></tbody>
+      </table></div>
 
-      <aside class="rail">
-        <div class="panel">
-          <div class="panel-h">Latest activity<span class="cc-live" style="color:#2563EB;"><span class="dot dot-red"></span>LIVE</span></div>
-          <div id="feed"></div>
-        </div>
-        <div class="panel rev-panel">
-          <div class="panel-h">Public revenue ledger</div>
-          <div class="rev-amt" id="revAmt">$0</div>
-          <div class="rev-sub">collected from all bids since launch — published, auditable, updated live.</div>
-        </div>
-      </aside>
-    </div>
-  </div>
-</section>
-
-<!-- ================= ANALYTICS ================= -->
-<section id="analytics">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Real analytics on every position</h2>
-      <p>Every listing gets a live dashboard: clicks, sources, countries, timing. You see exactly what your money buys — before and after you bid.</p>
-    </div>
-    <div class="an-grid">
-      <div class="an-card"><div class="lbl">Clicks today</div><div class="val" id="aClicks">—</div><div class="delta"><svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>+12% vs yesterday</div></div>
-      <div class="an-card"><div class="lbl">Value per click</div><div class="val">$0.42</div><div class="delta" style="color:#64748B;">vs $1.10 Google CPC avg</div></div>
-      <div class="an-card"><div class="lbl">Active positions</div><div class="val" id="aCount">—</div><div class="delta" style="color:#64748B;">earning traffic right now</div></div>
-      <div class="an-card"><div class="lbl">Top traffic source</div><div class="val" style="font-size:17px;">X / Twitter</div><div class="delta" style="color:#64748B;">38% of referrals this week</div></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Clicks sent — last 14 days<span class="legend"><span>All positions</span></span></div>
-      <div class="bars" id="mainBars"></div>
-    </div>
-
-    <div class="detail-card">
-      <div class="d-head" onclick="toggleDetail()">
-        <span class="fav" style="background:#2563EB;width:34px;height:34px;font-size:13px;">N</span>
-        <div><div class="d-name">Nexus Agents — position analytics</div><div class="d-meta">nexusagents.ai · Agents · held rank № 1 for 3 days</div></div>
-        <div class="d-bid" id="dBid">$12,405</div>
-        <span class="d-arrow" id="dArrow">▼</span>
-      </div>
-      <div class="d-body" id="dBody">
-        <div class="d-stat"><div class="l">Total clicks</div><div class="v">2,143</div><div class="s">+184 today</div></div>
-        <div class="d-stat"><div class="l">Effective CPC</div><div class="v">$0.38</div><div class="s">under market average</div></div>
-        <div class="d-stat"><div class="l">Your link</div><div class="v" style="font-size:13px;line-height:1.5;">smartseek.com/r/nexusagents</div><div class="s">dofollow · indexed</div></div>
-        <div class="d-stat" style="grid-column:span 1;"><div class="l">Last 14 days</div><div class="mini-bars" id="miniBars" style="margin-top:8px;"></div></div>
+      <div class="board-foot">
+        <p>Higher bid = higher rank. Updated live.<span>Start at $1 — live the second you pay.</span></p>
+        <button class="btn acc" onclick="openBid(-1)">Place a bid →</button>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ================= HOW ================= -->
-<section id="how">
-  <div class="wrap">
-    <div class="sec-head"><h2>How it works</h2><p>Three steps, thirty seconds, no account.</p></div>
-    <div class="how-grid">
-      <div class="h-card"><span class="h-no">1</span><h3>Paste any smart thing</h3><p>A URL or @handle — product, agent, robot, your profile, your business. It goes live instantly with its own indexed page and dofollow link.</p></div>
-      <div class="h-card"><span class="h-no">2</span><h3>Pay to take a rank</h3><p>New spots start at $1. Taking № 1 costs the leader's price plus $1 — lower bids land you on the board wherever they reach.</p></div>
-      <div class="h-card"><span class="h-no">3</span><h3>Get the traffic</h3><p>Visitors click through to you, counted honestly on your dashboard. Outbid? Reclaim your rank anytime for the difference.</p></div>
+    <div class="strip">
+      <div class="scell"><div class="ic">🚀</div><div><b>Instant visibility</b><span>Live in 60s — no review, no waiting</span></div></div>
+      <div class="scell"><div class="ic">🏁</div><div><b>Beat your competitors</b><span>Take any position — even #1 — anytime</span></div></div>
+      <div class="scell"><div class="ic">📊</div><div><b>Marketing that proves itself</b><span>Public clicks, CTR &amp; rank history</span></div></div>
     </div>
-  </div>
-</section>
+  </main>
 
-<!-- ================= PROOF ================= -->
-<section id="proof">
-  <div class="wrap">
-    <div class="sec-head"><h2>From the people who took № 1</h2><p>Sample results based on typical pay-to-rank outcomes. Yours will publish here, verifiable on-chain of bids.</p></div>
-    <div class="tw-grid">
-      <div class="tw">
-        <div class="tw-head"><span class="tw-av" style="background:#2563EB;">MT</span><div><div class="tw-name">MakerThrive</div><div class="tw-handle">@makerthrive</div></div></div>
-        <p>this is wild — spent <b>$42</b> on a #2 spot, drove <b>64,000 visitors</b> to our launch page and generated <b>$29k in one day</b>. best CAC we've ever had.</p>
-        <div class="tw-metrics"><span><b>64k</b> visitors</span><span><b>$29k</b> revenue day one</span></div>
-      </div>
-      <div class="tw">
-        <div class="tw-head"><span class="tw-av" style="background:#059669;">CR</span><div><div class="tw-name">CrowdReply</div><div class="tw-handle">@crowdreply_io</div></div></div>
-        <p>48 hours after taking № 1: trended on X, <b>6,550+ clicks</b>, <b>1,800 signups</b>, 50 demo calls booked, <b>$50k/mo pipeline</b>. absolutely worth it.</p>
-        <div class="tw-metrics"><span><b>6,550</b> clicks</span><span><b>1,800</b> signups</span><span><b>$50k/mo</b> pipeline</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CLOSING ================= -->
-<div class="close">
-  <div class="wrap">
-    <h2>Somewhere below, someone is<br>$1 away from your seat.</h2>
-    <p>Claim your rank before someone else does.</p>
-    <button class="btn btn-primary" onclick="document.getElementById('claim').scrollIntoView({behavior:'smooth'})">Claim rank № 1</button>
-  </div>
+  <aside class="rail" id="railR"></aside>
 </div>
 
-<footer>
-  <div class="wrap foot-in">
-    <span>© 2026 SmartSeek — rank what's smart.</span>
-    <div class="foot-links"><a href="#board">Board</a><a href="#">Rules</a><a href="#">Ledger</a><a href="#">Privacy</a><a href="#">Contact</a></div>
-  </div>
-</footer>
-
-<div class="toast" id="toast"></div>
-
-<!-- SEATED overlay -->
-<div class="seated-back" id="seatedBack" onclick="if(event.target===this)closeSeated()">
-  <div class="seated">
-    <span class="s-kick">● Payment settled · position live</span>
-    <h3><em id="sName">Your product</em> is on the board.</h3>
-    <div class="s-rank blue" id="sRank">#1</div>
-    <p id="sMsg">Every visitor now sees you first. Defend the seat — reclaim it anytime for the difference.</p>
-    <div class="exposure">
-      <div><b id="xViews">—</b><span>seekers online</span></div>
-      <div><b id="xClicks">0</b><span>clicks sent today</span></div>
-      <div><b>LIVE</b><span>your analytics</span></div>
-    </div>
-    <div class="s-actions">
-      <button class="btn btn-outline" onclick="closeSeated()">Back to board</button>
-      <button class="btn btn-primary" onclick="closeSeated();document.getElementById('analytics').scrollIntoView({behavior:'smooth'})">See your analytics ↓</button>
-    </div>
-  </div>
-</div>
-
-<!-- list modal -->
-<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <h3>List something smart</h3>
-    <p class="m-sub">No account. Starts at $1. <b>Demo:</b> nothing is charged.</p>
-    <div class="cc-form" style="padding:0;">
-      <div class="fld"><label>Url or @handle</label><input type="text" id="c-url" placeholder="yourproduct.ai"></div>
-      <div class="fld"><label>Display name</label><input type="text" id="c-name" placeholder="Acme AI"></div>
-      <div class="fld bid-cur"><label>Your bid · USD</label><span>$</span><input type="number" id="c-bid" min="1" step="1" placeholder="1"></div>
-      <button class="btn btn-primary cc-go" onclick="submitListing()">Put it on the board — demo</button>
-      <button class="btn btn-outline cc-go" onclick="closeModal()" style="background:#fff;color:#475569;">Cancel</button>
-    </div>
-  </div>
-</div>
+<div class="toasts" id="toasts"></div>
+<noscript><div style="padding:14px;text-align:center;font-weight:700">SmartSeek needs JavaScript for the live board.</div></noscript>
 
 <script>
-/* ================= data ================= */
-const CATS=["All","AI Tools","Agents","Platforms","Robotics","People","Businesses","Opportunities"];
-let seq=1;
-function P(name,domain,desc,cat,bid,clicks,color){return{id:seq++,name,domain,desc,cat,bid,clicks,color,moved:0};}
-let positions=[
-  P("Nexus Agents","nexusagents.ai","Autonomous AI employees — sales, support, and research working together in one console.","Agents",12405,2143,"#2563EB"),
-  P("Helix Robotics","helixrobotics.com","Warehouse robot arms that learn pick-and-place from a single demonstration.","Robotics",9800,1876,"#0F172A"),
-  P("PromptDeck","promptdeck.io","Version-control, test and ship prompts across every LLM like real code.","AI Tools",7500,1204,"#7C3AED"),
-  P("Sarah Chen","x.com/sarahbuilds","AI research engineer · open-source agents · ex-DeepMind. Posting daily builds.","People",5000,987,"#DB2777"),
-  P("DataForge","dataforge.dev","Turn messy databases into queryable knowledge APIs for your agents, in minutes.","Platforms",4200,654,"#D97706"),
-  P("Atlas Fund II","atlasopportunities.com","Co-invest alongside operators in pre-seed AI infrastructure deals. Tranche closing.","Opportunities",3500,431,"#0891B2"),
-  P("Cognify","getcognify.app","The reasoning spreadsheet — formulas that plan, verify and cite their work.","AI Tools",2800,512,"#059669"),
-  P("Marcus Reid","linkedin.com/in/marcusreid","Ghostwriter for AI founders · 2.1M impressions/month · 40+ founder clients.","People",1900,289,"#4F46E5"),
-  P("Quantum Ledger","quantumledger.fi","Fraud decisions on payment rails in 40ms — fully explainable verdicts.","Platforms",1200,176,"#B45309"),
-  P("SmartK9","smartk9.co","Smart collar that translates barks, tracks health and coaches training.","Businesses",450,94,"#DC2626"),
-];
-let total=positions.reduce((s,p)=>s+p.bid,0);
-const CLICKS_BASE=12547;
-let trades=[],activeCat="All";
-const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
-const sorted=()=>[...positions].sort((a,b)=>b.bid-a.bid||a.id-b.id);
+const API = "";  // same-origin on smartseek.com
+const C=["#111111","#E44B31","#1E9E5A","#2F5FE3","#B03BC4","#E39B12","#0E7C7B","#77777D","#2563EB","#7C3AED"];
+let items=[];
+let cats=[];
+let activeCat="All", bidTarget=-1, lastRank=null, maxBid=900;
+const fmt=n=>n.toLocaleString();
+const tb=document.getElementById('tb');
+const tabsEl=document.getElementById('tabs');
+const slider=document.getElementById('slider');
 
-/* ================= live API layer ================= */
-const API_BASE=(location.protocol==='file:'||location.hostname==='127.0.0.1'||location.hostname==='localhost')?'http://127.0.0.1:9091':'';
-let LIVE=false;
-async function api(path,opts){
-  const r=await fetch(API_BASE+path,opts);
-  if(!r.ok){const t=await r.text();throw new Error(t.slice(0,120));}
-  return r.json();
-}
-async function syncFromAPI(){
+async function load(){
   try{
-    const pos=await api('/api/positions');
-    positions=pos.map(x=>({id:x.id,name:x.name,domain:x.domain,desc:x.description,cat:x.category,bid:x.total_paid,clicks:x.clicks,color:x.color,moved:0}));
-    total=positions.reduce((s,x)=>s+x.bid,0);
-    LIVE=true;
-    try{
-      const act=await api('/api/activity');
-      trades=act.map(t=>({p:{name:t.name,color:t.color},amt:(t.delta>=0?'+':'−')+'$'+Math.abs(t.delta).toLocaleString('en-US'),note:t.note,ts:new Date(t.ts).getTime()}));
-      renderFeed();
-    }catch(e){}
-    paintAll();
-    console.info('[SmartSeek] LIVE mode — data from API');
-  }catch(e){
-    LIVE=false;
-    console.info('[SmartSeek] API offline — standalone demo data');
-  }
+    const r=await fetch(API+"/api/positions");
+    const data=await r.json();
+    items=data.map(p=>({
+      id:p.id, n:p.name, d:p.domain, t:p.description||"", c:p.category||"Other",
+      b:p.total_paid||0, k:p.clicks||0, slug:p.slug, color:p.color||"#2563EB", mine:false
+    }));
+    if(items.length){
+      maxBid=Math.max(900, ...items.map(i=>i.b+200));
+      slider.max=maxBid;
+    }
+    cats=['All',...new Set(items.map(i=>i.c))];
+    buildTabs(); render();
+    if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
+  }catch(e){ tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr>'; }
 }
 
-/* ================= render board ================= */
-function render(){
-  const el=document.getElementById('rows');
-  const view=sorted().filter(p=>activeCat==="All"||p.cat===activeCat);
-  const gRank=new Map();sorted().forEach((p,i)=>gRank.set(p.id,i+1));
-  const prev={};el.querySelectorAll('.row[data-id]').forEach(r=>prev[r.dataset.id]=r.getBoundingClientRect().top);
-  el.innerHTML='';
-  view.forEach(p=>{
-    const rank=gRank.get(p.id);
-    const s=sorted();
-    const myIdx=s.findIndex(x=>x.id===p.id);
-    const cost=myIdx===0?p.bid+1:s[myIdx-1].bid+1;
-    const r=document.createElement('div');
-    r.className='row'+(rank===1?' r1':'');
-    r.dataset.id=p.id;
-    r.innerHTML=`
-      <div class="r-left">
-        <span class="rank">${rank===1?'<span class="medal">№1</span>':''}#${rank}</span>
-        <span class="fav" style="background:${p.color}">${p.name[0]}</span>
-        <div class="p-main">
-          <div class="p-name">${p.name} <span class="dom">· ${p.domain}</span></div>
-          <div class="p-desc">${p.desc}</div>
-          <div class="p-meta">
-            <span>${timeAgo(Date.now()-(p.id*9+4)*3600000)}</span>
-            <span class="chip">${p.cat}</span>
-            <span class="clicks-chip"><svg viewBox="0 0 24 24" fill="none"><path d="M13 5l7 7-7 7M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>${p.clicks.toLocaleString('en-US')} clicks</span>
-            <a href="#" onclick="event.preventDefault();toggleDetail()">see details</a>
-          </div>
-        </div>
-      </div>
-      <div class="p-right">
-        <div class="price">${fmt(p.bid)}</div>
-        <button class="claim-btn" onclick="openRaiser(${p.id})">claim #${rank===1?'1':rank} · ${fmt(cost)}</button>
-      </div>
-      <div class="raiser" id="rz-${p.id}">
-        <div class="raiser-in">
-          <span style="font-size:13px;font-weight:600;">Raise ${p.name} to</span>
-          <div class="stepper">
-            <button onclick="step(${p.id},-10)">−</button>
-            <input type="number" id="bi-${p.id}" min="${cost}" step="1" value="${cost}">
-            <button onclick="step(${p.id},10)">+</button>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="confirmRaise(${p.id})">Confirm raise — demo</button>
-          <span class="rz-note">you pay only the difference · rank settles instantly</span>
-        </div>
-      </div>`;
-    el.appendChild(r);
-  });
-  if(!reduceMotion)requestAnimationFrame(()=>flip(el,prev));
+function buildTabs(){
+  tabsEl.innerHTML=cats.map(c=>`<button class="tab ${c===activeCat?'on':''}" onclick="setTab('${c}')">${c}</button>`).join('');
 }
-function flip(container,prev){
-  container.querySelectorAll('.row[data-id]').forEach(r=>{
-    const b=prev[r.dataset.id];
-    if(b==null)return;
-    const d=b-r.getBoundingClientRect().top;
-    if(Math.abs(d)>2){r.style.transition='none';r.style.transform=`translateY(${d}px)`;r.style.zIndex='2';
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.transition='transform .35s cubic-bezier(.22,.9,.36,1)';r.style.transform='none';}));}
-  });
-}
-function timeAgo(t){const m=Math.max(1,Math.round((Date.now()-t)/60000));if(m<60)return m+'m ago';const h=Math.round(m/60);return h<24?h+'h ago':Math.round(h/24)+'d ago';}
-function openRaiser(id){document.querySelectorAll('.raiser.open').forEach(x=>x.classList.remove('open'));document.getElementById('rz-'+id).classList.add('open');}
-function step(id,d){const el=document.getElementById('bi-'+id);el.value=Math.max(parseInt(el.min),parseInt(el.value||el.min)+d);}
+function setTab(c){activeCat=c;buildTabs();render();}
 
-async function confirmRaise(id){
-  const p=positions.find(x=>x.id===id);
-  const v=Math.floor(Number(document.getElementById('bi-'+id).value));
-  if(!v||v<=p.bid){toast('Bid must exceed '+fmt(p.bid));return;}
-  if(LIVE){
-    try{
-      await api('/api/bid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({position_id:id,amount:v})});
-      await syncFromAPI();
-      document.querySelectorAll('.raiser.open').forEach(x=>x.classList.remove('open'));
-      showSeated(p,sorted().findIndex(x=>x.id===id)+1,'blue');
-    }catch(e){toast('Bid failed — start the API (backend/start.bat)');}
-    return;
-  }
-  const old=sorted().findIndex(x=>x.id===id)+1;
-  const diff=v-p.bid;p.bid=v;total+=diff;
-  const nr=sorted().findIndex(x=>x.id===id)+1;
-  p.moved=Math.max(0,old-nr);
-  logTrade(p,'+'+fmt(diff),(old===nr?`holds #${nr}`:(nr<old?`up to #${nr}`:`now #${nr}`)));
-  paintAll();
-  showSeated(p,nr,nr===1?'gold':'blue');
-}
-
-/* ================= quick claim ================= */
-async function quickClaim(){
-  const url=document.getElementById('g-url').value.trim();
-  if(!url){toast('Paste a URL or @handle first');return;}
-  if(LIVE){
-    const bid=Math.max(1,Math.floor(Number(document.getElementById('g-bid').value)||1));
-    const cat=document.getElementById('g-cat').value;
-    const name=url.replace(/^https?:\/\//,'').split('/')[0];
-    try{
-      const r=await api('/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:name,name:name,amount:bid,category:cat})});
-      if(r.checkout_url){window.open(r.checkout_url,'_blank');toast('Opening Stripe Checkout…');return;}
-      toast(`Demo payment settling — $${r.amount.toLocaleString('en-US')}…`);
-      setTimeout(async()=>{
-        try{
-          await api(`/api/bid/${r.bid_id}/confirm`,{method:'POST'});
-          await syncFromAPI();
-          const np=positions.find(x=>x.id===r.position_id);
-          showSeated(np||positions[0],1,'gold');
-          document.getElementById('g-url').value='';
-        }catch(e){toast('Confirm failed');}
-      },1200);
-    }catch(e){toast('Claim failed — start the API (backend/start.bat)');}
-    return;
-  }
-  const existing=positions.find(p=>url.includes(p.domain)||p.domain.includes(url.replace(/^https?:\/\//,'')));
-  let p;
-  if(existing){
-    const cur=document.getElementById('topPrice');
-    const need=sorted()[0].bid+1;
-    p=existing;p.bid=Math.max(need,p.bid+1);
-  }else{
-    const bid=Math.max(sorted()[0].bid+1,1);
-    const colors=["#2563EB","#0F172A","#7C3AED","#DB2777","#D97706","#0891B2","#059669"];
-    p=P(url.split('/')[0].split('.')[0].replace(/^\w/,c=>c.toUpperCase()),url,"Just listed on SmartSeek — climbing the board.",document.getElementById('g-cat').value,bid,0,colors[Math.floor(Math.random()*colors.length)]);
-    positions.push(p);
-  }
-  total+=0;/* bid already full amount semantics kept simple in demo */
-  logTrade(p,fmt(p.bid),'TOOK № 1');
-  document.getElementById('g-url').value='';
-  paintAll();
-  showSeated(p,1,'gold');
-}
-
-/* ================= modal listing ================= */
-function openModal(){document.getElementById('modalBack').classList.add('open');setTimeout(()=>document.getElementById('c-url').focus(),80);}
-function closeModal(){document.getElementById('modalBack').classList.remove('open');}
-function submitListing(){
-  const url=document.getElementById('c-url').value.trim();
-  const name=document.getElementById('c-name').value.trim()||url.split('/')[0];
-  const bid=Math.floor(Number(document.getElementById('c-bid').value));
-  if(!url){toast('Paste a URL first');return;}
-  if(!bid||bid<1){toast('Floor is $1');return;}
-  const colors=["#2563EB","#0F172A","#7C3AED","#DB2777","#D97706","#0891B2","#059669"];
-  const np=P(name,url,`Listed on SmartSeek — ${url}.`, "Platforms",bid,0,colors[Math.floor(Math.random()*colors.length)]);
-  positions.push(np);total+=bid;
-  logTrade(np,fmt(bid),'LISTED · #'+(sorted().findIndex(x=>x.id===np.id)+1));
-  closeModal();
-  ['c-url','c-name','c-bid'].forEach(i=>document.getElementById(i).value='');
-  paintAll();
-  showSeated(np,sorted().findIndex(x=>x.id===np.id)+1,'blue');
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSeated();}});
-
-/* ================= trades / feed ================= */
-function logTrade(p,amt,note){
-  trades.unshift({p,amt,note,ts:Date.now()});
-  if(trades.length>14)trades.pop();
-  renderFeed();
-}
-function renderFeed(){
-  document.getElementById('feed').innerHTML=trades.map(t=>`
-    <div class="trade">
-      <span class="t-fav" style="background:${t.p.color}">${t.p.name[0]}</span>
-      <div class="t-body"><div class="t-name">${t.p.name}</div><div class="t-sub">${t.note} · ${timeAgo(t.ts)}</div></div>
-      <span class="t-amt">${t.amt}</span>
-    </div>`).join('');
-}
-
-/* ================= seated ================= */
-function showSeated(p,rank,tone){
-  document.getElementById('sName').textContent=p.name;
-  const rk=document.getElementById('sRank');
-  rk.textContent=rank===1?'№ 1':'#'+rank;
-  rk.className='s-rank '+tone;
-  document.getElementById('sMsg').innerHTML=rank===1
-    ?'Every visitor now sees you <b>first</b>. The seat is yours until someone believes harder.'
-    :'You are live on the public board. Climb higher anytime — the next seat costs $1 more than the row above.';
-  document.getElementById('xViews').textContent=(180+Math.floor(Math.random()*220)).toLocaleString('en-US');
-  document.getElementById('xClicks').textContent=(CLICKS_BASE%1000*3).toLocaleString('en-US');
-  document.getElementById('seatedBack').classList.add('open');
-}
-function closeSeated(){document.getElementById('seatedBack').classList.remove('open');}
-
-/* ================= analytics ================= */
-function drawMainBars(){
-  const el=document.getElementById('mainBars');
-  const labels=['Aug 11','','','','','','','Aug 18','','','','','','Today'];
-  el.innerHTML=Array.from({length:14},(_,i)=>{
-    const h=28+Math.sin(i*1.1)*14+Math.random()*40+i*1.5;
-    return `<div class="bw"><div class="bar" style="height:${Math.min(96,h)}%;transition-delay:${i*25}ms;"></div><div class="bar-lbl">${labels[i]||''}</div></div>`;
+function render(flash){
+  if(!items.length){ tb.innerHTML='<tr><td colspan="6" class="empty">The board is empty. Be the first — list at $1.</td></tr>'; return; }
+  items.sort((a,b)=>b.b-a.b);
+  const list=activeCat==='All'?items:items.filter(i=>i.c===activeCat);
+  tb.innerHTML=list.map((it,i)=>{
+    const gi=items.indexOf(it), mv=it.mv||0;
+    return `<tr class="${it.n===flash?'flash':''}" onclick="openBid(${gi})">
+      <td><div class="rnk">${i+1}</div></td>
+      <td><div class="pl">
+        <div class="thumb" style="background:${it.color||C[gi%C.length]}">${it.n[0]}</div>
+        <div><div class="t1">${it.n}</div><a class="t2" href="#" onclick="event.stopPropagation()">→ ${it.d}</a></div>
+      </div></td>
+      <td class="traffic"><b>${it.k? (it.k/1000).toFixed(1)+'K':'0'}</b><span>LAST 24H</span></td>
+      <td class="chg ${mv>0?'up':mv<0?'down':'flat'}">${mv>0?'▲+'+(mv*3.1).toFixed(1)+'%':mv<0?'▼-'+Math.abs(mv*3.1).toFixed(1)+'%':'—'}</td>
+      <td class="bidcell"><b>$${fmt(it.b)}</b></td>
+      <td style="text-align:right"><button class="obtn" onclick="event.stopPropagation();openBid(${gi})">Outbid</button></td>
+    </tr>`;
   }).join('');
 }
-function toggleDetail(){
-  const b=document.getElementById('dBody'),a=document.getElementById('dArrow');
-  const open=b.classList.toggle('open');
-  a.classList.toggle('open',open);
-  if(open&&!b.dataset.drawn){
-    document.getElementById('miniBars').innerHTML=Array.from({length:14},()=>`<div class="mb" style="height:${25+Math.random()*75}%"></div>`).join('');
-    b.dataset.drawn=1;
-  }
+
+/* rails — ad spots (real inventory, booking flow is placeholder) */
+const ADS_L=[
+ {bg:"#2F5FE3",icon:"🌄",h:"Grow your startup. Get more customers.",l:"growflow.com"},
+ {bg:"#B03BC4",icon:"✨",h:"AI that works for your business.",l:"tryflowai.com"}
+];
+const ADS_R=[
+ {bg:"#111111",icon:"🚀",h:"Launch faster. We'll handle DevOps.",l:"launchops.dev"},
+ {bg:"#E39B12",icon:"✉️",h:"Email marketing that grows with you.",l:"mailscale.com"}
+];
+function ad(a){return `<div class="ad"><span class="tag">AD SPOT</span>
+  <div class="visual" style="background:${a.bg}">${a.icon}</div>
+  <div class="body"><h5>${a.h}</h5><a href="#">→ ${a.l}</a></div></div>`;}
+document.getElementById('railL').innerHTML=ADS_L.map(ad).join('')+
+ `<div class="book"><p>This spot: $149/wk</p><button class="btn" onclick="toast('Sidebar slots: 2 of 4 available this week.')">Book it</button></div>`;
+document.getElementById('railR').innerHTML=ADS_R.map(ad).join('')+
+ `<div class="book"><p>Sponsor a category · $490/mo</p><button class="btn" onclick="toast('Open: all categories.')">Sponsor</button></div>`;
+
+/* console */
+function openBid(i){
+  bidTarget=i;
+  if(i>=0){
+    slider.value=Math.min(maxBid,items[i].b+1);
+    document.getElementById('target').textContent=`OUTBIDDING ${items[i].n.toUpperCase()} — #${items.indexOf(items[i])+1} AT $${fmt(items[i].b)}`;
+  } else document.getElementById('target').textContent='';
+  upd();
+  document.querySelector('.console').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function nudge(d){slider.value=Math.max(1,Math.min(maxBid,+slider.value+d));upd();}
+function upd(){
+  const v=+slider.value;
+  document.getElementById('bidnum').textContent='$'+fmt(v);
+  const above=items.filter(x=>x.b>=v).length, rank=above+1;
+  const pv=document.getElementById('proj');
+  pv.textContent='#'+rank;
+  if(lastRank!==null&&rank!==lastRank){pv.classList.remove('up-anim');void pv.offsetWidth;pv.classList.add('up-anim');}
+  lastRank=rank;
+  document.getElementById('beats').textContent = rank===1
+    ? (items.length? `TAKES #1 FROM ${items[0].n.toUpperCase()} ($${fmt(items[0].b)})` : 'CLAIMS #1 — first on the board')
+    : `BEATS ${items.length-above} PRODUCTS · +$${fmt(items[above-1].b-v+1)} TAKES #${rank-1}`;
+}
+slider.addEventListener('input',upd);
+document.getElementById('urlIn').addEventListener('keydown',e=>{if(e.key==='Enter')payBid();});
+
+async function payBid(){
+  const v=+slider.value;
+  const raw=(document.getElementById('urlIn').value||'').trim();
+  if(!raw){ toast('Enter your domain or @handle first.'); return; }
+  const d=raw.startsWith('@')?raw:raw.replace(/^https?:\/\//,'').split('/')[0];
+  const nm=raw.startsWith('@')?raw:d.replace(/^www\./,'');
+  try{
+    // create/ensure listing then bid
+    let pid;
+    const existed=items.find(i=>i.d===d || i.slug===d);
+    if(existed){ pid=existed.id; }
+    else{
+      const cr=await fetch(API+"/api/positions",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({name:nm,domain:d,description:"Your product, seen first.",category:"Other",color:"#2563EB"})});
+      const cj=await cr.json();
+      if(!cr.ok){ toast(cj.detail||"Could not list."); return; }
+      pid=cj.id;
+    }
+    const br=await fetch(API+"/api/bid",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({position_id:pid,amount:v})});
+    const bj=await br.json();
+    if(!br.ok){ toast(bj.detail||"Bid failed."); return; }
+    if(bj.checkout_url){ window.location.href=bj.checkout_url; }
+    else { toast('Demo mode — payment simulated.'); load(); }
+  }catch(e){ toast('Network error — try again.'); }
 }
 
-/* ================= paint ================= */
-let shownT=0,shownR=0;
-function paintAll(){
-  const s=sorted(),top=s[0];
-  document.getElementById('topPrice').textContent=top?fmt(top.bid+1):'$2';
-  document.getElementById('topName').textContent=top?top.name:'—';
-  document.getElementById('topPaid').textContent=top?fmt(top.bid):'$0';
-  const gb=document.getElementById('g-bid');gb.value=s[0].bid+1;gb.min=s[0].bid+1;
-  document.getElementById('m-count').textContent=positions.length;
-  document.getElementById('aCount').textContent=positions.length;
-  document.getElementById('aClicks').textContent=CLICKS_BASE.toLocaleString('en-US');
-  document.getElementById('dBid').textContent=fmt(s[0].bid);
-  document.getElementById('revAmt').textContent=fmt(total);
-  render();renderTabs();drawMainBarsOnce();
-}
-function renderTabs(){
-  document.getElementById('tabs').innerHTML=CATS.map(c=>{
-    const n=c==="All"?positions.length:positions.filter(p=>p.cat===c).length;
-    return `<button class="tab ${c===activeCat?'on':''}" onclick="setCat('${c}')">${c}<span class="n">${n}</span></button>`;
-  }).join('');
-}
-function setCat(c){activeCat=c;renderTabs();render();}
-let mainDrawn=false;
-function drawMainBarsOnce(){if(!mainDrawn){mainDrawn=true;}}
-let toastTimer;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
-function tickNumbers(){
-  shownT+=Math.ceil((total-shownT)*.12)||0;
-  shownR+=Math.ceil((CLICKS_BASE-shownR)*.12)||0;
-  document.getElementById('m-total').textContent=fmt(shownT);
-  document.getElementById('m-clicks').textContent=shownR.toLocaleString('en-US');
-  document.getElementById('m-seats').textContent='7';
-  if((shownT!==total||shownR<CLICKS_BASE)&&!reduceMotion)requestAnimationFrame(tickNumbers);
-}
+function toast(m){const box=document.getElementById('toasts');
+  while(box.children.length>=3)box.firstChild.remove();
+  const t=document.createElement('div');t.className='toast';t.textContent=m;
+  box.append(t);setTimeout(()=>t.remove(),4000);}
 
-/* ================= boot ================= */
-(function boot(){
-  const seeds=[[positions[0],'+$240','TOOK № 1',2],[positions[1],'+$600','raised · holds #2',9],[positions[2],'+$500','#4→#3',16],[positions[3],'$5,000','LISTED',23],[positions[4],'+$400','raised',31],[positions[5],'+$350','up to #6',38]];
-  seeds.forEach(s=>trades.push({p:s[0],amt:s[1],note:s[2],ts:Date.now()-s[3]*60000}));
-  renderFeed();paintAll();
-  shownT=Math.floor(total*.55);shownR=Math.floor(CLICKS_BASE*.55);
-  tickNumbers();
-  syncFromAPI();
-})();
-
-/* ambient rival moves */
-if(!reduceMotion)setInterval(()=>{
-  if(LIVE)return; /* real board — no simulated moves */
-  const s=sorted();
-  const t=Math.random()<.5?s[1]:s[Math.floor(Math.random()*s.length)];
-  const old=s.findIndex(x=>x.id===t.id)+1;
-  const nb=t.bid+Math.max(1,Math.floor(t.bid*.03));
-  const diff=nb-t.bid;t.bid=nb;total+=diff;
-  const nr=sorted().findIndex(x=>x.id===t.id)+1;
-  logTrade(t,'+'+fmt(diff),nr===1&&old!==1?'TOOK № 1':(nr<old?`up to #${nr}`:`holds #${nr}`));
-  paintAll();
-},13000);
+load();
+setInterval(load, 8000);
 </script>
 </body>
 </html>
