@@ -121,7 +121,7 @@ class PositionIn(BaseModel):
     name: str
     domain: str
     description: str = ""
-    category: str = "AI Tools"
+    category: str = "Other"
     color: str = "#2563EB"
 
 class BidIn(BaseModel):
@@ -132,7 +132,7 @@ class ClaimIn(BaseModel):
     domain: str
     name: str
     description: str = ""
-    category: str = "AI Tools"
+    category: str = "Other"
     color: str = "#2563EB"
     amount: int = Field(ge=1, le=MAX_BID)
 
@@ -262,6 +262,12 @@ def list_positions(
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
+    category_match = None
+    if category:
+        category_match = next((x for x in CATEGORY_CATALOG if x["slug"] == category or x["name"].lower() == category.lower()), None)
+        if not category_match:
+            raise HTTPException(404, "Category not found")
+        category = category_match["name"]
     qset = db.query(Position)
     if category:
         qset = qset.filter(Position.category == category)
@@ -273,6 +279,10 @@ def list_positions(
     out = []
     for p in all_positions:
         paid = int(totals.get(p.id, 0))
+        # A listing shell created for an unpaid Checkout is not public yet.
+        # Keep the board honest: only completed payments enter any leaderboard.
+        if paid <= 0:
+            continue
         clicks = db.query(Click).filter(Click.position_id == p.id).count()
         out.append({
             "id": p.id, "slug": p.slug, "name": p.name, "domain": p.domain,
@@ -405,6 +415,8 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
         # The new position is not ranked until this checkout is paid.
         leader_total = max(leader_total, 0)
     need = max(leader_total + 1, body.amount, current + 1)
+    if need > MAX_BID:
+        raise HTTPException(400, f"The $${MAX_BID:,} board limit has been reached")
     delta = need - current
 
     b = Bid(position_id=p.id, amount=delta, status="pending",
@@ -605,9 +617,9 @@ def seed_demo(db: Session = Depends(get_db)):
     if db.query(Position).count() > 0:
         return {"ok": True, "message": "board already has listings"}
     launch = [
-        ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Platforms", "#2563EB", 1),
-        ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "Agents", "#0F172A", 3),
-        ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Platforms", "#2563EB", 5),
+        ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Marketing", "#2563EB", 1),
+        ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "AI Agents", "#0F172A", 3),
+        ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Data & Research", "#2563EB", 5),
     ]
     for slug, name, domain, desc, cat, color, bid in launch:
         p = Position(slug=slug, name=name, domain=domain, description=desc,
@@ -678,9 +690,9 @@ def _auto_seed():
         elif old:
             return
         starters = [
-            ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Platforms", "#2563EB", 1),
-            ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "Agents", "#0F172A", 3),
-            ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Platforms", "#2563EB", 5),
+            ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Marketing", "#2563EB", 1),
+            ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "AI Agents", "#0F172A", 3),
+            ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Data & Research", "#2563EB", 5),
         ]
         for slug, name, domain, desc, cat, color, bid in starters:
             p = Position(slug=slug, name=name, domain=domain, description=desc,

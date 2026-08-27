@@ -74,6 +74,7 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .rin .thumb{width:27px;height:24px;font-size:10px}
 .rin .t1{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86px}
 .rin .t2{font-size:7.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86px}
+.t3{font-family:var(--mono);font-size:8px;color:var(--sub);margin-top:2px}
 .rb{font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
 .ad img{outline:1px solid rgba(0,0,0,.1)}
 .ad .visual{background:#fff!important}
@@ -229,6 +230,7 @@ body.modal-open{overflow:hidden}
 .modal-card h2{font-size:22px;line-height:1.05;margin:7px 44px 7px 0;text-transform:uppercase;letter-spacing:-.03em}
 .modal-card p{font-size:12px;line-height:1.55;color:var(--sub);margin:0 0 12px}
 .modal-stats{display:grid;grid-template-columns:1fr 1fr;border-top:var(--bd);border-bottom:var(--bd);margin-bottom:14px}
+.modal-stats span:last-child{grid-column:1/-1;border-top:1px solid #DDD9CC}
 .modal-stats span{padding:8px 7px;font-family:var(--mono);font-size:8.5px;color:var(--sub);border-bottom:1px solid #DDD9CC}
 .modal-stats span:nth-child(odd){border-right:1px solid #DDD9CC}.modal-stats span:nth-last-child(-n+2){border-bottom:0}
 .modal-stats b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
@@ -419,6 +421,7 @@ let cats=[];
 let activeCat="All", bidTarget=-1, lastRank=null, maxBid=900;
 let page=1, limit=12, totalPages=1;
 const fmt=n=>n.toLocaleString();
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tb=document.getElementById('tb');
 const tabsEl=document.getElementById('tabs');
 const slider=document.getElementById('slider');
@@ -437,7 +440,7 @@ async function load(){
       console.warn('[board] no array in response',data);
     }
     items=all.map(p=>({
-      id:p.id, n:p.name, d:p.domain, t:p.description||"", c:p.category||"Other",
+      id:p.id, n:p.name, d:p.domain, t:p.description||"", c:p.category||"Other", cr:Number(p.category_rank)||1,
       b:Number(p.total_paid)||0, k:Number(p.clicks)||0, slug:p.slug, color:p.color||"#2563EB", mine:false
     }));
     if(items.length){
@@ -447,16 +450,16 @@ async function load(){
     }
     cats=['All',...(Array.isArray(data.categories) ? data.categories.map(x=>x.name||x) : CATEGORIES)];
     const categoryIn=document.getElementById('categoryIn');
-    if(categoryIn) categoryIn.innerHTML=CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('');
+    if(categoryIn) categoryIn.innerHTML=cats.slice(1).map(c=>`<option value="${c}">${c}</option>`).join('');
     buildTabs(); render(); renderRail('railL',0); renderRail('railR',0);
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
-    loadAnalytics(); loadRevenue(); loadActivity();
+    loadAnalytics(); loadRevenue(); loadActivity(); loadDataHealth();
   }catch(e){ console.error('[board]', e); document.getElementById('dataStatus').innerHTML='<i class="ok" style="background:var(--red)"></i> Data check failed'; tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — ' + (e && e.message ? e.message : 'try again in a moment') + '</td></tr>'; }
 }
 
 async function loadAnalytics(){
   try{
-    const r=await fetch(API+"/api/analytics/summary");
+    const r=await fetch(API+"/api/analytics/summary?_="+Date.now(),{cache:"no-store"});
     const d=await r.json();
     const el=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
     el('mPos', d.positions ?? '—');
@@ -464,6 +467,18 @@ async function loadAnalytics(){
     el('mPot', '$'+(d.pot ?? 0).toLocaleString());
     el('mFee', '$'+((d.platform_earnings ?? 0).toLocaleString()));
   }catch(e){}
+}
+async function loadDataHealth(){
+  try{
+    const r=await fetch(API+"/api/data-health?_="+Date.now(),{cache:"no-store"});
+    if(!r.ok) throw new Error('data health '+r.status);
+    const d=await r.json();
+    const el=document.getElementById('dataStatus');
+    if(el) el.innerHTML=`<i class="ok"></i> ${d.database==='postgres'?'Verified live data':'Live data'} · ${d.categories_present.length} categories in use`;
+  }catch(e){
+    const el=document.getElementById('dataStatus');
+    if(el) el.innerHTML='<i class="ok" style="background:var(--red)"></i> Data check unavailable';
+  }
 }
 
 function buildTabs(){
@@ -485,7 +500,7 @@ function render(flash){
       <td><div class="rnk">${start+i+1}</div></td>
       <td><div class="pl">
         <div class="thumb" style="background:${it.color||C[gi%C.length]}">${it.n[0]}</div>
-        <div><div class="t1">${it.n}</div><a class="t2" href="#" onclick="event.stopPropagation()">→ ${it.d}</a></div>
+        <div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">→ ${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div>
       </div></td>
       <td class="traffic"><b>${it.k? (it.k/1000).toFixed(1)+'K':'0'}</b><span>LAST 24H</span></td>
       <td class="chg ${mv>0?'up':mv<0?'down':'flat'}">${mv>0?'▲+'+(mv*3.1).toFixed(1)+'%':mv<0?'▼-'+Math.abs(mv*3.1).toFixed(1)+'%':'—'}</td>
@@ -498,6 +513,11 @@ function render(flash){
   renderRail('railR', 0);
 }
 function goPage(p){page=p;render(); window.location.hash='board';}
+
+function rankFromBoard(it){
+  const sorted=[...items].sort((a,b)=>b.b-a);
+  return sorted.indexOf(it)+1;
+}
 
 const ADS_L=[];
 const ADS_R=[
@@ -515,7 +535,7 @@ function renderRail(railId, startRank){
     ? ADS_R.map(ad).join('') + '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>'
     : '';
   const sorted=[...items].sort((a,b)=>b.b-a);
-  const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${it.n[0]}</div><div><div class="t1">${it.n}</div><div class="t2">${it.d}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
+  const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${esc(it.n[0])}</div><div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
   rail.innerHTML = labels + (railId==='railL' ? players : '') + adBlock;
 }
 
@@ -523,11 +543,11 @@ function showOutbid(i){
   const it=items[i];
   if(!it) return;
   const sorted=[...items].sort((a,b)=>b.b-a);
-  const rank=sorted.indexOf(it)+1, next=it.b+1;
+  const rank=sorted.indexOf(it)+1, categoryRank=items.filter(x=>x.c===it.c).sort((a,b)=>b.b-a).indexOf(it)+1, next=it.b+1;
   document.getElementById('outbidTitle').textContent=`Outbid ${it.n}`;
   document.getElementById('outbidVisual').src='/assets/outbid-visual.png';
   document.getElementById('outbidCopy').textContent=`${it.n} is #${rank} in ${it.c}. Pay $${fmt(next)} total to move above this listing. Your checkout charges only the difference from your existing total. Category leaders are ranked independently from the global board.`;
-  document.getElementById('outbidStats').innerHTML=`<span><b>#${rank}</b> current rank</span><span><b>$${fmt(it.b)}</b> total paid</span><span><b>${fmt(it.k)}</b> clicks</span><span><b>$${fmt(next)}</b> next total</span>`;
+  document.getElementById('outbidStats').innerHTML=`<span><b>#${rank}</b> global rank</span><span><b>#${categoryRank}</b> in ${it.c}</span><span><b>$${fmt(it.b)}</b> total paid</span><span><b>${fmt(it.k)}</b> clicks</span><span><b>$${fmt(next)}</b> next total</span>`;
   const agree=document.getElementById('outbidAgree');
   agree.checked=false;
   const continueBtn=document.getElementById('outbidContinue');
@@ -583,7 +603,7 @@ async function loadActivity(){
     const rows=await r.json();
     const el=document.getElementById('actRows'); if(!el) return;
     if(!rows.length){ el.innerHTML='<tr><td colspan="3" class="empty">No activity yet.</td></tr>'; return; }
-    el.innerHTML=rows.map(x=>`<tr><td>${x.note||'bid'}</td><td>${x.name||''}</td><td>${new Date(x.ts).toLocaleString()}</td></tr>`).join('');
+    el.innerHTML=rows.map(x=>`<tr><td>${esc(x.note||'bid')}</td><td>${esc(x.name||'')}</td><td>${new Date(x.ts).toLocaleString()}</td></tr>`).join('');
   }catch(e){}
 }
 slider.addEventListener('input',upd);
