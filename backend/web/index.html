@@ -57,7 +57,10 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
 .ad .tag{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;background:var(--ink);color:var(--paper);
   padding:4px 8px;display:inline-block;margin:8px 0 0 8px}
-.ad .visual{margin:7px 8px 0;height:74px;border:var(--bd);display:grid;place-items:center;font-size:26px}
+.ad .visual{margin:7px 8px 0;height:104px;border:var(--bd);display:grid;place-items:center;font-size:26px;overflow:hidden;background:var(--paper)}
+.ad .visual img{width:100%;height:100%;object-fit:contain;display:block;padding:6px;background:#fff}
+.ad .body a{display:inline-block;padding:2px 0}
+.ad.reserve .visual{background:repeating-linear-gradient(-45deg,#fff 0 8px,var(--paper) 8px 16px);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em}
 .ad .body{padding:8px 10px 10px}
 .ad .body h5{margin:0 0 2px;font-size:12px;font-weight:800;line-height:1.25}
 .ad .body a{font-family:var(--mono);font-size:9.5px;color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
@@ -74,6 +77,10 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .rb{font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
 .ad img{outline:1px solid rgba(0,0,0,.1)}
 .ad .visual{background:#fff!important}
+.category-label{display:block;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin:8px 0 4px}
+.category-select{width:100%;border:var(--bd);background:var(--card);padding:8px 10px;font:inherit;font-weight:700;font-size:11px;min-height:38px}
+.data-status{font-family:var(--mono);font-size:9px;color:var(--sub);display:inline-flex;align-items:center;gap:6px;margin-left:6px}
+.data-status .ok{width:7px;height:7px;background:var(--green);border:1px solid var(--ink);display:inline-block}
 @media(max-width:1080px){.rp{min-width:210px}.rail{padding-bottom:5px}}
 
 .board{background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg)}
@@ -212,6 +219,26 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 .foot-cell a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 
 .empty{text-align:center;padding:34px 10px;color:var(--sub);font-weight:600}
+body.modal-open{overflow:hidden}
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(17,17,17,.42)}
+.modal.on{display:flex}
+.modal-card{position:relative;width:min(430px,100%);background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg);padding:18px}
+.modal-close{position:absolute;right:10px;top:8px;width:34px;height:34px;border:var(--bd);background:var(--paper);font-size:23px;line-height:1;cursor:pointer;font-weight:900}
+.modal-visual{width:100%;height:130px;object-fit:cover;border:var(--bd);display:block;margin-bottom:14px}
+.modal-kicker{font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;font-weight:700;color:var(--sub)}
+.modal-card h2{font-size:22px;line-height:1.05;margin:7px 44px 7px 0;text-transform:uppercase;letter-spacing:-.03em}
+.modal-card p{font-size:12px;line-height:1.55;color:var(--sub);margin:0 0 12px}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr;border-top:var(--bd);border-bottom:var(--bd);margin-bottom:14px}
+.modal-stats span{padding:8px 7px;font-family:var(--mono);font-size:8.5px;color:var(--sub);border-bottom:1px solid #DDD9CC}
+.modal-stats span:nth-child(odd){border-right:1px solid #DDD9CC}.modal-stats span:nth-last-child(-n+2){border-bottom:0}
+.modal-stats b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.modal-agree{display:flex;align-items:flex-start;gap:8px;color:var(--sub);font-size:10px;line-height:1.45;margin:0 0 12px;cursor:pointer}
+.modal-agree input{width:16px;height:16px;accent-color:var(--ink);flex:none;margin:0}
+.modal-actions .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.modal-actions .btn{min-height:40px}
+@media(max-width:1080px){.modal{align-items:flex-end;padding:0}.modal-card{width:100%;box-shadow:0 -4px 0 var(--ink);padding:16px 14px calc(16px + env(safe-area-inset-bottom));}.modal-visual{height:108px}.modal-actions .btn{flex:1;min-width:145px}.modal-card h2{font-size:20px}}
+
 
 @media(max-width:1080px){
   .layout{grid-template-columns:1fr}
@@ -244,7 +271,9 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 <div class="shell layout" id="board">
 
   <aside class="rail" id="railL">
-    <div class="rail-label">Top players</div>
+    <div class="rail-label">Sponsored placements</div>
+    <div class="ad" id="houseAd"><span class="tag">SPONSORED</span><a class="visual" href="https://smartseek.com" target="_blank" rel="noopener noreferrer"><img src="/ads/smartseek.svg" alt="SmartSeek"></a><div class="body"><h5>SmartSeek</h5><a href="https://smartseek.com" target="_blank" rel="noopener noreferrer">→ smartseek.com</a></div></div>
+    <div class="rail-label" style="margin-top:8px">Top paid placements</div>
   </aside>
 
   <main>
@@ -255,9 +284,9 @@ tr:nth-child(1) .rnk{background:var(--lime)}
           <h1>One board.<br>One rule.<br><span class="hl">Highest bid wins.</span></h1>
           <p class="tagline"><b>Pay for attention, not permission.</b> No API keys. No account. No dashboard. Pick a URL, pay the next dollar, and your listing moves into public view. <b>$1</b> starts a new spot.</p>
           <div class="mini">
-            <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>#1 IS TAKEABLE</span><span>REAL ANALYTICS</span>
+            <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>10 CATEGORIES</span><span>$100K MAX</span>
           </div>
-          <div class="ticker"><div class="ticker-inner" id="ticker">$0 collected since launch — be the first bid.</div></div>
+          <div class="ticker"><div class="ticker-inner" id="ticker">Public ledger — live totals update after payment confirmation.</div></div>
         </div>
         <div class="console">
           <p class="target" id="target"></p>
@@ -268,10 +297,12 @@ tr:nth-child(1) .rnk{background:var(--lime)}
             <button class="step" onclick="nudge(1)" aria-label="Raise bid">+</button>
             <div class="projchip"><span class="clab">Projected</span><span class="v" id="proj">#—</span></div>
           </div>
-          <input id="slider" type="range" min="1" max="900" value="1">
-          <div class="ends"><span>$1</span><span>$900+</span></div>
+          <input id="slider" type="range" min="1" max="100000" value="1">
+          <div class="ends"><span>$1</span><span>$100K max</span></div>
           <p class="beats" id="beats">Pick a target, or start at $1 to claim a fresh seat.</p>
           <div class="urlfield"><span class="at">@</span><input id="urlIn" placeholder="yoursite.com or @handle" autocomplete="off"></div>
+          <label class="category-label" for="categoryIn">Category</label>
+          <select class="category-select" id="categoryIn" aria-label="Choose a category"></select>
           <button class="paybtn" onclick="payBid()">Pay &amp; go live →</button>
         </div>
       </div>
@@ -279,7 +310,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       <div class="competeband"><span>🔥</span><span><b id="cbName">Be first.</b> <span id="cbAgo">No bids yet</span> — your competitors will be here.</span><button class="cta" onclick="openBid(-1)">Start at $1</button></div>
 
       <div class="tabs" id="tabs"></div>
-      <div class="board-note"><span>PUBLIC BOARD</span> Every total below is a completed payment. New listings appear after Checkout confirms.</div>
+      <div class="board-note"><span>PUBLIC BOARD</span> Every total below is a completed payment. New listings appear after Checkout confirms.<em id="dataStatus" class="data-status"><i class="ok"></i> Live data</em></div>
 
       <div class="tscroll"><table>
         <thead><tr><th>#</th><th>Player</th><th>Clicks</th><th>Move</th><th>Total paid</th><th></th></tr></thead>
@@ -335,6 +366,19 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 </div>
 
 <div class="toasts" id="toasts"></div>
+
+<div class="modal" id="outbidModal" role="dialog" aria-modal="true" aria-labelledby="outbidTitle" onclick="if(event.target===this)closeOutbid()">
+<div class="modal-card">
+  <button class="modal-close" onclick="closeOutbid()" aria-label="Close">×</button>
+  <img id="outbidVisual" class="modal-visual" src="/assets/outbid-visual.png" alt="Rank movement illustration">
+  <div class="modal-kicker">SMARTSEEK / OUTBID PREVIEW</div>
+  <h2 id="outbidTitle">Outbid this listing</h2>
+  <p id="outbidCopy">Review the listing before you choose your bid.</p>
+  <div class="modal-stats" id="outbidStats"></div>
+  <label class="modal-agree"><input id="outbidAgree" type="checkbox"> I understand that this is a paid rank bid. The amount shown is public, and my listing moves only after payment confirms.</label>
+  <div class="modal-actions"><button class="btn" onclick="closeOutbid()">Keep browsing</button><button class="btn acc" id="outbidContinue" disabled>Continue to bid →</button></div>
+</div>
+</div>
 <noscript><div style="padding:14px;text-align:center;font-weight:700">SmartSeek needs JavaScript for the live board.</div></noscript>
 
 <footer class="footer">
@@ -369,6 +413,7 @@ function ga(event, params) {
 ga("page_view", { page_title: document.title, page_location: location.href });
 
 const C=["#111111","#E44B31","#1E9E5A","#2F5FE3","#B03BC4","#E39B12","#0E7C7B","#77777D","#2563EB","#7C3AED"];
+const CATEGORIES=["AI Tools","AI Agents","Marketing","Data & Research","SaaS","Developer Tools","Automation","Robotics","Devices","Other"];
 let items=[];
 let cats=[];
 let activeCat="All", bidTarget=-1, lastRank=null, maxBid=900;
@@ -385,6 +430,7 @@ async function load(){
     const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
     if(!r.ok) throw new Error(`API ${r.status} ${r.statusText}`);
     const data=await r.json();
+    document.getElementById('dataStatus').innerHTML='<i class="ok"></i> Live data · checked now';
     const raw=Array.isArray(data)?data:(data&&data.items);
     const all=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
     if(!all.length && data && typeof data==='object' && !Array.isArray(data)){
@@ -396,13 +442,16 @@ async function load(){
     }));
     if(items.length){
       maxBid=Math.max(900, ...items.map(i=>i.b+200));
+      maxBid=100000;
       slider.max=maxBid;
     }
-    cats=['All',...new Set(items.map(i=>i.c))];
-    buildTabs(); render(); renderRail('railL',0); renderRail('railR',8);
+    cats=['All',...(Array.isArray(data.categories) ? data.categories.map(x=>x.name||x) : CATEGORIES)];
+    const categoryIn=document.getElementById('categoryIn');
+    if(categoryIn) categoryIn.innerHTML=CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('');
+    buildTabs(); render(); renderRail('railL',0); renderRail('railR',0);
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
     loadAnalytics(); loadRevenue(); loadActivity();
-  }catch(e){ console.error('[board]', e); tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — ' + (e && e.message ? e.message : 'try again in a moment') + '</td></tr>'; }
+  }catch(e){ console.error('[board]', e); document.getElementById('dataStatus').innerHTML='<i class="ok" style="background:var(--red)"></i> Data check failed'; tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — ' + (e && e.message ? e.message : 'try again in a moment') + '</td></tr>'; }
 }
 
 async function loadAnalytics(){
@@ -441,40 +490,55 @@ function render(flash){
       <td class="traffic"><b>${it.k? (it.k/1000).toFixed(1)+'K':'0'}</b><span>LAST 24H</span></td>
       <td class="chg ${mv>0?'up':mv<0?'down':'flat'}">${mv>0?'▲+'+(mv*3.1).toFixed(1)+'%':mv<0?'▼-'+Math.abs(mv*3.1).toFixed(1)+'%':'—'}</td>
       <td class="bidcell"><b>$${fmt(it.b)}</b></td>
-      <td style="text-align:right"><button class="obtn" onclick="event.stopPropagation();openBid(${gi})">Outbid</button></td>
+      <td style="text-align:right"><button class="obtn" onclick="event.stopPropagation();showOutbid(${gi})">Outbid</button></td>
     </tr>`;
   }).join('');
   pager.innerHTML=`<button ${page<=1?'disabled':''} onclick="goPage(${page-1})">← Prev</button><span class="info">Page ${page} / ${totalPages}</span><button ${page>=totalPages?'disabled':''} onclick="goPage(${page+1})">Next →</button>`;
   renderRail('railL', 0);
-  renderRail('railR', 8);
+  renderRail('railR', 0);
 }
 function goPage(p){page=p;render(); window.location.hash='board';}
 
 const ADS_L=[];
 const ADS_R=[
- {bg:"#F4F2EA",icon:"/ads/higgsfield.svg",h:"Higgsfield",l:"Higgsfield ad — link coming soon"},
- {bg:"#F4F2EA",icon:"/ads/railway.svg",h:"Railway",l:"railway.com"}
+ {icon:"/ads/higgsfield.svg",h:"Higgsfield",l:"Try Higgsfield AI",url:"https://higgsfield.com"},
+ {icon:"/ads/railway.svg",h:"Railway",l:"Deploy on Railway",url:"https://railway.com"}
 ];
 function ad(a){return `<div class="ad"><span class="tag">AD SPOT</span>
-  <div class="visual" style="background:${a.bg};color:#111"><img src="${a.icon}" alt="" style="max-height:44px;max-width:90%;display:block;margin:0 auto"></div>
-  <div class="body"><h5>${a.h}</h5><a href="#">→ ${a.l}</a></div></div>`;}
+  <a class="visual" href="${a.url}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${a.h}"><img src="${a.icon}" alt="${a.h}"></a>
+  <div class="body"><h5>${a.h}</h5><a href="${a.url}" target="_blank" rel="noopener noreferrer">→ ${a.l}</a></div></div>`;}
 function renderRail(railId, startRank){
   const rail=document.getElementById(railId);
   if(!rail) return;
-  const sorted=[...items].sort((a,b)=>b.b-a.b);
-  const pageItems = activeCat==='All'
-    ? sorted
-    : sorted.filter(i=>i.c===activeCat);
-  const slice = pageItems.slice(startRank, startRank+8);
-  const rows = slice.map((it, idx)=>`<div class="rp" onclick="event.stopPropagation();openBid(${items.indexOf(it)})">
-    <div class="rnk">${startRank+idx+1}</div>
-    <div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${it.n[0]}</div><div><div class="t1">${it.n}</div><div class="t2">${it.d}</div></div></div>
-    <div class="rb">$${fmt(it.b)}</div>
-  </div>`).join('');
-  const adBlock = railId==='railR' && ADS_R.length ? ADS_R.map(ad).join('') + '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>' : '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>';
-  const label = rail.querySelector('.rail-label');
-  rail.innerHTML = (label ? label.outerHTML : '') + rows + adBlock;
+  const labels=[...rail.querySelectorAll('.rail-label')].map(x=>x.outerHTML).join('');
+  const adBlock = railId==='railR' && ADS_R.length
+    ? ADS_R.map(ad).join('') + '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>'
+    : '';
+  const sorted=[...items].sort((a,b)=>b.b-a);
+  const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${it.n[0]}</div><div><div class="t1">${it.n}</div><div class="t2">${it.d}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
+  rail.innerHTML = labels + (railId==='railL' ? players : '') + adBlock;
 }
+
+function showOutbid(i){
+  const it=items[i];
+  if(!it) return;
+  const sorted=[...items].sort((a,b)=>b.b-a);
+  const rank=sorted.indexOf(it)+1, next=it.b+1;
+  document.getElementById('outbidTitle').textContent=`Outbid ${it.n}`;
+  document.getElementById('outbidVisual').src='/assets/outbid-visual.png';
+  document.getElementById('outbidCopy').textContent=`${it.n} is #${rank} in ${it.c}. Pay $${fmt(next)} total to move above this listing. Your checkout charges only the difference from your existing total. Category leaders are ranked independently from the global board.`;
+  document.getElementById('outbidStats').innerHTML=`<span><b>#${rank}</b> current rank</span><span><b>$${fmt(it.b)}</b> total paid</span><span><b>${fmt(it.k)}</b> clicks</span><span><b>$${fmt(next)}</b> next total</span>`;
+  const agree=document.getElementById('outbidAgree');
+  agree.checked=false;
+  const continueBtn=document.getElementById('outbidContinue');
+  continueBtn.disabled=true;
+  agree.onchange=()=>{continueBtn.disabled=!agree.checked;};
+  continueBtn.onclick=()=>{if(agree.checked){closeOutbid();openBid(i);}};
+  document.getElementById('outbidModal').classList.add('on');
+  document.body.classList.add('modal-open');
+}
+function closeOutbid(){document.getElementById('outbidModal').classList.remove('on');document.body.classList.remove('modal-open');}
+
 
 function openBid(i){
   bidTarget=i;
@@ -487,7 +551,7 @@ function openBid(i){
 }
 function nudge(d){slider.value=Math.max(1,Math.min(maxBid,+slider.value+d));upd();}
 function upd(){
-  const v=+slider.value;
+  const v=Math.max(1,Math.min(100000,+slider.value));
   document.getElementById('bidnum').textContent='$'+fmt(v);
   const above=items.filter(x=>x.b>=v).length, rank=above+1;
   const pv=document.getElementById('proj');
@@ -531,13 +595,14 @@ async function payBid(){
   if(!raw){ toast('Enter your domain or @handle first.'); return; }
   const d=raw.startsWith('@')?raw:raw.replace(/^https?:\/\//,'').split('/')[0];
   const nm=raw.startsWith('@')?raw:d.replace(/^www\./,'');
+  const category=document.getElementById('categoryIn')?.value || 'Other';
   try{
     let pid;
     const existed=items.find(i=>i.d===d || i.slug===d);
     if(existed){ pid=existed.id; }
     else{
       const cr=await fetch(API+"/api/positions",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({name:nm,domain:d,description:"Your product, seen first.",category:"Other",color:"#2563EB"})});
+        body:JSON.stringify({name:nm,domain:d,description:"Your product, seen first.",category:category,color:"#2563EB"})});
       const cj=await cr.json();
       if(!cr.ok){ toast(cj.detail||"Could not list."); return; }
       pid=cj.id;
