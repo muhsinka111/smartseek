@@ -236,6 +236,10 @@ def rules():
 def advertise():
     return FileResponse(WEB_DIR / "advertise.html", media_type="text/html")
 
+@app.get("/contact")
+def contact():
+    return FileResponse(WEB_DIR / "contact.html", media_type="text/html")
+
 @app.get("/api/config")
 def config():
     return {
