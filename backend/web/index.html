@@ -365,12 +365,18 @@ const pager=document.getElementById('pager');
 
 async function load(){
   try{
-    const r=await fetch(API+"/api/positions?limit=200");
+    const url=API+"/api/positions?limit=200&_="+Date.now();
+    const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+    if(!r.ok) throw new Error(`API ${r.status} ${r.statusText}`);
     const data=await r.json();
-    const all=data.items||data;
+    const raw=Array.isArray(data)?data:(data&&data.items);
+    const all=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
+    if(!all.length && data && typeof data==='object' && !Array.isArray(data)){
+      console.warn('[board] no array in response',data);
+    }
     items=all.map(p=>({
       id:p.id, n:p.name, d:p.domain, t:p.description||"", c:p.category||"Other",
-      b:p.total_paid||0, k:p.clicks||0, slug:p.slug, color:p.color||"#2563EB", mine:false
+      b:Number(p.total_paid)||0, k:Number(p.clicks)||0, slug:p.slug, color:p.color||"#2563EB", mine:false
     }));
     if(items.length){
       maxBid=Math.max(900, ...items.map(i=>i.b+200));
