@@ -8,6 +8,7 @@
 <meta property="og:title" content="SmartSeek — Highest bid wins.">
 <meta property="og:description" content="Bid. Climb. Get discovered. The transparent pay-to-rank board for everything smart. From $1.">
 <meta property="og:type" content="website">
+<link rel="icon" href="/ads/smartseek.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -27,9 +28,10 @@
   --mono:'Space Mono',monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:Archivo,system-ui,sans-serif;
+html{width:100%;overflow-x:clip}
+body{width:100%;max-width:100%;overflow-x:clip;margin:0;background:var(--paper);color:var(--ink);font-family:Archivo,system-ui,sans-serif;
   font-size:13px;-webkit-font-smoothing:antialiased}
-.shell{max-width:1300px;margin:0 auto;padding:0 18px}
+.shell{width:100%;max-width:1500px;margin:0 auto;padding:0 clamp(12px,2vw,28px)}
 
 nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-index:50}
 .nav-in{display:flex;align-items:center;gap:22px;height:56px}
@@ -51,7 +53,8 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .btn.acc{background:var(--lime)}
 .btn.dark{background:var(--ink);color:var(--paper)}
 
-.layout{display:grid;grid-template-columns:185px 1fr 185px;gap:16px;padding:16px 0 30px;align-items:start}
+.layout{display:grid;grid-template-columns:minmax(0,185px) minmax(0,1fr) minmax(0,185px);gap:16px;padding:16px 0 30px;align-items:start;min-width:0}
+.layout main,.board,.bhero,.bhero-l,.console{min-width:0;max-width:100%}
 .rail{display:flex;flex-direction:column;gap:10px;position:sticky;top:72px}.rail-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);padding:4px 0}
 
 .ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
@@ -130,7 +133,7 @@ input[type=range]:focus-visible{outline:3px solid var(--lime);outline-offset:2px
 .competeband .cta{margin-left:auto;background:var(--lime);color:var(--ink);border:2px solid var(--lime);font:inherit;
   font-size:9.5px;font-weight:900;text-transform:uppercase;padding:4px 9px;cursor:pointer;letter-spacing:.05em}
 
-.tabs{display:flex;border-bottom:var(--bd);overflow-x:auto}.board-note{padding:7px 10px;background:#FBFAF4;border-bottom:1px solid #DDD9CC;color:var(--sub);font-size:10px}.board-note span{font-family:var(--mono);font-size:8px;color:var(--ink);font-weight:700;border:1px solid var(--ink);padding:2px 4px;margin-right:6px}
+.tabs{display:flex;border-bottom:var(--bd);overflow-x:auto}.board-note{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:7px 10px;background:#FBFAF4;border-bottom:1px solid #DDD9CC;color:var(--sub);font-size:10px}.board-note span{font-family:var(--mono);font-size:8px;color:var(--ink);font-weight:700;border:1px solid var(--ink);padding:2px 4px}
 .tab{font:inherit;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);
   background:none;border:0;border-right:var(--bd);padding:10px 14px;cursor:pointer;white-space:nowrap}
 .tab.on{background:var(--lime);color:var(--ink)}
@@ -148,7 +151,8 @@ tr.flash td{animation:fl 1s}
   font-family:var(--mono);background:var(--card)}
 tr:nth-child(1) .rnk{background:var(--lime)}
 .pl{display:flex;align-items:center;gap:9px}
-.thumb{width:44px;height:32px;border:var(--bd);display:grid;place-items:center;color:#fff;font-weight:900;font-size:13px;flex:none}
+.thumb{width:44px;height:32px;border:var(--bd);display:grid;place-items:center;color:#fff;font-weight:900;font-size:13px;flex:none;overflow:hidden;background:#fff}
+.thumb img{width:100%;height:100%;object-fit:contain;display:block;background:#fff;outline:1px solid rgba(0,0,0,.1)}
 .t1{font-weight:800;font-size:12px;line-height:1.2}
 .t2{font-family:var(--mono);font-size:9px;font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .traffic b{font-family:var(--mono);font-size:11.5px;font-weight:700}
@@ -225,7 +229,6 @@ body.modal-open{overflow:hidden}
 .modal.on{display:flex}
 .modal-card{position:relative;width:min(430px,100%);background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg);padding:18px}
 .modal-close{position:absolute;right:10px;top:8px;width:34px;height:34px;border:var(--bd);background:var(--paper);font-size:23px;line-height:1;cursor:pointer;font-weight:900}
-.modal-visual{width:100%;height:130px;object-fit:cover;border:var(--bd);display:block;margin-bottom:14px}
 .modal-kicker{font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;font-weight:700;color:var(--sub)}
 .modal-card h2{font-size:22px;line-height:1.05;margin:7px 44px 7px 0;text-transform:uppercase;letter-spacing:-.03em}
 .modal-card p{font-size:12px;line-height:1.55;color:var(--sub);margin:0 0 12px}
@@ -242,16 +245,48 @@ body.modal-open{overflow:hidden}
 @media(max-width:1080px){.modal{align-items:flex-end;padding:0}.modal-card{width:100%;box-shadow:0 -4px 0 var(--ink);padding:16px 14px calc(16px + env(safe-area-inset-bottom));}.modal-visual{height:108px}.modal-actions .btn{flex:1;min-width:145px}.modal-card h2{font-size:20px}}
 
 
+@media(max-width:1280px) and (min-width:1081px){
+  .layout{grid-template-columns:minmax(0,155px) minmax(0,1fr) minmax(0,155px);gap:12px}
+  .bhero{grid-template-columns:minmax(0,1fr) minmax(0,340px)}
+  .nav-in{gap:12px}
+}
 @media(max-width:1080px){
   .layout{grid-template-columns:1fr}
-  .rail{position:static;flex-direction:row;overflow-x:auto}
-  .ad{min-width:200px}
+  .rail{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+  .rail-label{grid-column:1/-1}
+  .rp,.ad{min-width:0;width:100%}
   .bhero{grid-template-columns:1fr}
   .console{border-left:0;border-top:var(--bd)}
   .strip{grid-template-columns:1fr}
   .metrics{grid-template-columns:1fr 1fr}
   .nav-links{display:none}
   .footer .shell{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .shell{padding-left:12px;padding-right:12px}
+  .nav-in{height:54px;gap:8px;padding-left:12px;padding-right:12px}
+  .logo{font-size:16px;gap:6px}
+  .logo .sq{width:14px;height:14px}
+  .nav-live{font-size:8px;gap:4px;white-space:nowrap}
+  .nav-right{gap:0;margin-left:auto}
+  .nav-right .btn:first-child{display:none}
+  .nav-right .btn.acc{padding:8px 10px;font-size:9px;white-space:nowrap}
+  .rail{grid-template-columns:1fr}
+  .rail-label{grid-column:1}
+  .bhero-l{padding:16px 14px 12px}
+  .console{padding:14px 12px 12px}
+  .amount{gap:5px}
+  .bignum{font-size:clamp(25px,9vw,34px);min-width:0}
+  .projchip{padding:5px 7px}
+  .projchip .v{font-size:15px}
+  .paybtn{min-height:48px}
+  .board-note{align-items:flex-start}
+  .data-status{margin-left:0}
+  .metrics{gap:8px}
+  .mcell{padding:9px}
+  .modal-card{padding-left:12px;padding-right:12px}
+  .modal-actions{gap:6px}
+  .modal-actions .btn{min-width:0;padding-left:9px;padding-right:9px;font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -372,13 +407,11 @@ body.modal-open{overflow:hidden}
 <div class="modal" id="outbidModal" role="dialog" aria-modal="true" aria-labelledby="outbidTitle" onclick="if(event.target===this)closeOutbid()">
 <div class="modal-card">
   <button class="modal-close" onclick="closeOutbid()" aria-label="Close">×</button>
-  <img id="outbidVisual" class="modal-visual" src="/assets/outbid-visual.png" alt="Rank movement illustration">
-  <div class="modal-kicker">SMARTSEEK / OUTBID PREVIEW</div>
+  <div class="modal-kicker">SMARTSEEK / OUTBID</div>
   <h2 id="outbidTitle">Outbid this listing</h2>
   <p id="outbidCopy">Review the listing before you choose your bid.</p>
   <div class="modal-stats" id="outbidStats"></div>
-  <label class="modal-agree"><input id="outbidAgree" type="checkbox"> I understand that this is a paid rank bid. The amount shown is public, and my listing moves only after payment confirms.</label>
-  <div class="modal-actions"><button class="btn" onclick="closeOutbid()">Keep browsing</button><button class="btn acc" id="outbidContinue" disabled>Continue to bid →</button></div>
+  <div class="modal-actions"><button class="btn" onclick="closeOutbid()">Keep browsing</button><button class="btn acc" id="outbidContinue">Continue to bid →</button></div>
 </div>
 </div>
 <noscript><div style="padding:14px;text-align:center;font-weight:700">SmartSeek needs JavaScript for the live board.</div></noscript>
@@ -420,8 +453,19 @@ let items=[];
 let cats=[];
 let activeCat="All", bidTarget=-1, lastRank=null, maxBid=900;
 let page=1, limit=12, totalPages=1;
-const fmt=n=>n.toLocaleString();
+const fmt=n=>Number(n||0).toLocaleString();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRAND_LOGOS={
+  'smartseek.com':'/ads/smartseek.svg',
+  'ortaq.biz':'/ads/ortaq.svg',
+  'ihalezeka.com':'/ads/ihalezeka.svg',
+  'higgsfield.com':'/ads/higgsfield.svg',
+  'railway.com':'/ads/railway.svg'
+};
+function logoFor(it){
+  const src=BRAND_LOGOS[String(it?.d||'').toLowerCase()];
+  return src ? `<img src="${src}" alt="" loading="lazy">` : esc(String(it?.n||'').trim().charAt(0).toUpperCase()||'?');
+}
 const tb=document.getElementById('tb');
 const tabsEl=document.getElementById('tabs');
 const slider=document.getElementById('slider');
@@ -499,7 +543,7 @@ function render(flash){
     return `<tr class="${it.n===flash?'flash':''}" onclick="openBid(${gi})">
       <td><div class="rnk">${start+i+1}</div></td>
       <td><div class="pl">
-        <div class="thumb" style="background:${it.color||C[gi%C.length]}">${it.n[0]}</div>
+        <div class="thumb" style="background:${it.color||C[gi%C.length]}">${logoFor(it)}</div>
         <div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">→ ${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div>
       </div></td>
       <td class="traffic"><b>${it.k? (it.k/1000).toFixed(1)+'K':'0'}</b><span>LAST 24H</span></td>
@@ -535,7 +579,7 @@ function renderRail(railId, startRank){
     ? ADS_R.map(ad).join('') + '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>'
     : '';
   const sorted=[...items].sort((a,b)=>b.b-a);
-  const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${esc(it.n[0])}</div><div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
+  const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${logoFor(it)}</div><div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
   rail.innerHTML = labels + (railId==='railL' ? players : '') + adBlock;
 }
 
@@ -543,21 +587,23 @@ function showOutbid(i){
   const it=items[i];
   if(!it) return;
   const sorted=[...items].sort((a,b)=>b.b-a);
-  const rank=sorted.indexOf(it)+1, categoryRank=items.filter(x=>x.c===it.c).sort((a,b)=>b.b-a).indexOf(it)+1, next=it.b+1;
+  const rank=sorted.indexOf(it)+1, categoryRank=items.filter(x=>x.c===it.c).sort((a,b)=>b.b-a).indexOf(it)+1, next=Math.min(maxBid,it.b+1);
   document.getElementById('outbidTitle').textContent=`Outbid ${it.n}`;
-  document.getElementById('outbidVisual').src='/assets/outbid-visual.png';
-  document.getElementById('outbidCopy').textContent=`${it.n} is #${rank} in ${it.c}. Pay $${fmt(next)} total to move above this listing. Your checkout charges only the difference from your existing total. Category leaders are ranked independently from the global board.`;
-  document.getElementById('outbidStats').innerHTML=`<span><b>#${rank}</b> global rank</span><span><b>#${categoryRank}</b> in ${it.c}</span><span><b>$${fmt(it.b)}</b> total paid</span><span><b>${fmt(it.k)}</b> clicks</span><span><b>$${fmt(next)}</b> next total</span>`;
-  const agree=document.getElementById('outbidAgree');
-  agree.checked=false;
+  document.getElementById('outbidCopy').textContent=next<=it.b ? `${it.n} is already at the $${fmt(maxBid)} board limit.` : `${it.n} is #${rank} in ${it.c}. Current total is $${fmt(it.b)}. Put down $${fmt(next)} total to beat it; checkout charges only the $${fmt(next - it.b)} difference.`;
+  document.getElementById('outbidStats').innerHTML=`<span><b>$${fmt(it.b)}</b> competitor total</span><span><b>$${fmt(next)}</b> your required total</span><span><b>$${fmt(next - it.b)}</b> charged now</span><span><b>#${rank}</b> global rank</span><span><b>#${categoryRank}</b> in ${it.c}</span>`;
   const continueBtn=document.getElementById('outbidContinue');
-  continueBtn.disabled=true;
-  agree.onchange=()=>{continueBtn.disabled=!agree.checked;};
-  continueBtn.onclick=()=>{if(agree.checked){closeOutbid();openBid(i);}};
+  continueBtn.disabled=next<=it.b;
+  continueBtn.textContent=next<=it.b ? 'Board limit reached' : 'Continue to bid →';
+  continueBtn.onclick=()=>{if(next>it.b){closeOutbid();openBid(i);}};
   document.getElementById('outbidModal').classList.add('on');
   document.body.classList.add('modal-open');
 }
-function closeOutbid(){document.getElementById('outbidModal').classList.remove('on');document.body.classList.remove('modal-open');}
+function closeOutbid(){
+  document.getElementById('outbidModal').classList.remove('on');
+  document.body.classList.remove('modal-open');
+  const btn=document.getElementById('outbidContinue');
+  btn.disabled=false; btn.textContent='Continue to bid →';
+}
 
 
 function openBid(i){

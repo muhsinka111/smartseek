@@ -1,6 +1,7 @@
 fastapi>=0.100
 uvicorn[standard]>=0.23
 sqlalchemy>=2.0
+psycopg2-binary>=2.9
 stripe>=7.0
 pydantic>=2.0
 python-multipart
