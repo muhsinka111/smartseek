@@ -365,7 +365,7 @@ const pager=document.getElementById('pager');
 
 async function load(){
   try{
-    const url=API+"/api/positions?limit=200&_="+Date.now();
+    const url=API+"/api/positions?limit=100&_="+Date.now();
     const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
     if(!r.ok) throw new Error(`API ${r.status} ${r.statusText}`);
     const data=await r.json();
