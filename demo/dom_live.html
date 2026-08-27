@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SmartSeek — One board. One rule. Highest bid wins.</title>
@@ -9,8 +8,8 @@
 <meta property="og:description" content="Bid. Climb. Get discovered. The transparent pay-to-rank board for everything smart. From $1.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#F4F2EA;
@@ -269,7 +268,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 
       <div class="tscroll"><table>
         <thead><tr><th>#</th><th>Product</th><th>Clicks/24h</th><th>Δ</th><th>Bid</th><th></th></tr></thead>
-        <tbody id="tb"><tr><td colspan="6" class="empty">Loading the board…</td></tr></tbody>
+        <tbody id="tb"><tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr></tbody>
       </table></div>
 
       <div class="board-foot">
@@ -300,7 +299,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
           <span>One email when someone beats your spot. No spam, no account needed.</span>
         </div>
         <form class="alert-form" onsubmit="event.preventDefault();toast('Alert signup coming soon.');">
-          <input id="alertEmail" type="email" placeholder="you@example.com" required>
+          <input id="alertEmail" type="email" placeholder="you@example.com" required="">
           <button class="btn acc" type="submit">Watch this spot</button>
         </form>
       </div>
@@ -380,7 +379,7 @@ async function load(){
     buildTabs(); render(); renderRail('railL',0); renderRail('railR',8);
     if(items[0]){ document.getElementById('cbName').textContent=items[0].n; document.getElementById('cbAgo').textContent='currently #1'; }
     loadAnalytics(); loadRevenue(); loadActivity();
-  }catch(e){ console.error('[board]', e); tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — ' + (e && e.message ? e.message : 'try again in a moment') + '</td></tr>'; }
+  }catch(e){ tb.innerHTML='<tr><td colspan="6" class="empty">Board offline — try again in a moment.</td></tr>'; }
 }
 
 async function loadAnalytics(){
@@ -540,5 +539,6 @@ function toast(m){const box=document.getElementById('toasts');
 load();
 setInterval(load, 8000);
 </script>
-</body>
-</html>
+
+
+</body></html>
