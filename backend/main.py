@@ -93,6 +93,11 @@ class TradeLog(Base):
     note        = Column(String(200), default="")
     created_at  = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+class AppSetting(Base):
+    __tablename__ = "app_settings"
+    key         = Column(String(120), primary_key=True)
+    value       = Column(String(400), nullable=False, default="")
+
 Base.metadata.create_all(bind=engine)
 
 # ─────────────────────────────────────────────────────────────
@@ -241,15 +246,16 @@ def list_positions(
 
 @app.post("/api/positions")
 def create_position(body: PositionIn, db: Session = Depends(get_db)):
+    """Create a listing shell; money is recorded only after payment succeeds."""
     s = slugify(body.domain)
-    if db.query(Position).filter(Position.slug == s).first():
-        raise HTTPException(400, "Already listed — enter a bid instead")
+    existing = db.query(Position).filter(Position.slug == s).first()
+    if existing:
+        return {"ok": True, "id": existing.id, "slug": existing.slug, "existing": True}
     p = Position(slug=s, name=body.name, domain=body.domain,
-                 description=body.description, category=body.category, color=body.color)
-    db.add(p); db.flush()
-    b = Bid(position_id=p.id, amount=1, status="paid")
-    db.add(b); db.commit()
-    return {"ok": True, "id": p.id, "slug": p.slug}
+                 description=body.description, category=body.category,
+                 color=body.color, is_demo=False)
+    db.add(p); db.commit()
+    return {"ok": True, "id": p.id, "slug": p.slug, "existing": False}
 
 # ─────────────────────────────────────────────────────────────
 # bids — the ranking engine
@@ -266,42 +272,43 @@ def place_bid(body: BidIn, db: Session = Depends(get_db)):
     if body.amount < need:
         raise HTTPException(400, f"Must be at least ${need} to rank here")
     delta = body.amount - current
-    b = Bid(position_id=p.id, amount=delta, status="paid", paid_at=datetime.now(timezone.utc))
-    db.add(b); db.flush()
-    db.add(TradeLog(position_id=p.id, delta=delta,
-                    note=f"raised by ${delta} → total ${body.amount}"))
-    db.commit()
-    new_total = total_paid(db, p.id)
-    rank = db.query(func.count(func.distinct(Position.id))).join(Bid).filter(
-        Bid.status == "paid", Bid.amount > new_total
-    ).scalar() + 1
+    # Never rank a live bid before Stripe confirms it. This also makes
+    # cancelled checkouts invisible to the public leaderboard.
+    b = Bid(position_id=p.id, amount=delta, status="pending",
+            created_at=datetime.now(timezone.utc))
+    db.add(b); db.commit()
+    proposed_total = current + delta
+    rank = rank_for(db, p.id, proposed_total)
 
     if STRIPE_SECRET:
         base = PUBLIC_BASE_URL.rstrip("/")
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[{
-                "price_data": {
-                    "currency": "usd",
-                    "unit_amount": delta * 100,
-                    "product_data": {"name": f"Rank #{rank} — {p.name} (total ${new_total + delta})"},
-                },
-                "quantity": 1,
-            }],
-            mode="payment",
-            success_url=f"{base}/success?bid_id={b.id}",
-            cancel_url=f"{base}/cancel?position_id={p.id}",
-            metadata={"bid_id": str(b.id), "position_id": str(p.id)},
-        )
-        b.stripe_pid = session.id
-        db.commit()
-        return {"checkout_url": session.url, "demo": False, "bid_id": b.id, "rank": rank, "total_paid": new_total, "position_id": p.id, "delta": delta}
-    else:
-        b.status = "paid"
-        b.paid_at = datetime.now(timezone.utc)
-        db.add(TradeLog(position_id=p.id, delta=delta, note="payment confirmed (demo)"))
-        db.commit()
-        return {"checkout_url": None, "demo": True, "bid_id": b.id, "rank": rank, "total_paid": new_total, "position_id": p.id, "delta": delta}
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[{
+                    "price_data": {
+                        "currency": "usd", "unit_amount": delta * 100,
+                        "product_data": {"name": f"Rank #{rank} — {p.name} (total ${proposed_total})"},
+                    }, "quantity": 1,
+                }], mode="payment",
+                success_url=f"{base}/success?bid_id={b.id}",
+                cancel_url=f"{base}/cancel?position_id={p.id}",
+                metadata={"bid_id": str(b.id), "position_id": str(p.id)},
+            )
+        except Exception:
+            db.delete(b); db.commit()
+            raise HTTPException(502, "Stripe checkout could not be created")
+        b.stripe_pid = session.id; db.commit()
+        return {"checkout_url": session.url, "demo": False, "bid_id": b.id,
+                "rank": rank, "total_paid": current, "position_id": p.id, "delta": delta,
+                "pending": True}
+    b.status = "paid"; b.paid_at = datetime.now(timezone.utc)
+    db.add(TradeLog(position_id=p.id, delta=delta, note="payment confirmed (demo)"))
+    db.commit()
+    new_total = total_paid(db, p.id)
+    return {"checkout_url": None, "demo": True, "bid_id": b.id,
+            "rank": rank_for(db, p.id), "total_paid": new_total,
+            "position_id": p.id, "delta": delta}
 
 @app.post("/api/claim")
 def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
@@ -319,41 +326,48 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
                      description=body.description, category=body.category, color=body.color)
         db.add(p); db.flush()
 
-    leader_total = db.query(func.coalesce(func.sum(Bid.amount), 0)).join(Position).filter(
-        Bid.status == "paid"
-    ).scalar() or 0
-
+    totals = paid_totals(db)
+    leader_total = max(totals.values(), default=0)
     current = total_paid(db, p.id)
+    if not existing:
+        # The new position is not ranked until this checkout is paid.
+        leader_total = max(leader_total, 0)
     need = max(leader_total + 1, body.amount, current + 1)
     delta = need - current
 
     b = Bid(position_id=p.id, amount=delta, status="pending",
             created_at=datetime.now(timezone.utc))
     db.add(b); db.commit()
+    rank = rank_for(db, p.id, need)
 
     if STRIPE_SECRET:
         base = PUBLIC_BASE_URL.rstrip("/")
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[{
-                "price_data": {
-                    "currency": "usd",
-                    "unit_amount": delta * 100,
-                    "product_data": {"name": f"Rank №1 — {p.name} (total ${need})"},
-                },
-                "quantity": 1,
-            }],
-            mode="payment",
-            success_url=f"{base}/success?bid_id={b.id}",
-            cancel_url=f"{base}/cancel?position_id={p.id}",
-            metadata={"bid_id": str(b.id), "position_id": str(p.id)},
-        )
-        b.stripe_pid = session.id
-        db.commit()
-        return {"checkout_url": session.url, "demo": False, "bid_id": b.id}
-    else:
-        return {"checkout_url": None, "demo": True, "bid_id": b.id,
-                "amount": need, "position_id": p.id, "delta": delta}
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[{
+                    "price_data": {
+                        "currency": "usd", "unit_amount": delta * 100,
+                        "product_data": {"name": f"Rank #1 — {p.name} (total ${need})"},
+                    }, "quantity": 1,
+                }], mode="payment",
+                success_url=f"{base}/success?bid_id={b.id}",
+                cancel_url=f"{base}/cancel?position_id={p.id}",
+                metadata={"bid_id": str(b.id), "position_id": str(p.id)},
+            )
+        except Exception:
+            db.delete(b); db.commit()
+            raise HTTPException(502, "Stripe checkout could not be created")
+        b.stripe_pid = session.id; db.commit()
+        return {"checkout_url": session.url, "demo": False, "bid_id": b.id,
+                "rank": rank, "total_paid": current, "position_id": p.id,
+                "delta": delta, "pending": True}
+    b.status = "paid"; b.paid_at = datetime.now(timezone.utc)
+    db.add(TradeLog(position_id=p.id, delta=delta, note="payment confirmed (demo)"))
+    db.commit()
+    return {"checkout_url": None, "demo": True, "bid_id": b.id,
+            "rank": rank_for(db, p.id), "amount": need,
+            "total_paid": total_paid(db, p.id), "position_id": p.id, "delta": delta}
 
 # ─────────────────────────────────────────────────────────────
 # stripe webhook — real payments land here
@@ -384,9 +398,10 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         bid_id = int(meta.get("bid_id", 0) or 0)
         b = db.query(Bid).filter(Bid.id == bid_id).first() if bid_id else None
         if b and b.status != "paid":
+            # Only a completed Checkout can move a bid into the public board.
             b.status = "paid"
             b.paid_at = datetime.now(timezone.utc)
-            b.stripe_pid = obj.get("id")
+            b.stripe_pid = obj.get("id") or b.stripe_pid
             db.add(TradeLog(position_id=b.position_id, delta=b.amount,
                             note="payment confirmed (stripe)"))
             db.commit()
@@ -495,49 +510,22 @@ def activity(limit: int = Query(14, le=50), db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────────────────────
 @app.post("/api/seed")
 def seed_demo(db: Session = Depends(get_db)):
-    if db.query(Position).filter(Position.is_demo == True).count() > 0:
-        return {"ok": True, "message": "demo data already present"}
-    demo = [
-        ("smartseek", "SmartSeek", "smartseek.com",
-         "The marketing platform for intelligent things. Pay, rank, get traffic.",
-         "Platforms", "#2563EB", 1),
-        ("ortaq", "Ortaq", "ortaq.biz",
-         "AI agents that work alongside your team — sales, support, research.",
-         "Agents", "#0F172A", 2),
-        ("openai", "OpenAI", "openai.com",
-         "ChatGPT, GPT-4, and the research behind them.",
-         "AI Tools", "#10A37F", 500),
-        ("anthropic", "Anthropic", "anthropic.com",
-         "Claude and the pursuit of reliable, interpretable AI.",
-         "AI Tools", "#D97706", 400),
-        ("ihalezeka", "İhaleZeka", "ihalezeka.com",
-         "AI-powered tender intelligence for Turkish public procurement.",
-         "Platforms", "#2563EB", 300),
-        ("luxrentals", "Lux Rentals", "luxrentals.com",
-         "Curated short-term luxury properties.",
-         "Businesses", "#7C3AED", 150),
-        ("7stories", "7Stories", "7stories.com",
-         "Short-form vertical video platform.",
-         "Platforms", "#DB2777", 120),
-        ("github", "GitHub", "github.com",
-         "Where the world builds software.",
-         "Platforms", "#24292E", 200),
-        ("huggingface", "Hugging Face", "huggingface.co",
-         "The AI community platform.",
-         "AI Tools", "#FFD21E", 180),
-        ("perplexity", "Perplexity", "perplexity.ai",
-         "AI-powered answer engine.",
-         "AI Tools", "#2563EB", 250),
+    """Development helper: seed only the three verified launch players."""
+    if db.query(Position).count() > 0:
+        return {"ok": True, "message": "board already has listings"}
+    launch = [
+        ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Platforms", "#2563EB", 1),
+        ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "Agents", "#0F172A", 3),
+        ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Platforms", "#2563EB", 5),
     ]
-    for slug, name, domain, desc, cat, color, bid in demo:
+    for slug, name, domain, desc, cat, color, bid in launch:
         p = Position(slug=slug, name=name, domain=domain, description=desc,
-                     category=cat, color=color, is_demo=True)
+                     category=cat, color=color, is_demo=False)
         db.add(p); db.flush()
-        b = Bid(position_id=p.id, amount=bid, status="paid",
-                paid_at=datetime.now(timezone.utc))
-        db.add(b)
+        db.add(Bid(position_id=p.id, amount=bid, status="paid",
+                   paid_at=datetime.now(timezone.utc)))
     db.commit()
-    return {"ok": True, "seeded": len(demo)}
+    return {"ok": True, "seeded": len(launch)}
 
 @app.post("/api/reset")
 def reset_and_seed(db: Session = Depends(get_db)):
@@ -547,6 +535,7 @@ def reset_and_seed(db: Session = Depends(get_db)):
     db.query(Click).delete()
     db.query(Bid).delete()
     db.query(Position).delete()
+    db.query(AppSetting).delete()
     db.commit()
     return seed_demo(db)
 
@@ -572,36 +561,30 @@ def serve_frontend(request: Request, full_path: str):
 def _auto_seed():
     db = SessionLocal()
     try:
-        if db.query(Position).count() > 0:
+        # One-time launch board: only the three verified SmartSeek ecosystem
+        # players are seeded. Future bidders can add themselves normally.
+        launch_key = db.query(AppSetting).filter(AppSetting.key == "launch_board_v2").first()
+        if launch_key:
+            return
+        # Remove only the old auto-seeded starter board. Never touch a board
+        # that already contains a visitor-created listing or payment.
+        old = db.query(Position).all()
+        legacy_slugs = {"openai", "anthropic", "perplexity", "github", "huggingface", "ihalezeka", "luxrentals", "7stories", "ortaq", "smartseek"}
+        if old and all(p.slug in legacy_slugs for p in old):
+            db.query(TradeLog).delete(); db.query(Click).delete(); db.query(Bid).delete(); db.query(Position).delete()
+        elif old:
             return
         starters = [
-            ("openai", "OpenAI", "openai.com",
-             "ChatGPT, GPT-4, and the research behind them.", "AI Tools", "#10A37F", 500),
-            ("anthropic", "Anthropic", "anthropic.com",
-             "Claude and the pursuit of reliable, interpretable AI.", "AI Tools", "#D97706", 400),
-            ("perplexity", "Perplexity", "perplexity.ai",
-             "AI-powered answer engine.", "AI Tools", "#2563EB", 250),
-            ("github", "GitHub", "github.com",
-             "Where the world builds software.", "Platforms", "#24292E", 200),
-            ("huggingface", "Hugging Face", "huggingface.co",
-             "The AI community platform.", "AI Tools", "#FFD21E", 180),
-            ("ihalezeka", "İhaleZeka", "ihalezeka.com",
-             "AI-powered tender intelligence.", "Platforms", "#2563EB", 300),
-            ("luxrentals", "Lux Rentals", "luxrentals.com",
-             "Curated short-term luxury properties.", "Businesses", "#7C3AED", 150),
-            ("7stories", "7Stories", "7stories.com",
-             "Short-form vertical video platform.", "Platforms", "#DB2777", 120),
-            ("ortaq", "Ortaq", "ortaq.biz",
-             "AI agents that work alongside your team.", "Agents", "#0F172A", 90),
-            ("smartseek", "SmartSeek", "smartseek.com",
-             "The marketing platform for intelligent things.", "Platforms", "#2563EB", 1),
+            ("smartseek", "SmartSeek", "smartseek.com", "The pay-to-rank marketplace for intelligent things.", "Platforms", "#2563EB", 1),
+            ("ortaq", "Ortaq", "ortaq.biz", "AI agents that work alongside your team.", "Agents", "#0F172A", 3),
+            ("ihalezeka", "İhaleZeka", "ihalezeka.com", "AI-powered tender intelligence.", "Platforms", "#2563EB", 5),
         ]
         for slug, name, domain, desc, cat, color, bid in starters:
             p = Position(slug=slug, name=name, domain=domain, description=desc,
                          category=cat, color=color, is_demo=False)
             db.add(p); db.flush()
-            b = Bid(position_id=p.id, amount=bid, status="paid", paid_at=datetime.now(timezone.utc))
-            db.add(b)
+            db.add(Bid(position_id=p.id, amount=bid, status="paid", paid_at=datetime.now(timezone.utc)))
+        db.add(AppSetting(key="launch_board_v2", value="smartseek-ortaq-ihalezeka"))
         db.commit()
     finally:
         db.close()

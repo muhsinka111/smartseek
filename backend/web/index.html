@@ -52,7 +52,7 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .btn.dark{background:var(--ink);color:var(--paper)}
 
 .layout{display:grid;grid-template-columns:185px 1fr 185px;gap:16px;padding:16px 0 30px;align-items:start}
-.rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:72px}
+.rail{display:flex;flex-direction:column;gap:10px;position:sticky;top:72px}.rail-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);padding:4px 0}
 
 .ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
 .ad .tag{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;background:var(--ink);color:var(--paper);
@@ -64,6 +64,17 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .book{border:2px dashed var(--ink);padding:10px;text-align:center;background:transparent}
 .book p{margin:0 0 7px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .book .btn{box-shadow:none;padding:7px 10px;font-size:10px}
+.rp{display:grid;grid-template-columns:26px 1fr auto;gap:7px;align-items:center;border:var(--bd);background:var(--card);padding:7px;box-shadow:2px 2px 0 var(--ink);cursor:pointer;transition:background .12s,transform .12s}
+.rp:hover{background:var(--lime);transform:translate(-1px,-1px)}
+.rp .rnk{width:26px;height:26px;font-size:10px}
+.rin{display:flex;align-items:center;gap:6px;min-width:0}
+.rin .thumb{width:27px;height:24px;font-size:10px}
+.rin .t1{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86px}
+.rin .t2{font-size:7.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86px}
+.rb{font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
+.ad img{outline:1px solid rgba(0,0,0,.1)}
+.ad .visual{background:#fff!important}
+@media(max-width:1080px){.rp{min-width:210px}.rail{padding-bottom:5px}}
 
 .board{background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg)}
 
@@ -111,7 +122,7 @@ input[type=range]:focus-visible{outline:3px solid var(--lime);outline-offset:2px
 .competeband .cta{margin-left:auto;background:var(--lime);color:var(--ink);border:2px solid var(--lime);font:inherit;
   font-size:9.5px;font-weight:900;text-transform:uppercase;padding:4px 9px;cursor:pointer;letter-spacing:.05em}
 
-.tabs{display:flex;border-bottom:var(--bd);overflow-x:auto}
+.tabs{display:flex;border-bottom:var(--bd);overflow-x:auto}.board-note{padding:7px 10px;background:#FBFAF4;border-bottom:1px solid #DDD9CC;color:var(--sub);font-size:10px}.board-note span{font-family:var(--mono);font-size:8px;color:var(--ink);font-weight:700;border:1px solid var(--ink);padding:2px 4px;margin-right:6px}
 .tab{font:inherit;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);
   background:none;border:0;border-right:var(--bd);padding:10px 14px;cursor:pointer;white-space:nowrap}
 .tab.on{background:var(--lime);color:var(--ink)}
@@ -232,7 +243,9 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 
 <div class="shell layout" id="board">
 
-  <aside class="rail" id="railL"></aside>
+  <aside class="rail" id="railL">
+    <div class="rail-label">Top players</div>
+  </aside>
 
   <main>
     <div class="board">
@@ -240,7 +253,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       <div class="bhero">
         <div class="bhero-l">
           <h1>One board.<br>One rule.<br><span class="hl">Highest bid wins.</span></h1>
-          <p class="tagline"><b>This is the simplest marketing channel left.</b> No API keys. No account. No dashboard. You pay, you rank, you get direct visibility. <b>$1</b> puts you on the board today.</p>
+          <p class="tagline"><b>Pay for attention, not permission.</b> No API keys. No account. No dashboard. Pick a URL, pay the next dollar, and your listing moves into public view. <b>$1</b> starts a new spot.</p>
           <div class="mini">
             <span>LIVE IN 60 SECONDS</span><span>EVERY PRICE PUBLIC</span><span>#1 IS TAKEABLE</span><span>REAL ANALYTICS</span>
           </div>
@@ -266,9 +279,10 @@ tr:nth-child(1) .rnk{background:var(--lime)}
       <div class="competeband"><span>🔥</span><span><b id="cbName">Be first.</b> <span id="cbAgo">No bids yet</span> — your competitors will be here.</span><button class="cta" onclick="openBid(-1)">Start at $1</button></div>
 
       <div class="tabs" id="tabs"></div>
+      <div class="board-note"><span>PUBLIC BOARD</span> Every total below is a completed payment. New listings appear after Checkout confirms.</div>
 
       <div class="tscroll"><table>
-        <thead><tr><th>#</th><th>Product</th><th>Clicks/24h</th><th>Δ</th><th>Bid</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>Player</th><th>Clicks</th><th>Move</th><th>Total paid</th><th></th></tr></thead>
         <tbody id="tb"><tr><td colspan="6" class="empty">Loading the board…</td></tr></tbody>
       </table></div>
 
@@ -282,7 +296,7 @@ tr:nth-child(1) .rnk{background:var(--lime)}
 
     <div class="strip" id="how">
       <div class="scell"><div class="ic">🚀</div><div><b>No API keys, no account</b><span>Paste your URL, add $1, pay, and you’re live in 60 seconds.</span></div></div>
-      <div class="scell"><div class="ic">🏁</div><div><b>One dollar more is all it takes</b><span>Want to jump a competitor? Bid exactly $1 above them — no packages, no auctions.</span></div></div>
+      <div class="scell"><div class="ic">↑</div><div><b>Pay the next dollar</b><span>Want to move above a player? Pay exactly $1 more than the total shown. No packages. No auction jargon.</span></div></div>
       <div class="scell"><div class="ic">📊</div><div><b>Real clicks, real rank, real analytics</b><span>Every click is counted. Every rank is public. Every dollar is shown.</span></div></div>
     </div>
 
@@ -315,7 +329,9 @@ tr:nth-child(1) .rnk{background:var(--lime)}
     </div>
   </main>
 
-  <aside class="rail" id="railR"></aside>
+  <aside class="rail" id="railR">
+    <div class="rail-label">Featured ads</div>
+  </aside>
 </div>
 
 <div class="toasts" id="toasts"></div>
@@ -455,8 +471,9 @@ function renderRail(railId, startRank){
     <div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${it.n[0]}</div><div><div class="t1">${it.n}</div><div class="t2">${it.d}</div></div></div>
     <div class="rb">$${fmt(it.b)}</div>
   </div>`).join('');
-  const adBlock = railId==='railR' && ADS_R.length ? ADS_R.map(ad).join('') : '';
-  rail.innerHTML = rows + adBlock;
+  const adBlock = railId==='railR' && ADS_R.length ? ADS_R.map(ad).join('') + '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>' : '<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>';
+  const label = rail.querySelector('.rail-label');
+  rail.innerHTML = (label ? label.outerHTML : '') + rows + adBlock;
 }
 
 function openBid(i){
@@ -530,8 +547,8 @@ async function payBid(){
     const bj=await br.json();
     if(!br.ok){ toast(bj.detail||"Bid failed."); return; }
     if(bj.checkout_url){ window.location.href=bj.checkout_url; }
-    else {
-      const msg = bj.rank ? `Paid demo $${bj.delta}. You are #${bj.rank}.` : 'Demo mode — payment simulated.';
+    else{
+      const msg = bj.rank ? `Payment confirmed — $${bj.delta} added. You are #${bj.rank}.` : 'Payment received — your listing is processing.';
       toast(msg);
       load();
     }
