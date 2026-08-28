@@ -55,7 +55,7 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 
 .layout{display:grid;grid-template-columns:minmax(0,185px) minmax(0,1fr) minmax(0,185px);gap:16px;padding:16px 0 30px;align-items:start;min-width:0}
 .layout main,.board,.bhero,.bhero-l,.console{min-width:0;max-width:100%}
-.rail{display:flex;flex-direction:column;gap:10px;position:sticky;top:72px}.rail-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);padding:4px 0}
+.rail{display:flex;flex-direction:column;gap:10px;position:sticky;top:72px}.rail-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);padding:4px 0}.rail-caption{font-size:10px;line-height:1.45;color:var(--sub);padding:0 2px 4px}
 
 .ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
 .ad .tag{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;background:var(--ink);color:var(--paper);
@@ -98,7 +98,6 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .feed-proof-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .feed-proof-head b{color:var(--lime);font-size:11px;text-transform:uppercase;letter-spacing:.05em}.feed-proof-head span{font:8px var(--mono);color:#B9B6A9;text-transform:uppercase}
 .feed-list{display:grid;gap:7px}.feed-item{display:grid;grid-template-columns:8px 1fr auto;gap:8px;align-items:center;font:10px var(--mono);border-top:1px solid #3A3A35;padding-top:7px}.feed-item i{width:7px;height:7px;background:var(--lime);border:1px solid var(--paper)}.feed-item strong{font-family:Archivo,sans-serif;color:var(--paper)}.feed-item time{font-size:8px;color:#B9B6A9;white-space:nowrap}.feed-empty{color:#B9B6A9;font-size:10px;line-height:1.45}
-.ad .visual img.brand-mark{width:100%;height:100%;padding:14px;object-fit:contain}
 .category-label{display:block;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin:8px 0 4px}
 .category-select{width:100%;border:var(--bd);background:var(--card);padding:8px 10px;font:inherit;font-weight:700;font-size:11px;min-height:38px}
 .data-status{font-family:var(--mono);font-size:9px;color:var(--sub);display:inline-flex;align-items:center;gap:6px;margin-left:6px}
@@ -255,8 +254,6 @@ body.modal-open{overflow:hidden}
 .modal-stats span{padding:8px 7px;font-family:var(--mono);font-size:8.5px;color:var(--sub);border-bottom:1px solid #DDD9CC}
 .modal-stats span:nth-child(odd){border-right:1px solid #DDD9CC}.modal-stats span:nth-last-child(-n+2){border-bottom:0}
 .modal-stats b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
-.modal-agree{display:flex;align-items:flex-start;gap:8px;color:var(--sub);font-size:10px;line-height:1.45;margin:0 0 12px;cursor:pointer}
-.modal-agree input{width:16px;height:16px;accent-color:var(--ink);flex:none;margin:0}
 .modal-actions .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .modal-actions .btn{min-height:40px}
@@ -329,6 +326,7 @@ body.modal-open{overflow:hidden}
 
   <aside class="rail" id="railL">
     <div class="rail-label">Top players</div>
+    <div class="rail-caption">Confirmed totals only. The board decides the order.</div>
   </aside>
 
   <main>
@@ -402,19 +400,6 @@ body.modal-open{overflow:hidden}
       <div class="mcell"><div class="mlbl">PLATFORM</div><div class="mval" id="mFee">—</div></div>
     </div>
 
-    <div class="alert-band">
-      <div class="alert-inner">
-        <div>
-          <b>Get outbid? We’ll tell you.</b>
-          <span>One email when someone beats your spot. No spam, no account needed.</span>
-        </div>
-        <form class="alert-form" onsubmit="event.preventDefault();toast('Alert signup coming soon.');">
-          <input id="alertEmail" type="email" placeholder="you@example.com" required>
-          <button class="btn acc" type="submit">Watch this spot</button>
-        </form>
-      </div>
-    </div>
-
     <div class="activity-band">
       <div class="act-head"><b>Live activity</b><span>Verified events only · no synthetic feed</span></div>
       <div class="tscroll"><table>
@@ -423,10 +408,24 @@ body.modal-open{overflow:hidden}
       </table></div>
       <div class="feed-proof"><div class="feed-proof-head"><b>What the feed proves</b><span>PUBLIC LEDGER</span></div><div class="feed-list"><div class="feed-item"><i></i><span><strong>Completed payment</strong> changes rank</span><time>server-confirmed</time></div><div class="feed-item"><i></i><span><strong>Every click</strong> is counted at the destination link</span><time>redirect logged</time></div><div class="feed-item"><i></i><span><strong>No activity is fabricated</strong>; quiet means quiet</span><time>transparent by design</time></div></div></div>
     </div>
+
+    <div class="alert-band">
+      <div class="alert-inner">
+        <div>
+          <b>Protect your place.</b>
+          <span>Leave an email and we’ll tell you when a new confirmed payment moves above your listing.</span>
+        </div>
+        <form class="alert-form" onsubmit="event.preventDefault();toast('Alert signup coming soon.');">
+          <input id="alertEmail" type="email" placeholder="you@example.com" required>
+          <button class="btn acc" type="submit">Watch this spot</button>
+        </form>
+      </div>
+    </div>
   </main>
 
   <aside class="rail" id="railR">
     <div class="rail-label">Featured ads</div>
+    <div class="rail-caption">A clear frame beside a real decision.</div>
   </aside>
 </div>
 
@@ -448,11 +447,11 @@ body.modal-open{overflow:hidden}
   <div class="shell">
     <div class="foot-cell">
       <h4>Rules</h4>
-      <p>Rank is determined by total paid. Highest bid wins. Minimum bid is $1. Bids are public. Being outbid is part of the game.</p>
+      <p>Ranking is arithmetic, not a black box: total paid sets the order, ties keep their earlier place, and only completed Stripe payments appear. Start at $1; the public ceiling is $100,000.</p>
     </div>
     <div class="foot-cell">
       <h4>Revenue</h4>
-      <p>SmartSeek collects a small platform fee on paid bids. The rest stays with the listing owner. All fees are shown before checkout.</p>
+      <p>SmartSeek keeps a small fee from confirmed bids to run the board and keep the ledger public. No hidden packages, paid fake clicks, or guaranteed outcomes.</p>
     </div>
     <div class="foot-cell">
       <h4>Contact</h4>
@@ -610,9 +609,9 @@ function renderRail(railId, startRank){
   const rail=document.getElementById(railId);
   if(!rail) return;
   const labels=[...rail.querySelectorAll('.rail-label')].map(x=>x.outerHTML).join('');
-  const reserveAd='<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ Reserve this frame</a></div></div>';
+  const reserveAd=(label)=>`<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ ${label}</a></div></div>`;
   const adBlock = railId==='railR' && ADS_R.length
-    ? ADS_R.map(ad).join('') + reserveAd + reserveAd
+    ? ADS_R.map(ad).join('') + reserveAd('Reserve this frame') + reserveAd('Reserve another frame')
     : '';
   const sorted=[...items].sort((a,b)=>b.b-a);
   const players=railId==='railL' ? sorted.slice(0,3).map((it,idx)=>`<div class="rp" onclick="showOutbid(${items.indexOf(it)})"><div class="rnk">${idx+1}</div><div class="rin"><div class="thumb" style="background:${it.color||'#2563EB'}">${logoFor(it)}</div><div><div class="t1">${esc(it.n)}</div><a class="t2" href="/r/${encodeURIComponent(it.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(it.d)}</a><div class="t3">#${it.cr} in ${esc(it.c)}</div></div></div><div class="rb">$${fmt(it.b)}</div></div>`).join('') : '';
