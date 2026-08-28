@@ -154,6 +154,29 @@ def slugify(s: str) -> str:
     s = s.split("?")[0].split("#")[0].strip("/")
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:100]
 
+def normalize_domain(s: str) -> str:
+    """Store a clean destination while preserving a path or social handle."""
+    value = str(s or "").strip()
+    if value.startswith("@"):
+        value = f"x.com/{value[1:]}"
+    value = re.sub(r"^https?://", "", value, flags=re.I)
+    return value.strip().strip("/")
+
+def destination_url(s: str) -> str:
+    """Return an HTTPS destination for domains and social handles."""
+    value = str(s or "").strip()
+    if value.startswith("@"):
+        value = f"x.com/{value[1:]}"
+    if re.match(r"^https?://", value, flags=re.I):
+        return value
+    return f"https://{value.lstrip('/')}"
+
+
+def logo_host(s: str) -> str:
+    """Extract the host used by favicon/logo services."""
+    value = normalize_domain(s).split("/", 1)[0]
+    return value.lower().removeprefix("www.")
+
 def total_paid(db: Session, position_id: int) -> int:
     return db.query(func.coalesce(func.sum(Bid.amount), 0)).filter(
         Bid.position_id == position_id, Bid.status == "paid"
@@ -324,13 +347,14 @@ def category_leaderboard(category: str, page: int = Query(1, ge=1),
 @app.post("/api/positions")
 def create_position(body: PositionIn, db: Session = Depends(get_db)):
     """Create a listing shell; money is recorded only after payment succeeds."""
-    s = slugify(body.domain)
+    domain = normalize_domain(body.domain)
+    s = slugify(domain)
     if body.category not in ALLOWED_CATEGORIES:
         raise HTTPException(400, "Choose a valid category")
     existing = db.query(Position).filter(Position.slug == s).first()
     if existing:
         return {"ok": True, "id": existing.id, "slug": existing.slug, "existing": True}
-    p = Position(slug=s, name=body.name, domain=body.domain,
+    p = Position(slug=s, name=body.name, domain=domain,
                  description=body.description, category=body.category,
                  color=body.color, is_demo=False)
     db.add(p); db.commit()
@@ -398,7 +422,8 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
     Returns a Stripe checkout session when STRIPE_SECRET is set,
     otherwise a demo placeholder.
     """
-    s = slugify(body.domain)
+    domain = normalize_domain(body.domain)
+    s = slugify(domain)
     if body.category not in ALLOWED_CATEGORIES:
         raise HTTPException(400, "Choose a valid category")
     if body.amount > MAX_BID:
@@ -407,7 +432,7 @@ def claim_top(body: ClaimIn, db: Session = Depends(get_db)):
     if existing:
         p = existing
     else:
-        p = Position(slug=s, name=body.name, domain=body.domain,
+        p = Position(slug=s, name=body.name, domain=domain,
                      description=body.description, category=body.category,
                      color=body.color, is_demo=False)
         db.add(p); db.flush()
@@ -528,7 +553,7 @@ def redirect_slug(slug: str, request: Request, db: Session = Depends(get_db)):
         referer=request.headers.get("referer", ""),
     )
     db.add(c); db.commit()
-    dest = p.domain if p.domain.startswith("http") else f"https://{p.domain}"
+    dest = destination_url(p.domain)
     return RedirectResponse(dest, status_code=302)
 
 @app.get("/api/clicks/{position_id}")
@@ -547,10 +572,14 @@ def clicks_for(position_id: int, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────────────────────
 @app.get("/api/analytics/summary")
 def analytics_summary(db: Session = Depends(get_db)):
-    total_positions = db.query(Position).count()
+    paid = paid_totals(db)
+    public_ids = [position_id for position_id, total in paid.items() if int(total or 0) > 0]
+    public_filter = Position.id.in_(public_ids) if public_ids else False
+    total_positions = db.query(Position).filter(public_filter).count()
     total_clicks = db.query(Click).count()
     pot = db.query(func.coalesce(func.sum(Bid.amount), 0)).filter(Bid.status == "paid").scalar() or 0
     seats_today = db.query(Position).filter(
+        public_filter,
         Position.created_at >= datetime.now(timezone.utc).replace(hour=0, minute=0, second=0)
     ).count()
     platform_earnings = int(pot * 0.03)
@@ -569,14 +598,19 @@ def data_health(db: Session = Depends(get_db)):
     """Small, honest health payload for the public data-status indicator."""
     paid = db.query(Bid).filter(Bid.status == "paid").count()
     pending = db.query(Bid).filter(Bid.status == "pending").count()
-    categories = sorted({p.category for p in db.query(Position).all()})
+    totals = paid_totals(db)
+    public_ids = [position_id for position_id, total in totals.items() if int(total or 0) > 0]
+    public_filter = Position.id.in_(public_ids) if public_ids else False
+    public_positions = db.query(Position).filter(public_filter).all()
+    all_positions = db.query(Position).count()
     return {
         "status": "live",
         "database": "postgres" if not DATABASE_URL.startswith("sqlite") else "sqlite",
-        "positions": db.query(Position).count(),
+        "positions": len(public_positions),
+        "pending_listings": max(0, all_positions - len(public_positions)),
         "paid_bids": paid,
         "pending_bids": pending,
-        "categories_present": categories,
+        "categories_present": sorted({p.category for p in public_positions}),
         "max_bid": MAX_BID,
         "stripe": bool(STRIPE_SECRET),
     }
@@ -599,18 +633,48 @@ def position_analytics(position_id: int, db: Session = Depends(get_db)):
     }
 
 @app.get("/api/activity")
-def activity(limit: int = Query(14, le=50), db: Session = Depends(get_db)):
-    rows = db.query(TradeLog, Position).join(
+def activity(limit: int = Query(14, ge=1, le=50), db: Session = Depends(get_db)):
+    """Return only real, server-recorded payment and outbound-click events."""
+    trade_rows = db.query(TradeLog, Position).join(
         Position, TradeLog.position_id == Position.id
-    ).order_by(TradeLog.created_at.desc()).limit(limit).all()
-    return [{
-        "position_id": t.position_id,
-        "name": p.name,
-        "color": p.color,
-        "delta": t.delta,
-        "note": t.note,
-        "ts": t.created_at.isoformat(),
-    } for t, p in rows]
+    ).all()
+    click_rows = db.query(Click, Position).join(
+        Position, Click.position_id == Position.id
+    ).all()
+    events = []
+    for t, p in trade_rows:
+        events.append({
+            "kind": "payment",
+            "position_id": t.position_id,
+            "name": p.name,
+            "domain": p.domain,
+            "slug": p.slug,
+            "category": p.category,
+            "total_paid": total_paid(db, p.id),
+            "color": p.color,
+            "delta": t.delta,
+            "note": t.note or "payment confirmed",
+            "ts": t.created_at.isoformat(),
+        })
+    for c, p in click_rows:
+        # A click is public only for a listing that has a confirmed paid total.
+        if total_paid(db, p.id) <= 0:
+            continue
+        events.append({
+            "kind": "click",
+            "position_id": c.position_id,
+            "name": p.name,
+            "domain": p.domain,
+            "slug": p.slug,
+            "category": p.category,
+            "total_paid": total_paid(db, p.id),
+            "color": p.color,
+            "delta": 0,
+            "note": "outbound click",
+            "ts": c.created_at.isoformat(),
+        })
+    events.sort(key=lambda x: x["ts"], reverse=True)
+    return events[:limit]
 
 # ─────────────────────────────────────────────────────────────
 # seed / reset

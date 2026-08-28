@@ -81,7 +81,8 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .rb{font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
 .ad img{outline:1px solid rgba(0,0,0,.1)}
 .ad .visual{background:#fff!important}
-.ad .visual img.brand-mark{width:58px;height:58px;padding:0;object-fit:contain}
+.ad .visual img.brand-mark{width:100%;height:100%;max-width:100%;max-height:100%;padding:12px;object-fit:contain}.feed-link{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:2px}.feed-link img{width:18px;height:18px;display:inline-block;vertical-align:middle;object-fit:contain;background:#fff;outline:1px solid rgba(0,0,0,.1)}
+.empty b{display:block;color:var(--ink);margin-bottom:4px}.empty span{font-size:10px;font-weight:500}.activity-band .feed-proof{margin-top:12px}
 .story-band{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;padding:16px 0 20px;border-bottom:var(--bd)}
 .story-band h2,.why-band h2{font-size:clamp(22px,3vw,34px);line-height:1;letter-spacing:-.03em;margin:7px 0 8px;text-wrap:balance}
 .story-band p,.why-band p{font-size:12px;line-height:1.6;color:var(--sub);max-width:58ch;margin:0;text-wrap:pretty}
@@ -97,12 +98,12 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .feed-proof-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .feed-proof-head b{color:var(--lime);font-size:11px;text-transform:uppercase;letter-spacing:.05em}.feed-proof-head span{font:8px var(--mono);color:#B9B6A9;text-transform:uppercase}
 .feed-list{display:grid;gap:7px}.feed-item{display:grid;grid-template-columns:8px 1fr auto;gap:8px;align-items:center;font:10px var(--mono);border-top:1px solid #3A3A35;padding-top:7px}.feed-item i{width:7px;height:7px;background:var(--lime);border:1px solid var(--paper)}.feed-item strong{font-family:Archivo,sans-serif;color:var(--paper)}.feed-item time{font-size:8px;color:#B9B6A9;white-space:nowrap}.feed-empty{color:#B9B6A9;font-size:10px;line-height:1.45}
-.ad .visual img.brand-mark{width:58px;height:58px;padding:0;object-fit:contain}
+.ad .visual img.brand-mark{width:100%;height:100%;padding:14px;object-fit:contain}
 .category-label{display:block;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin:8px 0 4px}
 .category-select{width:100%;border:var(--bd);background:var(--card);padding:8px 10px;font:inherit;font-weight:700;font-size:11px;min-height:38px}
 .data-status{font-family:var(--mono);font-size:9px;color:var(--sub);display:inline-flex;align-items:center;gap:6px;margin-left:6px}
 .data-status .ok{width:7px;height:7px;background:var(--green);border:1px solid var(--ink);display:inline-block}
-@media(max-width:1080px){.rp{min-width:210px}.rail{padding-bottom:5px}}
+@media(max-width:1080px){.rp{min-width:0}.rail{padding-bottom:5px}}
 
 .board{background:var(--card);border:var(--bd);box-shadow:var(--shadow-lg)}
 
@@ -327,16 +328,10 @@ body.modal-open{overflow:hidden}
 <div class="shell layout" id="board">
 
   <aside class="rail" id="railL">
-    <div class="rail-label">Sponsored placements</div>
-    <div class="ad" id="houseAd"><span class="tag">SPONSORED</span><a class="visual" href="https://smartseek.com" target="_blank" rel="noopener noreferrer"><img class="brand-mark" src="/ads/smartseek.svg" alt="SmartSeek"></a><div class="body"><h5>SmartSeek</h5><a href="https://smartseek.com" target="_blank" rel="noopener noreferrer">→ smartseek.com</a></div></div>
-    <div class="rail-label" style="margin-top:8px">Top paid placements</div>
+    <div class="rail-label">Top players</div>
   </aside>
 
   <main>
-    <section class="story-band" aria-label="Why SmartSeek">
-      <div class="story-lead"><span class="story-kicker">THE SMARTSEEK DIFFERENCE</span><h2>Earn attention in public.</h2><p>Search is crowded, social feeds disappear, and paid campaigns stop the moment the budget does. SmartSeek turns one clear decision into a durable signal: pay the next dollar, earn the rank, and let the audience choose.</p><a class="story-link" href="#why">Why list here? ↓</a></div>
-      <div class="story-points"><div><b>01 / Be found</b><span>Your listing is placed where curious buyers already browse.</span></div><div><b>02 / Show proof</b><span>Every rank, click, and completed payment is visible.</span></div><div><b>03 / Create motion</b><span>One bid creates a story competitors and customers can see.</span></div></div>
-    </section>
     <div class="board">
 
       <div class="bhero">
@@ -389,6 +384,10 @@ body.modal-open{overflow:hidden}
       <div><span class="story-kicker">WHY THIS WORKS NOW</span><h2>People trust what they can understand.</h2></div>
       <p>SmartSeek is not another dashboard asking you to wait for an algorithm. It is a simple public market for attention. The price is the rank, the destination is your link, and the ledger is the proof. A small team can compete with a large budget because the rule is the same for everyone.</p>
       <a class="btn dark" href="#board">See the live board →</a>
+    </section>
+    <section class="story-band" aria-label="Why SmartSeek">
+      <div class="story-lead"><span class="story-kicker">THE SMARTSEEK DIFFERENCE</span><h2>Earn attention in public.</h2><p>Search is crowded, social feeds disappear, and paid campaigns stop the moment the budget does. SmartSeek turns one clear decision into a durable signal: pay the next dollar, earn the rank, and let the audience choose.</p><a class="story-link" href="#why">Why list here? ↓</a></div>
+      <div class="story-points"><div><b>01 / Be found</b><span>Your listing is placed where curious buyers already browse.</span></div><div><b>02 / Show proof</b><span>Every rank, click, and completed payment is visible.</span></div><div><b>03 / Create motion</b><span>One bid creates a story competitors and customers can see.</span></div></div>
     </section>
     <div class="strip" id="how">
       <div class="scell"><div class="ic">🚀</div><div><b>No API keys, no account</b><span>Paste your URL, add $1, pay, and you’re live in 60 seconds.</span></div></div>
@@ -488,12 +487,17 @@ const BRAND_LOGOS={
   'smartseek.com':'/ads/smartseek.svg',
   'ortaq.biz':'/ads/ortaq.svg',
   'ihalezeka.com':'/ads/ihalezeka.svg',
-  'higgsfield.com':'/ads/higgsfield.svg',
-  'railway.com':'/ads/railway.svg'
+  'higgsfield.ai':'/ads/higgsfield-official.png',
+  'higgsfield.com':'/ads/higgsfield-official.png',
+  'railway.com':'/ads/railway-official.png',
+  'railway.app':'/ads/railway-official.png'
 };
 function logoFor(it){
   const src=BRAND_LOGOS[String(it?.d||'').toLowerCase()];
-  return src ? `<img src="${src}" alt="" loading="lazy">` : esc(String(it?.n||'').trim().charAt(0).toUpperCase()||'?');
+  if(src) return `<img src="${src}" alt="" loading="lazy">`;
+  const host=String(it?.d||'').toLowerCase().replace(/^https?:\/\//,'').split('/')[0].replace(/^www\./,'');
+  const remote=host ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64` : '';
+  return remote ? `<img src="${remote}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();this.parentElement.textContent='${esc(String(it?.n||'').trim().charAt(0).toUpperCase()||'?')}'">` : esc(String(it?.n||'').trim().charAt(0).toUpperCase()||'?');
 }
 const tb=document.getElementById('tb');
 const tabsEl=document.getElementById('tabs');
@@ -557,7 +561,9 @@ async function loadDataHealth(){
 function buildTabs(){
   tabsEl.innerHTML=cats.map(c=>`<button class="tab ${c===activeCat?'on':''}" onclick="setTab('${c}')">${c}</button>`).join('');
 }
-function setTab(c){activeCat=c;buildTabs();render();}
+function setTab(c){activeCat=c;page=1;buildTabs();render();}
+const CATEGORY_SLUGS={'AI Tools':'ai-tools','AI Agents':'ai-agents','Marketing':'marketing','Data & Research':'data-research','SaaS':'saas','Developer Tools':'developer-tools','Automation':'automation','Robotics':'robotics','Devices':'devices','Other':'other'};
+function categorySlug(name){return CATEGORY_SLUGS[name]||'';}
 
 function render(flash){
   if(!items.length){ tb.innerHTML='<tr><td colspan="6" class="empty">The board is empty. Be the first — list at $1.</td></tr>'; pager.innerHTML=''; return; }
@@ -679,7 +685,7 @@ async function loadActivity(){
     const rows=await r.json();
     const el=document.getElementById('actRows'); if(!el) return;
     if(!rows.length){ el.innerHTML='<tr><td colspan="3" class="empty"><b>The public ledger is quiet — be the first move.</b><br><span>No synthetic bids, no invented activity. Your completed payment appears here.</span><br><button class="btn acc" style="margin-top:10px" onclick="openBid(-1)">Make the first move →</button></td></tr>'; return; }
-    el.innerHTML=rows.map(x=>`<tr><td>${esc(x.note||'bid')}</td><td>${esc(x.name||'')}</td><td>${new Date(x.ts).toLocaleString()}</td></tr>`).join('');
+    el.innerHTML=rows.map(x=>`<tr><td><b>${x.kind==='click'?'CLICK':'PAYMENT'}</b><br><span>${esc(x.note||'')}</span></td><td><a class="feed-link" href="/r/${encodeURIComponent(x.slug||'')}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${logoFor({d:x.domain,n:x.name})} ${esc(x.name||'')}</a><br><span class="t3">${esc(x.category||'')}</span></td><td>${new Date(x.ts).toLocaleString()}</td></tr>`).join('');
   }catch(e){}
 }
 slider.addEventListener('input',upd);
