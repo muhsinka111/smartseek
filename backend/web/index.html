@@ -60,8 +60,8 @@ nav{background:var(--paper);border-bottom:var(--bd);position:sticky;top:0;z-inde
 .ad{background:var(--card);border:var(--bd);box-shadow:var(--shadow)}
 .ad .tag{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;background:var(--ink);color:var(--paper);
   padding:4px 8px;display:inline-block;margin:8px 0 0 8px}
-.ad .visual{margin:7px 8px 0;height:104px;border:var(--bd);display:grid;place-items:center;font-size:26px;overflow:hidden;background:var(--paper)}
-.ad .visual img{width:100%;height:100%;object-fit:contain;display:block;padding:6px;background:#fff}
+.ad .visual{margin:7px 8px 0;height:104px;border:var(--bd);display:grid;place-items:center;overflow:hidden;background:#fff!important;min-width:0}
+.ad .visual img.brand-mark{width:100%;height:100%;object-fit:contain;display:block;padding:10px}
 .ad .body a{display:inline-block;padding:2px 0}
 .ad.reserve .visual{background:repeating-linear-gradient(-45deg,#fff 0 8px,var(--paper) 8px 16px);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em}
 .ad .body{padding:8px 10px 10px}
@@ -610,7 +610,7 @@ function renderRail(railId, startRank){
   if(!rail) return;
   const labels=[...rail.querySelectorAll('.rail-label')].map(x=>x.outerHTML).join('');
   const reserveAd=(label)=>`<div class="ad reserve"><span class="tag">AD SPOT</span><div class="visual">YOUR BRAND</div><div class="body"><h5>Place your ad</h5><a href="/advertise">→ ${label}</a></div></div>`;
-  const adBlock = railId==='railR' && ADS_R.length
+  const adBlock = railId==='railR'
     ? ADS_R.map(ad).join('') + reserveAd('Reserve this frame') + reserveAd('Reserve another frame')
     : '';
   const sorted=[...items].sort((a,b)=>b.b-a);
