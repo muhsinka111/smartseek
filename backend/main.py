@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
-from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, func
@@ -262,6 +262,34 @@ def advertise():
 @app.get("/contact")
 def contact():
     return FileResponse(WEB_DIR / "contact.html", media_type="text/html")
+
+# ─────────────────────────────────────────────────────────────
+# SEO — sitemap + robots (canonical host is the apex)
+# ─────────────────────────────────────────────────────────────
+SEO_BASE = _os.environ.get("SEO_BASE_URL", "https://smartseek.com").rstrip("/")
+SITEMAP_PATHS = ["/", "/about", "/rules", "/advertise", "/contact", "/success", "/cancel"]
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap():
+    urls = "\n".join(
+        f"  <url><loc>{SEO_BASE}{p}</loc></url>" for p in SITEMAP_PATHS
+    )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{urls}\n"
+        "</urlset>\n"
+    )
+    return Response(content=body, media_type="application/xml")
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots():
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        f"Sitemap: {SEO_BASE}/sitemap.xml\n"
+    )
+    return Response(content=body, media_type="text/plain")
 
 @app.get("/api/config")
 def config():
